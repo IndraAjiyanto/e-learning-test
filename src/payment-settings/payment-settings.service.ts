@@ -68,7 +68,10 @@ export class PaymentSettingsService {
     settings.gateway_enabled = false;
     if (patch.manual_enabled === false && patch.gateway_enabled !== true) {
       settings.manual_enabled = true;
-    } else if (patch.manual_enabled === true || patch.gateway_enabled !== true) {
+    } else if (
+      patch.manual_enabled === true ||
+      patch.gateway_enabled !== true
+    ) {
       settings.manual_enabled = true;
     }
 
@@ -89,7 +92,7 @@ export class PaymentSettingsService {
   async effective() {
     const s = await this.get();
     // Xendit/Gateway dinonaktifkan untuk sementara
-    const gatewayAvailable = false;
+    // const gatewayAvailable = false;
     const gatewayHidden = true;
 
     const manualEnabled = true;

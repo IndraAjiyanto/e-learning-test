@@ -200,20 +200,20 @@ export class PaymentsService {
         let discountAmount = 0;
 
         if (promoCode) {
-            try {
-              const validationResult = await this.voucherService.validateVoucher(
-                promoCode,
-                createPaymentDto.courseId,
-                contractTotal,
-                createPaymentDto.userId,
-              );
-              discountAmount = validationResult.discountAmount;
-            } catch (err: unknown) {
-              console.warn(
-                '[PaymentsService] Invalid voucher on manual installment:',
-                err instanceof Error ? err.message : String(err),
-              );
-            }
+          try {
+            const validationResult = await this.voucherService.validateVoucher(
+              promoCode,
+              createPaymentDto.courseId,
+              contractTotal,
+              createPaymentDto.userId,
+            );
+            discountAmount = validationResult.discountAmount;
+          } catch (err: unknown) {
+            console.warn(
+              '[PaymentsService] Invalid voucher on manual installment:',
+              err instanceof Error ? err.message : String(err),
+            );
+          }
         }
 
         const pricing = this.calculateInstallmentPricing(
@@ -221,24 +221,24 @@ export class PaymentsService {
           discountAmount,
         );
         const payment: Payment = this.paymentRepository.create({
-            ...createPaymentDto,
-            user: user,
-            course: course,
-            installment: installments,
-            voucher_code: promoCode || null,
-            voucher_discount_total: promoCode ? pricing.totalDiscount : null,
-            pricing_snapshot: {
-              totalOriginal: pricing.totalOriginal,
-              totalDiscount: pricing.totalDiscount,
-              downPayment: pricing.downPayment,
-              monthly: pricing.monthly,
-            },
-          });
+          ...createPaymentDto,
+          user: user,
+          course: course,
+          installment: installments,
+          voucher_code: promoCode || null,
+          voucher_discount_total: promoCode ? pricing.totalDiscount : null,
+          pricing_snapshot: {
+            totalOriginal: pricing.totalOriginal,
+            totalDiscount: pricing.totalDiscount,
+            downPayment: pricing.downPayment,
+            monthly: pricing.monthly,
+          },
+        });
         const saved = await this.paymentRepository.save(payment);
         await this.createInstallmentSnapshots(saved, pricing);
 
         await this.invoiceService
-            .createManualInvoice(
+          .createManualInvoice(
             saved,
             course,
             user,
@@ -731,9 +731,14 @@ export class PaymentsService {
           paymentLink: null,
           keyword: registration.referal_source || 'Registration',
           userName:
-            registration.user_fullname || registration.user?.biodata?.fullName || registration.user?.username || null,
-          userEmail: registration.user_email || registration.user?.email || null,
-          userPhone: registration.user_no || registration.user?.biodata?.no || null,
+            registration.user_fullname ||
+            registration.user?.biodata?.fullName ||
+            registration.user?.username ||
+            null,
+          userEmail:
+            registration.user_email || registration.user?.email || null,
+          userPhone:
+            registration.user_no || registration.user?.biodata?.no || null,
           installmentDetail: null,
           ...statusOf(registration.process),
         };
@@ -965,7 +970,7 @@ export class PaymentsService {
               month: p.installment.month,
               downPayment: p.installment.downPayment,
               price: p.installment.price,
-          dueDates: dateHelpers.toDateOnlyArray(p.installment.dueDates),
+              dueDates: dateHelpers.toDateOnlyArray(p.installment.dueDates),
             }
           : null,
         process: p.process,
@@ -977,9 +982,7 @@ export class PaymentsService {
         paidSoFar: totalPaid,
         remainingBalance: storedTotal - totalPaid,
         progressPercentage:
-          storedTotal > 0
-            ? Math.round((totalPaid / storedTotal) * 100)
-            : 0,
+          storedTotal > 0 ? Math.round((totalPaid / storedTotal) * 100) : 0,
         monthly: monthlyStatus,
       };
     });
@@ -1325,7 +1328,11 @@ export class PaymentsService {
       const amountToPay =
         row.amount !== null && row.amount !== undefined
           ? Number(row.amount)
-          : Math.max(0, Number(row.original_amount || scheduleAmount) - Number(row.discount_amount || 0));
+          : Math.max(
+              0,
+              Number(row.original_amount || scheduleAmount) -
+                Number(row.discount_amount || 0),
+            );
       row.amount = amountToPay;
       row.no = `INV-M${month}-${Date.now()}-${Math.random()
         .toString(36)
