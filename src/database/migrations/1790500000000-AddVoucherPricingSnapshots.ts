@@ -1,8 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddVoucherPricingSnapshots1790500000000
-  implements MigrationInterface
-{
+export class AddVoucherPricingSnapshots1790500000000 implements MigrationInterface {
   name = 'AddVoucherPricingSnapshots1790500000000';
 
   public async up(q: QueryRunner): Promise<void> {
@@ -27,9 +25,7 @@ export class AddVoucherPricingSnapshots1790500000000
   }
 
   public async down(q: QueryRunner): Promise<void> {
-    await q.query(
-      'ALTER TABLE "invoice" DROP COLUMN IF EXISTS "voucher_code"',
-    );
+    await q.query('ALTER TABLE "invoice" DROP COLUMN IF EXISTS "voucher_code"');
     await q.query(
       'ALTER TABLE "payments" DROP COLUMN IF EXISTS "pricing_snapshot"',
     );

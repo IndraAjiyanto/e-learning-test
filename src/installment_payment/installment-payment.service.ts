@@ -41,7 +41,12 @@ export class InstallmentPaymentService {
   async findByPaymentId(paymentId: string) {
     return this.installmentPaymentRepository.find({
       where: { payment: { id: paymentId } },
-      relations: ['payment', 'payment.user', 'payment.course', 'payment.installment'],
+      relations: [
+        'payment',
+        'payment.user',
+        'payment.course',
+        'payment.installment',
+      ],
       order: { month: 'ASC' },
     });
   }

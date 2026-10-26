@@ -523,7 +523,7 @@ export class PaymentsController {
         (req.body as { uploadedImageUrls?: string[] }).uploadedImageUrls?.[0] ??
         '';
       uploadedFile = file;
-const bodyRecord = req.body as Record<string, unknown>;
+      const bodyRecord = req.body as Record<string, unknown>;
       const formSource =
         typeof bodyRecord.source === 'string' ? bodyRecord.source : '';
       const formCurrentStatus = bodyRecord.currentStatus;
