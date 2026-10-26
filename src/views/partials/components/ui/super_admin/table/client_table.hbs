@@ -4,50 +4,16 @@
   Level: L0 Skrip pendamping (scoped super_admin)
 
   Menyediakan factory Alpine `clientTable()`: search + pagination di sisi client,
-  untuk halaman yang datanya sudah dikirim penuh oleh controller (tanpa endpoint
-  filter seperti /users/filter).
-
-  Sumber data boleh salah satu dari:
-  - `items` : array yang sudah dirender controller ke template (mayoritas halaman)
-  - `url`   : endpoint JSON yang diambil lewat load(), untuk panel yang datanya
-              belum ada saat render (mis. tab di halaman detail program)
-
-  `dataKey` dipakai bila endpoint membungkus arraynya dalam objek, mis.
-  GET /program/installment/:courseId yang membalas { availableMonths, installments }
-  — tanpa itu payloadnya bukan array dan tabel tampil kosong. Payload mentahnya
-  disimpan di `raw` supaya pemanggil bisa membaca field pendamping seperti
-  availableMonths.
-
-  `sortKey` mengurutkan data (dari `items` maupun load()) naik menurut path itu
-  (mis. "createdAt"), untuk query yang tidak memakai ORDER BY: tanpa itu Postgres
-  menaruh baris yang baru diedit di akhir, dan urutan tabel berubah setelah edit.
-
-  Kontrak state yang dihasilkan — sesuai yang diharapkan komponen lain:
-  - searchInput, handleSearch()          → ui/super_admin/table/toolbar
-  - currentPage, totalPages, changePage() → ui/super_admin/table/pagination
-  - rows                                  → dipakai <template x-for> di halaman
-  - size                                  → dipakai halaman untuk menomori baris
-  - loading                               → true selama load() berjalan; false bila
-                                            memakai `items` (datanya sudah ada saat render)
-
-  Filter hanya dijalankan sekali per pencarian (lihat applySearch), bukan tiap
-  render — `filtered` sengaja properti biasa, bukan getter.
-
-  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
-
-  Contoh:
-    {{> components/ui/super_admin/table/client_table }}
-    <div x-data='clientTable({ items: {{json partners}}, searchKeys: ["categoryPartner.category"] })'>
+  serta bulk selection & bulk delete dengan modal dan toast design system terbaru.
 --}}
 <script>
-  // Membaca path bertitik ("categoryPartner.category") dengan aman —
-  // relasi bisa null, mis. partner tanpa kategori.
+  // Membaca path bertitik ("categoryPartner.category") dengan aman
   function valueAt(row, path) {
     const value = path.split('.').reduce((acc, key) => (acc == null ? acc : acc[key]), row);
     return value == null ? '' : String(value);
   }
 
-  function clientTable({ items, size, searchKeys, url, dataKey, sortKey }) {
+  function clientTable({ items, size, searchKeys, url, dataKey, sortKey, entityName, deleteEntity }) {
     const byKey = (list) =>
       sortKey
         ? list.sort((a, b) => valueAt(a, sortKey).localeCompare(valueAt(b, sortKey)))
@@ -58,23 +24,218 @@
       items: allItems,
       searchKeys: searchKeys || [],
       searchInput: '',
-      // Hasil filter yang sedang aktif. Sengaja properti biasa, BUKAN getter:
-      // getter Alpine tidak di-memoize, sehingga satu render (pagination membaca
-      // totalPages, tbody membaca rows) akan menjalankan filter berkali-kali.
-      // Di sini filter hanya jalan sekali per pencarian, lewat applySearch().
-      // Nilai awal = seluruh item karena kotak search masih kosong.
       filtered: allItems,
       currentPage: 1,
       size: size || 10,
       loading: Boolean(url),
       searchTimeout: null,
-      // Payload mentah hasil load(), untuk endpoint yang mengirim field lain di
-      // samping arraynya. Null bila datanya datang lewat `items`.
       raw: null,
 
-      // Dipanggil lewat x-init oleh pemanggil yang memberi `url`. Tanpa `url`
-      // tidak melakukan apa-apa, sehingga aman dipasang di komponen yang dipakai
-      // dua-duanya.
+      // Bulk delete states
+      selectMode: false,
+      selectedIds: [],
+      entityName: entityName || '',
+      deleteEntity: deleteEntity || '',
+
+      toggleSelectMode() {
+        this.selectMode = !this.selectMode;
+        if (!this.selectMode) {
+          this.selectedIds = [];
+        }
+      },
+
+      resolveEntity() {
+        if (this.deleteEntity) return this.deleteEntity;
+        const p = window.location.pathname.replace(/^\/|\/$/g, '').split('/')[0];
+        return p || 'data';
+      },
+
+      isAllSelected() {
+        const list = this.rows || this.filtered || [];
+        if (!list || list.length === 0) return false;
+        return list.every((row) => this.selectedIds.some((id) => String(id) === String(row.id)));
+      },
+
+      toggleSelectAll(event) {
+        const list = this.rows || this.filtered || [];
+        if (event.target.checked) {
+          const currentIds = list.map((r) => r.id);
+          const currentSet = new Set(this.selectedIds.map(String));
+          currentIds.forEach((id) => {
+            if (!currentSet.has(String(id))) {
+              this.selectedIds.push(id);
+              currentSet.add(String(id));
+            }
+          });
+        } else {
+          const currentSet = new Set(list.map((r) => String(r.id)));
+          this.selectedIds = this.selectedIds.filter((id) => !currentSet.has(String(id)));
+        }
+      },
+
+      toggleSelectAllOnPage() {
+        const list = this.rows || this.filtered || [];
+        if (this.isAllSelected()) {
+          const currentSet = new Set(list.map((r) => String(r.id)));
+          this.selectedIds = this.selectedIds.filter((id) => !currentSet.has(String(id)));
+        } else {
+          const currentIds = list.map((r) => r.id);
+          const currentSet = new Set(this.selectedIds.map(String));
+          currentIds.forEach((id) => {
+            if (!currentSet.has(String(id))) {
+              this.selectedIds.push(id);
+              currentSet.add(String(id));
+            }
+          });
+        }
+      },
+
+      clearSelection() {
+        this.selectedIds = [];
+      },
+
+      confirmDeleteSelected() {
+        const count = this.selectedIds.length;
+        if (count === 0) return;
+        const label = this.entityName || 'items';
+
+        if (typeof openDeleteModal === 'function') {
+          openDeleteModal({
+            title: `Delete ${count} Selected Items?`,
+            description: `Are you sure you want to delete ${count} selected ${label}? This action is permanent and cannot be undone.`,
+            cancelLabel: 'Cancel',
+            confirmLabel: `Delete (${count})`,
+            onConfirm: async () => {
+              await this.executeDeleteSelected();
+            },
+          });
+        }
+      },
+
+      async executeDeleteSelected() {
+        try {
+          const res = await fetch('/api/bulk-delete/selected', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              entity: this.resolveEntity(),
+              ids: this.selectedIds,
+            }),
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            this.selectedIds = [];
+            window.dispatchEvent(
+              new CustomEvent('toast:success', {
+                detail: {
+                  title: 'Deleted Successfully',
+                  description: json.message || 'Selected data has been deleted successfully.',
+                },
+              }),
+            );
+            if (url) {
+              await this.load();
+            } else {
+              setTimeout(() => {
+                window.location.reload();
+              }, 600);
+            }
+          } else {
+            window.dispatchEvent(
+              new CustomEvent('toast:error', {
+                detail: {
+                  title: 'Failed to Delete',
+                  description: json.message || 'An error occurred while deleting data.',
+                },
+              }),
+            );
+          }
+        } catch (err) {
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Error',
+                description: 'A network or server error occurred while deleting data.',
+              },
+            }),
+          );
+        }
+      },
+
+      confirmDeleteAll() {
+        const total = (this.rows || this.filtered || this.items || []).length;
+        if (total === 0) return;
+        const label = this.entityName || 'items';
+
+        if (typeof openDeleteModal === 'function') {
+          openDeleteModal({
+            title: 'Delete ALL Data?',
+            description: `WARNING: You are about to delete ALL ${label} (${total} items). This action is permanent and cannot be undone!`,
+            cancelLabel: 'Cancel',
+            confirmLabel: 'Yes, Delete ALL',
+            onConfirm: async () => {
+              await this.executeDeleteAll();
+            },
+          });
+        }
+      },
+
+      async executeDeleteAll() {
+        try {
+          const res = await fetch('/api/bulk-delete/all', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              entity: this.resolveEntity(),
+            }),
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            this.selectedIds = [];
+            this.selectMode = false;
+            window.dispatchEvent(
+              new CustomEvent('toast:success', {
+                detail: {
+                  title: 'Deleted Successfully',
+                  description: json.message || 'All data has been deleted successfully.',
+                },
+              }),
+            );
+            if (url) {
+              await this.load();
+            } else {
+              setTimeout(() => {
+                window.location.reload();
+              }, 600);
+            }
+          } else {
+            window.dispatchEvent(
+              new CustomEvent('toast:error', {
+                detail: {
+                  title: 'Failed to Delete',
+                  description: json.message || 'An error occurred while deleting all data.',
+                },
+              }),
+            );
+          }
+        } catch (err) {
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Error',
+                description: 'A network or server error occurred while deleting all data.',
+              },
+            }),
+          );
+        }
+      },
+
       async load() {
         if (!url) return;
 
@@ -89,8 +250,6 @@
 
           const list = dataKey ? data?.[dataKey] : data;
 
-          // Bentuk yang tidak terduga JANGAN lewat diam-diam: tabel kosong tanpa
-          // pesan apa pun sulit dibedakan dari "memang belum ada data".
           if (!Array.isArray(list)) {
             console.error(
               `clientTable: ${url} tidak mengembalikan array` +
@@ -101,7 +260,6 @@
 
           this.items = byKey(Array.isArray(list) ? list : []);
         } catch (error) {
-          // Tabel tetap dirender kosong; pesan empty state yang muncul, bukan halaman rusak.
           console.error('Failed to load table data:', error);
           this.raw = null;
           this.items = [];
@@ -112,11 +270,8 @@
         }
       },
 
-      // Membaca path bertitik ("categoryPartner.category") dengan aman —
-      // relasi bisa null, mis. partner tanpa kategori.
       valueAt,
 
-      // Satu-satunya tempat filter dijalankan.
       applySearch(keyword) {
         const needle = String(keyword || '').trim().toLowerCase();
 
@@ -126,13 +281,9 @@
             )
           : this.items;
 
-        // Halaman aktif dijepit DI SINI, bukan di getter rows: kalau hanya rows
-        // yang dijepit, pagination tetap mencetak currentPage mentah dan labelnya
-        // bisa berbunyi "Page 3 of 2" sementara isi tabel menampilkan halaman 2.
         if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
       },
 
-      // O(1) — hanya membaca panjang array yang sudah difilter.
       get totalPages() {
         return Math.max(1, Math.ceil(this.filtered.length / this.size));
       },
@@ -145,7 +296,6 @@
         return [1, '...', c - 1, c, c + 1, '...', t];
       },
 
-      // O(size) — tidak memfilter ulang.
       get rows() {
         const start = (this.currentPage - 1) * this.size;
         return this.filtered.slice(start, start + this.size);

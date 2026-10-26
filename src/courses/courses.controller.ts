@@ -1879,7 +1879,7 @@ export class CoursesController {
       const result = await this.coursesService.removeAll();
       return res.json({
         success: true,
-        message: `Berhasil menghapus seluruh program (${result.count} data).`,
+        message: `Successfully deleted all programs (${result.count} data).`,
         count: result.count,
       });
     } catch (error: unknown) {
@@ -1888,7 +1888,7 @@ export class CoursesController {
         message:
           error instanceof Error
             ? error.message
-            : 'Gagal menghapus seluruh program',
+            : 'Failed to delete all programs',
       });
     }
   }
@@ -1909,7 +1909,7 @@ export class CoursesController {
       const result = await this.coursesService.removeMany(ids);
       return res.json({
         success: true,
-        message: `Berhasil menghapus ${result.count} program yang dipilih.`,
+        message: `Successfully deleted ${result.count} selected program(s).`,
         count: result.count,
       });
     } catch (error: unknown) {
@@ -1918,7 +1918,7 @@ export class CoursesController {
         message:
           error instanceof Error
             ? error.message
-            : 'Gagal menghapus program yang dipilih',
+            : 'Failed to delete selected programs',
       });
     }
   }
@@ -1949,13 +1949,13 @@ export class CoursesController {
       await this.coursesService.deleteFile(course.image);
       return res.json({
         success: true,
-        message: 'Program berhasil dihapus.',
+        message: 'Program has been successfully deleted.',
       });
     } catch (error: unknown) {
       return res.status(400).json({
         success: false,
         message:
-          error instanceof Error ? error.message : 'Gagal menghapus program',
+          error instanceof Error ? error.message : 'Failed to delete program',
       });
     }
   }

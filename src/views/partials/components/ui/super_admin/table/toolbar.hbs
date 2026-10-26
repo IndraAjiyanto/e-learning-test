@@ -4,13 +4,13 @@
   Alpine yang disediakan pemanggil: searchInput, handleSearch()
 
   Props (semua opsional, default-nya perilaku user list):
-  - placeholder : default 'Search user..'
-  - searchLabel : teks sr-only, default 'Search user'
-  - createHref  : default '/users/formCreate'
-  - createLabel : default 'Create User'
-  - fullWidth   : boolean (default false) — search mengisi sisa lebar sampai tombol create
-  - hideCreate  : boolean — tanpa tombol create (tabel read-only)
-  - hideSearch  : boolean — tanpa kotak search; aksi rata kanan
+  - placeholder   : default 'Search user..'
+  - searchLabel   : teks sr-only, default 'Search user'
+  - createHref    : default '/users/formCreate'
+  - createLabel   : default 'Create User'
+  - fullWidth     : boolean (default false) — search mengisi sisa lebar sampai tombol create
+  - hideCreate    : boolean — tanpa tombol create (tabel read-only)
+  - hideSearch    : boolean — tanpa kotak search; aksi rata kanan
 
   Aksi tambahan (mis. Export Excel) dikirim lewat partial-block dan muncul di
   kiri tombol create:
@@ -18,42 +18,142 @@
       <button type='button' @click='exportToExcel()'>Export Excel</button>
     {{/components/ui/super_admin/table/toolbar}}
 --}}
-<div class='flex flex-col gap-3 sm:flex-row sm:items-center {{#if hideSearch}}sm:justify-end{{else}}sm:justify-between{{/if}}'>
-  {{#unless hideSearch}}
-  {{!-- Spasi setelah {{else}} WAJIB ada. Tanpa itu, ekstraktor Tailwind tidak
-       pernah melihat `sm:w-[400px]` sebagai kandidat kelas (nilai arbitrer yang
-       menempel langsung pada `}}` tidak terdeteksi), kelasnya tidak pernah
-       ter-generate, dan search box melebar jadi w-full di SEMUA halaman daftar
-       super_admin. `sm:flex-1` tidak kena karena bukan nilai arbitrer. --}}
-  <label class='relative block w-full {{#if fullWidth}}sm:flex-1{{else}} sm:w-[400px]{{/if}}'>
-    <span class='sr-only'>{{default searchLabel 'Search user'}}</span>
-    <input
-      type='search'
-      placeholder='{{default placeholder "Search user.."}}'
-      x-model='searchInput'
-      @input='handleSearch()'
-      class='h-11 w-full rounded-lg border border-[#d4d4d4] bg-white py-2.5 pl-3.5 pr-11 font-inter text-base leading-6 text-[#404040] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#a3a3a3] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
-    />
-    <span class='pointer-events-none absolute right-3.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-[#a3a3a3]'>
-      {{!-- lucide: search --}}
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'>
-        <circle cx='11' cy='11' r='8' />
-        <path d='m21 21-4.3-4.3' />
-      </svg>
-    </span>
-  </label>
-  {{/unless}}
-
-  <div class='flex shrink-0 items-center gap-3'>
-    {{#if @partial-block}}{{> @partial-block}}{{/if}}
-
-    {{#unless hideCreate}}
-    <a
-      href='{{default createHref "/users/formCreate"}}'
-      class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#00254a] hover:bg-[#00254a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:bg-[#001c39]'
-    >
-      {{default createLabel 'Create User'}}
-    </a>
+<div class='flex flex-col gap-3'>
+  <div class='flex flex-col gap-3 sm:flex-row sm:items-center {{#if hideSearch}}sm:justify-end{{else}}sm:justify-between{{/if}}'>
+    {{#unless hideSearch}}
+    {{!-- Spasi setelah {{else}} WAJIB ada. Tanpa itu, ekstraktor Tailwind tidak
+         pernah melihat `sm:w-[400px]` sebagai kandidat kelas (nilai arbitrer yang
+         menempel langsung pada `}}` tidak terdeteksi), kelasnya tidak pernah
+         ter-generate, dan search box melebar jadi w-full di SEMUA halaman daftar
+         super_admin. `sm:flex-1` tidak kena karena bukan nilai arbitrer. --}}
+    <label class='relative block w-full {{#if fullWidth}}sm:flex-1{{else}} sm:w-[400px]{{/if}}'>
+      <span class='sr-only'>{{default searchLabel 'Search user'}}</span>
+      <input
+        type='search'
+        placeholder='{{default placeholder "Search user.."}}'
+        x-model='searchInput'
+        @input='handleSearch()'
+        class='h-11 w-full rounded-lg border border-[#d4d4d4] bg-white py-2.5 pl-3.5 pr-11 font-inter text-base leading-6 text-[#404040] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#a3a3a3] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
+      />
+      <span class='pointer-events-none absolute right-3.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-[#a3a3a3]'>
+        {{!-- lucide: search --}}
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'>
+          <circle cx='11' cy='11' r='8' />
+          <path d='m21 21-4.3-4.3' />
+        </svg>
+      </span>
+    </label>
     {{/unless}}
+
+    <div class='flex shrink-0 items-center gap-3'>
+      {{#if @partial-block}}{{> @partial-block}}{{/if}}
+
+      {{#unless hideBulkDelete}}
+      <button
+        type='button'
+        @click='toggleSelectMode()'
+        class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border font-inter text-sm font-semibold transition-all shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] cursor-pointer'
+        :class="selectMode ? 'bg-[#F5F5F5] border-[#D4D4D4] hover:bg-[#E5E5E5] text-[#404040] w-11 px-0' : 'bg-white border-[#D4D4D4] hover:border-[#DC2626] hover:bg-[#FEF2F2] text-[#404040] hover:text-[#DC2626] px-4'"
+        :title="selectMode ? 'Close' : 'Manage Delete'"
+        :aria-label="selectMode ? 'Close' : 'Manage Delete'"
+      >
+        <template x-if='!selectMode'>
+          <div class='flex items-center gap-2'>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#DC2626]'>
+              <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+            </svg>
+            <span>Manage Delete</span>
+          </div>
+        </template>
+        <template x-if='selectMode'>
+          <div class='flex items-center justify-center'>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#525252]'>
+              <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
+            </svg>
+          </div>
+        </template>
+      </button>
+      {{/unless}}
+
+      {{#unless hideCreate}}
+      <a
+        href='{{default createHref "/users/formCreate"}}'
+        class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#00254a] hover:bg-[#00254a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:bg-[#001c39]'
+      >
+        {{default createLabel 'Create User'}}
+      </a>
+      {{/unless}}
+    </div>
+  </div>
+
+  {{!-- Bulk Selection Action Bar --}}
+  <div
+    x-show='selectMode'
+    x-cloak
+    x-transition:enter='transition ease-out duration-150'
+    x-transition:enter-start='opacity-0 -translate-y-2'
+    x-transition:enter-end='opacity-100 translate-y-0'
+    x-transition:leave='transition ease-in duration-100'
+    x-transition:leave-start='opacity-100 translate-y-0'
+    x-transition:leave-end='opacity-0 -translate-y-2'
+    class='box-border w-full flex flex-col sm:flex-row justify-between items-center px-4 py-2.5 bg-[#FEF2F2] border border-[#FCA5A5] rounded-lg gap-2.5 shadow-sm'
+    style='display: none;'
+  >
+    <div class='flex flex-wrap items-center gap-2 text-[14px] text-[#991B1B] font-inter font-medium'>
+      <svg class='w-5 h-5 text-[#DC2626] shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+        <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/>
+      </svg>
+      <span>
+        <strong x-text='selectedIds ? selectedIds.length : 0'></strong> items selected
+      </span>
+
+      <span class='text-[#FCA5A5] mx-1'>•</span>
+
+      <button
+        type='button'
+        @click='toggleSelectAllOnPage()'
+        class='text-xs text-[#DC2626] hover:underline font-semibold cursor-pointer'
+        x-text="isAllSelected() ? 'Deselect Page' : 'Select All on Page'"
+      ></button>
+
+      <template x-if='selectedIds && selectedIds.length > 0'>
+        <button
+          type='button'
+          @click='clearSelection()'
+          class='text-xs text-[#7F1D1D] hover:underline font-normal cursor-pointer ml-1'
+        >
+          (Clear Selection)
+        </button>
+      </template>
+    </div>
+
+    <div class='flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end'>
+      {{!-- Tombol Hapus Terpilih --}}
+      <button
+        type='button'
+        @click='confirmDeleteSelected()'
+        :disabled='!selectedIds || selectedIds.length === 0'
+        :class="(!selectedIds || selectedIds.length === 0) ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'bg-[#DC2626] hover:bg-[#B91C1C] cursor-pointer'"
+        class='box-border h-[38px] px-3.5 flex flex-row items-center gap-2 text-white rounded-lg font-inter text-[13px] font-semibold transition-colors shadow-sm'
+      >
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+          <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+        </svg>
+        <span>Delete Selected (<span x-text='selectedIds ? selectedIds.length : 0'></span>)</span>
+      </button>
+
+      {{!-- Tombol Tutup (Tanda X) --}}
+      <button
+        type='button'
+        @click='toggleSelectMode()'
+        class='box-border h-[38px] w-[38px] flex items-center justify-center bg-white hover:bg-[#F5F5F5] text-[#525252] hover:text-[#171717] border border-[#D4D4D4] rounded-lg transition-colors shadow-sm cursor-pointer'
+        title='Close'
+        aria-label='Close'
+      >
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+          <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
+        </svg>
+      </button>
+    </div>
   </div>
 </div>

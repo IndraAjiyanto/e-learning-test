@@ -141,7 +141,7 @@
       select(next) {
         if (this.saving) return;
         if (next === 'gateway' && this.gatewayHidden) {
-          showWarningToast('Gateway belum tersedia', 'XENDIT_SECRET_KEY belum dikonfigurasi — gateway tidak bisa diaktifkan.');
+          showWarningToast('Gateway Unavailable', 'XENDIT_SECRET_KEY is not configured — gateway cannot be activated.');
           return;
         }
         if (next === this.channel) return;
@@ -195,7 +195,7 @@
           });
           const json = await res.json();
           if (!res.ok || json.status !== 'success') {
-            showErrorToast('Gagal menyimpan', json.message || 'Gagal menyimpan pengaturan pembayaran.');
+            showErrorToast('Failed to Save', json.message || 'Failed to save payment settings.');
             await this.refresh();
             return;
           }
@@ -205,13 +205,13 @@
           // kontrak komponen ui/admin/toast/success.
           window.dispatchEvent(new CustomEvent('toast:success', {
             detail: {
-              title: 'Pengaturan tersimpan',
-              description: 'Kanal pembayaran aktif: ' + (this.channel === 'gateway' ? 'Gateway (Xendit)' : 'Manual (Bank Transfer)') + '.',
+              title: 'Settings Saved',
+              description: 'Active payment channel: ' + (this.channel === 'gateway' ? 'Gateway (Xendit)' : 'Manual (Bank Transfer)') + '.',
             },
           }));
         } catch (err) {
           console.error('Update payment settings error:', err);
-          showErrorToast('Gagal menyimpan', 'Terjadi kesalahan saat menyimpan pengaturan pembayaran.');
+          showErrorToast('Failed to Save', 'An error occurred while saving payment settings.');
           await this.refresh();
         } finally {
           this.saving = false;

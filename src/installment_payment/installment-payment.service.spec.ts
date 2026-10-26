@@ -87,7 +87,12 @@ describe('InstallmentPaymentService', () => {
 
       expect(repo.find).toHaveBeenCalledWith({
         where: { payment: { id: 'p1' } },
-        relations: ['payment'],
+        relations: [
+          'payment',
+          'payment.user',
+          'payment.course',
+          'payment.installment',
+        ],
         order: { month: 'ASC' },
       });
       expect(result).toEqual(rows);
@@ -103,7 +108,11 @@ describe('InstallmentPaymentService', () => {
 
       expect(repo.findOne).toHaveBeenCalledWith({
         where: { payment: { id: 'p1' }, month: 3 },
-        relations: ['payment'],
+        relations: [
+          'payment',
+          'payment.user',
+          'payment.course',
+        ],
       });
       expect(result).toEqual(row);
     });

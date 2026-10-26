@@ -38,15 +38,17 @@
       {{/components/ui/super_admin/table/toolbar}}
       {{#> components/ui/super_admin/table/card tableClass='min-w-[1052px]'}}
         <colgroup>
+          <template x-if='selectMode'><col class='w-[48px]' /></template>
           <col class='w-[88px]' />
-          <col class='w-[297px]' />
-          <col class='w-[297px]' />
+          <col class='w-[280px]' />
+          <col class='w-[280px]' />
           <col class='w-[120px]' />
           <col class='w-[135px]' />
           <col class='w-[116px]' />
         </colgroup>
         <thead>
           <tr>
+            {{> components/ui/super_admin/table/header_cell checkbox=true }}
             {{> components/ui/super_admin/table/header_cell label='Profile' }}
             {{> components/ui/super_admin/table/header_cell label='Username' }}
             {{> components/ui/super_admin/table/header_cell label='Email address' }}
@@ -56,12 +58,17 @@
           </tr>
         </thead>
         <tbody>
-          {{#> components/ui/super_admin/table/message_row show='loading' colspan='6'}}
+          {{#> components/ui/super_admin/table/message_row show='loading' colspan='7'}}
             <i class='fas fa-spinner fa-spin text-xl'></i>
           {{/components/ui/super_admin/table/message_row}}
 
           <template x-for='(user, index) in (loading ? [] : users)' :key='user.id'>
-            <tr class='transition-colors hover:bg-[#fafafa]'>
+            <tr
+              class='transition-colors hover:bg-[#fafafa]'
+              :class="selectedIds && selectedIds.some(id => String(id) === String(user.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+            >
+              {{> components/ui/super_admin/table/cell checkbox=true idField='user.id' }}
+
               {{#> components/ui/super_admin/table/cell}}
                 {{> components/ui/super_admin/table/avatar
                   src='user.profile'
@@ -111,7 +118,7 @@
             </tr>
           </template>
 
-          {{#> components/ui/super_admin/table/message_row show='!loading && users.length === 0' colspan='6'}}
+          {{#> components/ui/super_admin/table/message_row show='!loading && users.length === 0' colspan='7'}}
             No users found.
           {{/components/ui/super_admin/table/message_row}}
         </tbody>
@@ -155,6 +162,189 @@
       size: 10,
       loading: false,
       searchTimeout: null,
+      selectedIds: [],
+      selectMode: false,
+
+      get rows() {
+        return this.users;
+      },
+
+      get items() {
+        return this.users;
+      },
+
+      toggleSelectMode() {
+        this.selectMode = !this.selectMode;
+        if (!this.selectMode) {
+          this.selectedIds = [];
+        }
+      },
+
+      toggleSelectAllOnPage() {
+        if (!this.users || this.users.length === 0) return;
+        if (this.isAllSelected()) {
+          const currentSet = new Set(this.users.map((u) => String(u.id)));
+          this.selectedIds = this.selectedIds.filter((id) => !currentSet.has(String(id)));
+        } else {
+          const currentIds = this.users.map((u) => u.id);
+          const currentSet = new Set(this.selectedIds.map(String));
+          currentIds.forEach((id) => {
+            if (!currentSet.has(String(id))) {
+              this.selectedIds.push(id);
+              currentSet.add(String(id));
+            }
+          });
+        }
+      },
+
+      confirmDeleteAll() {
+        if (!this.users || this.users.length === 0) return;
+
+        openDeleteModal({
+          title: 'Delete ALL Users?',
+          description: 'WARNING: You are about to delete ALL users. Super Admin accounts will be preserved. This action is permanent and cannot be undone!',
+          confirmLabel: 'Yes, Delete ALL Users',
+          cancelLabel: 'Cancel',
+          onConfirm: async () => {
+            await this.executeDeleteAll();
+          },
+        });
+      },
+
+      async executeDeleteAll() {
+        try {
+          const res = await fetch('/api/bulk-delete/all', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              entity: 'user',
+            }),
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            this.selectedIds = [];
+            this.selectMode = false;
+            window.dispatchEvent(
+              new CustomEvent('toast:success', {
+                detail: {
+                  title: 'Deleted Successfully',
+                  description: json.message || 'All users have been deleted.',
+                },
+              }),
+            );
+            await this.fetchUsers();
+          } else {
+            window.dispatchEvent(
+              new CustomEvent('toast:error', {
+                detail: {
+                  title: 'Failed to Delete',
+                  description: json.message || 'Failed to delete all users.',
+                },
+              }),
+            );
+          }
+        } catch (err) {
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Error',
+                description: 'A network or server error occurred while deleting data.',
+              },
+            }),
+          );
+        }
+      },
+
+      isAllSelected() {
+        if (!this.users || this.users.length === 0) return false;
+        return this.users.every((u) => this.selectedIds.some((id) => String(id) === String(u.id)));
+      },
+
+      toggleSelectAll(event) {
+        if (!this.users || this.users.length === 0) return;
+        if (event.target.checked) {
+          const currentIds = this.users.map((u) => u.id);
+          const currentSet = new Set(this.selectedIds.map(String));
+          currentIds.forEach((id) => {
+            if (!currentSet.has(String(id))) {
+              this.selectedIds.push(id);
+              currentSet.add(String(id));
+            }
+          });
+        } else {
+          const currentSet = new Set(this.users.map((u) => String(u.id)));
+          this.selectedIds = this.selectedIds.filter((id) => !currentSet.has(String(id)));
+        }
+      },
+
+      clearSelection() {
+        this.selectedIds = [];
+      },
+
+      confirmDeleteSelected() {
+        const count = this.selectedIds.length;
+        if (count === 0) return;
+
+        openDeleteModal({
+          title: `Delete ${count} Selected Users?`,
+          description: `Are you sure you want to delete ${count} selected users? Super Admin accounts are protected and will not be deleted. This action is permanent.`,
+          confirmLabel: `Delete (${count})`,
+          cancelLabel: 'Cancel',
+          onConfirm: async () => {
+            await this.executeDeleteSelected();
+          },
+        });
+      },
+
+      async executeDeleteSelected() {
+        try {
+          const res = await fetch('/api/bulk-delete/selected', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              entity: 'user',
+              ids: this.selectedIds,
+            }),
+          });
+          const json = await res.json();
+
+          if (json.success) {
+            this.selectedIds = [];
+            window.dispatchEvent(
+              new CustomEvent('toast:success', {
+                detail: {
+                  title: 'Deleted Successfully',
+                  description: json.message || 'Selected users have been deleted successfully.',
+                },
+              }),
+            );
+            await this.fetchUsers();
+          } else {
+            window.dispatchEvent(
+              new CustomEvent('toast:error', {
+                detail: {
+                  title: 'Failed to Delete',
+                  description: json.message || 'An error occurred while deleting data.',
+                },
+              }),
+            );
+          }
+        } catch (err) {
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Error',
+                description: 'A network or server error occurred while deleting data.' ,
+              },
+            }),
+          );
+        }
+      },
 
       init() {
         this.$watch('selectedRole', () => {

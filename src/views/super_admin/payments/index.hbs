@@ -247,15 +247,15 @@
             location.reload();
           } else {
             showErrorToast(
-              'Gagal Memperbarui Status Cicilan',
-              'Permintaan tidak dapat diproses. Silakan coba lagi.',
+              'Failed to Update Installment Status',
+              'The request could not be processed. Please try again.',
             );
           }
         } catch (error) {
           console.error('Review term error:', error);
           showErrorToast(
-            'Gagal Memperbarui Status Cicilan',
-            'Terjadi kesalahan koneksi ke server.',
+            'Failed to Update Installment Status',
+            'Connection error to server.',
           );
         }
       },
@@ -287,15 +287,15 @@
             location.reload();
           } else {
             showErrorToast(
-              'Gagal Memperbarui Status Pembayaran',
-              'Permintaan tidak dapat diproses. Silakan coba lagi.',
+              'Failed to Update Payment Status',
+              'The request could not be processed. Please try again.',
             );
           }
         } catch (error) {
           console.error('Review payment error:', error);
           showErrorToast(
-            'Gagal Memperbarui Status Pembayaran',
-            'Terjadi kesalahan koneksi ke server.',
+            'Failed to Update Payment Status',
+            'Connection error to server.',
           );
         }
       },
