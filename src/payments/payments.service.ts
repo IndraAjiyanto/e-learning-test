@@ -911,7 +911,7 @@ export class PaymentsService {
 
         const isDpApproved =
           p.process === 'approved' ||
-          (p as any).status === 'paid' ||
+          (p as unknown as { status?: unknown }).status === 'paid' ||
           (p.process as string) === 'paid';
         const isPaid = status === 'paid';
         const canPay =

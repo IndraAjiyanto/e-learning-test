@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Post,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Post, Req, Res } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { Roles } from '../common/decorators/roles.decorator';
 import { BulkDeleteService } from './bulk-delete.service';
@@ -63,9 +56,7 @@ export class BulkDeleteController {
       return res.status(400).json({
         success: false,
         message:
-          error instanceof Error
-            ? error.message
-            : 'Failed to delete all data',
+          error instanceof Error ? error.message : 'Failed to delete all data',
       });
     }
   }
