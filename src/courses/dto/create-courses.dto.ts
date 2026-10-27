@@ -73,8 +73,10 @@ export class CreateCoursesDto {
 
   /** Opsional - kolom `locationLink` nullable. */
   @IsOptional()
+  @ValidateIf((o) => !!o.locationLink)
   @IsString()
-  locationLink: string;
+  @IsUrl({ protocols: ["http", "https"], require_protocol: true, require_tld: true }, { message: "Link location must be a valid URL" })
+  locationLink?: string;
 
   @IsOptional()
   @IsArray()

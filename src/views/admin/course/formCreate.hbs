@@ -422,13 +422,43 @@
       keys.reduce((acc, key) => acc[key], obj)[last] = value;
     };
     const digits = (value) => String(value ?? '').replace(/\D/g, '');
-    const isHttpUrl = (value) => {
+    const parseUrl = (value) => {
+      if (!value || typeof value !== 'string') return null;
+      const trimmed = value.trim();
+      if (!trimmed || trimmed.length > 2048) return null;
+      if (!/^https?:\/\/\S+$/i.test(trimmed)) return null;
       try {
-        const { protocol } = new URL(value);
-        return protocol === 'http:' || protocol === 'https:';
+        const u = new URL(trimmed);
+        if (!u.hostname || !u.hostname.includes('.')) return null;
+        if (u.hostname.startsWith('.') || u.hostname.endsWith('.')) return null;
+        return u;
       } catch {
-        return false;
+        return null;
       }
+    };
+    const isHttpUrl = (value) => parseUrl(value) !== null;
+    const isMapsUrl = (value) => {
+      const u = parseUrl(value);
+      if (!u) return false;
+      const host = u.hostname.toLowerCase();
+      const path = u.pathname.toLowerCase();
+
+      // Google Maps
+      if (host === 'maps.app.goo.gl') return true;
+      if (host === 'goo.gl' && path.startsWith('/maps')) return true;
+      if (/^maps\.google\.[a-z.]+$/.test(host)) return true;
+      if (/^(www\.)?google\.[a-z.]+$/.test(host) && path.startsWith('/maps')) return true;
+
+      // OpenStreetMap
+      if (host === 'openstreetmap.org' || host.endsWith('.openstreetmap.org') || host === 'osm.org' || host.endsWith('.osm.org')) return true;
+
+      // Waze
+      if (host === 'waze.com' || host.endsWith('.waze.com')) return true;
+
+      // Apple Maps
+      if (host === 'maps.apple.com') return true;
+
+      return false;
     };
     const inRange = (value, min, max) => /^\d+$/.test(value) && +value >= min && +value <= max;
 
@@ -567,7 +597,10 @@
               return d.startDate && val < d.startDate ? 'End date must be on or after the start date.' : '';
             case 'locationLink':
               if (!val) return '';
-              return isHttpUrl(val) ? '' : 'Link location must be a valid URL.';
+              if (!isHttpUrl(val)) return 'Link location must be a valid URL (http/https).';
+              return isMapsUrl(val)
+                ? ''
+                : 'Link location must be a valid Maps URL (Google Maps, OpenStreetMap, Waze, Apple Maps).';
             case 'technologies':
               return val > 0 ? '' : 'Please select at least one tool.';
             case 'description':

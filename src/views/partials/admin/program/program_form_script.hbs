@@ -41,6 +41,51 @@ function programData(mode) {
     formErrors: { programType: '', locationLink: '' },
     formValid: { locationLink: false },
 
+    /* ================= URL VALIDATORS ================= */
+
+    parseUrl(value) {
+      if (!value || typeof value !== 'string') return null;
+      const trimmed = value.trim();
+      if (!trimmed || trimmed.length > 2048) return null;
+      if (!/^https?:\/\/\S+$/i.test(trimmed)) return null;
+      try {
+        const u = new URL(trimmed);
+        if (!u.hostname || !u.hostname.includes('.')) return null;
+        if (u.hostname.startsWith('.') || u.hostname.endsWith('.')) return null;
+        return u;
+      } catch (e) {
+        return null;
+      }
+    },
+
+    isValidUrl(value) {
+      return this.parseUrl(value) !== null;
+    },
+
+    isMapsUrl(value) {
+      const u = this.parseUrl(value);
+      if (!u) return false;
+      const host = u.hostname.toLowerCase();
+      const path = u.pathname.toLowerCase();
+
+      // Google Maps
+      if (host === 'maps.app.goo.gl') return true;
+      if (host === 'goo.gl' && path.startsWith('/maps')) return true;
+      if (/^maps\.google\.[a-z.]+$/.test(host)) return true;
+      if (/^(www\.)?google\.[a-z.]+$/.test(host) && path.startsWith('/maps')) return true;
+
+      // OpenStreetMap
+      if (host === 'openstreetmap.org' || host.endsWith('.openstreetmap.org') || host === 'osm.org' || host.endsWith('.osm.org')) return true;
+
+      // Waze
+      if (host === 'waze.com' || host.endsWith('.waze.com')) return true;
+
+      // Apple Maps
+      if (host === 'maps.apple.com') return true;
+
+      return false;
+    },
+
     // Opsi learning structure — sama dengan form Create Program di tab
     // Program pada halaman Detail Category (admin/course/formCreate.hbs).
     programTypeOptions: [
@@ -50,6 +95,9 @@ function programData(mode) {
     ],
 
     val(elId) {
+      if (elId === 'locationLink' && this.formData && this.formData.locationLink) {
+        return String(this.formData.locationLink).trim();
+      }
       const el = document.getElementById(elId);
       return el ? el.value.trim() : '';
     },
@@ -78,6 +126,10 @@ function programData(mode) {
     },
 
     setFieldStatus(elId, ok) {
+      if (elId === 'locationLink' && !this.val('locationLink') && !(this.formData && this.formData.locationLink)) {
+        this.fieldStatus[elId] = '';
+        return;
+      }
       const show = this.submitAttempted || this.touched[elId];
       this.fieldStatus[elId] = show ? (ok ? 'valid' : 'error') : '';
     },
@@ -108,19 +160,25 @@ function programData(mode) {
       return !msg;
     },
 
-    validateUrlField(elId, label) {
+    validateUrlField(elId, label, optional = false) {
       const value = this.val(elId);
-      let msg = this.nonEmpty(value, label);
-      if (!msg) {
-        try {
-          const u = new URL(value.trim());
-          if (u.protocol !== 'http:' && u.protocol !== 'https:') {
-            msg = label + ' must be a valid URL (http/https)';
-          }
-        } catch (e) {
-          msg = label + ' must be a valid URL (http/https)';
+      if (!value) {
+        if (optional) {
+          this.setFieldError(elId, '');
+          this.setFieldStatus(elId, true);
+          return true;
         }
+        const msg = label + ' is required';
+        this.setFieldError(elId, msg);
+        this.setFieldStatus(elId, false);
+        return false;
       }
+
+      let msg = '';
+      if (!this.isValidUrl(value)) {
+        msg = label + ' must be a valid URL (http/https)';
+      }
+
       this.setFieldError(elId, msg);
       this.setFieldStatus(elId, !msg);
       return !msg;
@@ -224,15 +282,24 @@ function programData(mode) {
     },
 
     validateLocationLink() {
-      // Opsional: kosong selalu valid, URL hanya dicek bila diisi.
-      const value = (this.formData.locationLink || '').trim();
+      this.touched.locationLink = true;
+      const value = (this.formData.locationLink || this.val('locationLink') || '').trim();
       let msg = '';
       if (value) {
-        try { new URL(value); } catch (e) { msg = 'Please enter a valid URL'; }
+        if (!this.isValidUrl(value)) {
+          msg = 'Link location must be a valid URL (http/https)';
+        } else if (!this.isMapsUrl(value)) {
+          msg = 'Link location must be a valid Maps URL (Google Maps, OpenStreetMap, Waze, Apple Maps)';
+        }
       }
+
+      this.setFieldError('locationLink', msg);
+      this.setFieldStatus('locationLink', !msg);
+
       const show = this.submitAttempted || this.touched.locationLink;
       this.formErrors.locationLink = show ? msg : '';
       this.formValid.locationLink = !msg;
+
       return !msg;
     },
 

@@ -7,6 +7,7 @@ import { CreateCoursesDto } from './dto/create-courses.dto';
 import { UpdateCoursesDto } from './dto/update-courses.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
+import { isValidHttpUrl, isMapsLocationUrl } from 'src/common/utils/url.util';
 import { In, IsNull, Not, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Session } from 'src/entities/session.entity';
@@ -131,17 +132,13 @@ export class CoursesService {
     ) {
       throw new BadRequestException('Program quota must be greater than 0');
     }
-    if (createCourseDto.group) {
-      try {
-        const u = new URL(createCourseDto.group);
-        if (u.protocol !== 'http:' && u.protocol !== 'https:') {
-          throw new BadRequestException(
-            'Group link must be a valid URL (http/https)',
-          );
-        }
-      } catch {
+    if (createCourseDto.group && !isValidHttpUrl(createCourseDto.group)) {
+      throw new BadRequestException('Group link must be a valid URL (http/https)');
+    }
+    if (createCourseDto.locationLink) {
+      if (!isMapsLocationUrl(createCourseDto.locationLink)) {
         throw new BadRequestException(
-          'Group link must be a valid URL (http/https)',
+          'Link location must be a valid Maps URL (Google Maps, OpenStreetMap, Waze, Apple Maps)',
         );
       }
     }
@@ -1761,17 +1758,13 @@ export class CoursesService {
     ) {
       throw new BadRequestException('Program quota must be greater than 0');
     }
-    if (updateCourseDto.group) {
-      try {
-        const u = new URL(updateCourseDto.group);
-        if (u.protocol !== 'http:' && u.protocol !== 'https:') {
-          throw new BadRequestException(
-            'Group link must be a valid URL (http/https)',
-          );
-        }
-      } catch {
+    if (updateCourseDto.group && !isValidHttpUrl(updateCourseDto.group)) {
+      throw new BadRequestException('Group link must be a valid URL (http/https)');
+    }
+    if (updateCourseDto.locationLink) {
+      if (!isMapsLocationUrl(updateCourseDto.locationLink)) {
         throw new BadRequestException(
-          'Group link must be a valid URL (http/https)',
+          'Link location must be a valid Maps URL (Google Maps, OpenStreetMap, Waze, Apple Maps)',
         );
       }
     }
