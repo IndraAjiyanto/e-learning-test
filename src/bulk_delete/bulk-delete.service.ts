@@ -186,7 +186,35 @@ export class BulkDeleteService {
       };
     }
 
-    // 3. Entity umum
+    // 3. Safety check khusus Course / Program
+    if (
+      key === 'course' ||
+      key === 'courses' ||
+      key === 'program' ||
+      key === 'programs'
+    ) {
+      const courses = (await repo.find({
+        where: { id: In(ids) },
+        relations: ['userCourses'],
+      })) as Course[];
+      const withParticipants = courses.filter(
+        (c) => (c.userCourses || []).length > 0,
+      );
+      if (withParticipants.length > 0) {
+        if (withParticipants.length === 1) {
+          throw new BadRequestException(
+            `Program "${withParticipants[0].name}" cannot be deleted because it already has ${withParticipants[0].userCourses.length} enrolled participant(s).`,
+          );
+        } else {
+          const names = withParticipants.map((c) => `"${c.name}"`).join(', ');
+          throw new BadRequestException(
+            `Programs ${names} cannot be deleted because they already have enrolled participants.`,
+          );
+        }
+      }
+    }
+
+    // 4. Entity umum
     const items = await repo.findBy({ id: In(ids) });
     if (!items || items.length === 0) {
       throw new NotFoundException('Selected items were not found.');
@@ -270,7 +298,34 @@ export class BulkDeleteService {
       };
     }
 
-    // 3. Entity umum
+    // 3. Safety check khusus Course / Program
+    if (
+      key === 'course' ||
+      key === 'courses' ||
+      key === 'program' ||
+      key === 'programs'
+    ) {
+      const courses = (await repo.find({
+        relations: ['userCourses'],
+      })) as Course[];
+      const withParticipants = courses.filter(
+        (c) => (c.userCourses || []).length > 0,
+      );
+      if (withParticipants.length > 0) {
+        if (withParticipants.length === 1) {
+          throw new BadRequestException(
+            `Program "${withParticipants[0].name}" cannot be deleted because it already has ${withParticipants[0].userCourses.length} enrolled participant(s).`,
+          );
+        } else {
+          const names = withParticipants.map((c) => `"${c.name}"`).join(', ');
+          throw new BadRequestException(
+            `Programs ${names} cannot be deleted because they already have enrolled participants.`,
+          );
+        }
+      }
+    }
+
+    // 4. Entity umum
     const items = await repo.find();
     if (!items || items.length === 0) {
       return {
