@@ -867,12 +867,8 @@ export class PaymentsController {
       dto.userId = userId;
       dto.courseId = courseId;
       dto.process = proses;
-      if (
-        proses === 'approved' &&
-        payment.installment &&
-        !payment.dpPaidAt
-      ) {
-        (dto as any).dpPaidAt = new Date();
+      if (proses === 'approved' && payment.installment && !payment.dpPaidAt) {
+        dto.dpPaidAt = new Date();
       }
       await this.paymentsService.update(paymentId, dto);
 

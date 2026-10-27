@@ -108,11 +108,7 @@ describe('InstallmentPaymentService', () => {
 
       expect(repo.findOne).toHaveBeenCalledWith({
         where: { payment: { id: 'p1' }, month: 3 },
-        relations: [
-          'payment',
-          'payment.user',
-          'payment.course',
-        ],
+        relations: ['payment', 'payment.user', 'payment.course'],
       });
       expect(result).toEqual(row);
     });

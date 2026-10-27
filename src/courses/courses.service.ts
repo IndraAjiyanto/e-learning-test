@@ -133,7 +133,9 @@ export class CoursesService {
       throw new BadRequestException('Program quota must be greater than 0');
     }
     if (createCourseDto.group && !isValidHttpUrl(createCourseDto.group)) {
-      throw new BadRequestException('Group link must be a valid URL (http/https)');
+      throw new BadRequestException(
+        'Group link must be a valid URL (http/https)',
+      );
     }
     if (createCourseDto.locationLink) {
       if (!isMapsLocationUrl(createCourseDto.locationLink)) {
@@ -1759,7 +1761,9 @@ export class CoursesService {
       throw new BadRequestException('Program quota must be greater than 0');
     }
     if (updateCourseDto.group && !isValidHttpUrl(updateCourseDto.group)) {
-      throw new BadRequestException('Group link must be a valid URL (http/https)');
+      throw new BadRequestException(
+        'Group link must be a valid URL (http/https)',
+      );
     }
     if (updateCourseDto.locationLink) {
       if (!isMapsLocationUrl(updateCourseDto.locationLink)) {
@@ -1857,7 +1861,9 @@ export class CoursesService {
 
   async removeMany(ids: string[]) {
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      throw new BadRequestException('Pilih setidaknya satu program untuk dihapus.');
+      throw new BadRequestException(
+        'Pilih setidaknya satu program untuk dihapus.',
+      );
     }
 
     const courses = await this.courseRepository.findBy({ id: In(ids) });

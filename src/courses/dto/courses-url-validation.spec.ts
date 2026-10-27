@@ -35,4 +35,3 @@ describe('CreateCoursesDto URL validation', () => {
     expect(locationError?.constraints?.isUrl).toBeDefined();
   });
 });
-

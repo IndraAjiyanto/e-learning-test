@@ -8,7 +8,7 @@ import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import * as fs from 'fs';
 import * as path from 'path';
-import { chromium as playwrightChromium } from 'playwright';
+import { chromium as playwrightChromium, Browser } from 'playwright';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
 import { Repository } from 'typeorm';
@@ -130,13 +130,16 @@ export class CertificatesService {
     const certificateDate = this.formatDate(certificate.createdAt);
     const certificateStartDate = this.formatDate(course.startDate);
     const certificateEndDate = this.formatDate(course.startEnd);
-    const certificateDateRange = certificateStartDate && certificateEndDate
-      ? `${certificateStartDate} - ${certificateEndDate}`
-      : certificateDate;
+    const certificateDateRange =
+      certificateStartDate && certificateEndDate
+        ? `${certificateStartDate} - ${certificateEndDate}`
+        : certificateDate;
     const categoryName = this.formatCategoryName(
       course.category?.name || 'Program',
     );
-    const categoryNameDesc = this.escapeHtml(course.category?.name || 'Program');
+    const categoryNameDesc = this.escapeHtml(
+      course.category?.name || 'Program',
+    );
     const categoryType = this.escapeHtml(course.category?.type || 'Bootcamp');
     const courseMethod = this.escapeHtml(course.method || 'Online');
     const courseName = this.escapeHtml(course.name || 'Program');
@@ -179,7 +182,7 @@ export class CertificatesService {
     return html;
   }
 
-  private async launchChromium(): Promise<any> {
+  private async launchChromium(): Promise<Browser> {
     const commonArgs = [
       '--no-sandbox',
       '--disable-setuid-sandbox',
@@ -245,17 +248,22 @@ export class CertificatesService {
 
       // 3. Try @sparticuz/chromium (for Lambda or Linux environments with sparticuz package)
       try {
-        const sparticuz = await import('@sparticuz/chromium');
-        const sparticuzModule = (sparticuz as any).default || sparticuz;
+        const sparticuz: unknown = await import('@sparticuz/chromium');
+        type SparticuzModule = {
+          executablePath?: () => Promise<string>;
+          args?: string[];
+        };
+        type SparticuzExport = SparticuzModule & {
+          default?: SparticuzModule;
+        };
+        const typedSparticuz = sparticuz as SparticuzExport;
+        const sparticuzModule = typedSparticuz.default || typedSparticuz;
         if (typeof sparticuzModule.executablePath === 'function') {
           const sparticuzPath = await sparticuzModule.executablePath();
           if (sparticuzPath && fs.existsSync(sparticuzPath)) {
             return await playwrightChromium.launch({
               executablePath: sparticuzPath,
-              args: [
-                ...((sparticuzModule.args as string[]) || []),
-                ...commonArgs,
-              ],
+              args: [...(sparticuzModule.args || []), ...commonArgs],
               headless: true,
             });
           }

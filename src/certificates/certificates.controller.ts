@@ -63,10 +63,13 @@ export class CertificatesController {
       res.setHeader('Content-Length', pdf.length);
       return res.end(pdf);
     } catch (error: unknown) {
-      console.error('[CertificatesController] Error rendering certificate download:', error);
+      console.error(
+        '[CertificatesController] Error rendering certificate download:',
+        error,
+      );
       const status =
         typeof error === 'object' && error && 'status' in error
-          ? Number((error as any).status) || 500
+          ? Number((error as { status?: unknown }).status) || 500
           : 500;
       const message =
         error instanceof Error
