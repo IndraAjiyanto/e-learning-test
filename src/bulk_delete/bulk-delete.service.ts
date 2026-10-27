@@ -173,9 +173,16 @@ export class BulkDeleteService {
         (c) => (c.courses || []).length > 0,
       );
       if (withCourses.length > 0) {
-        throw new BadRequestException(
-          `Category "${withCourses[0].name}" cannot be deleted because it still has ${withCourses[0].courses.length} related program(s). Please delete or reassign the programs first.`,
-        );
+        if (withCourses.length === 1) {
+          throw new BadRequestException(
+            `Category "${withCourses[0].name}" cannot be deleted because it still contains ${withCourses[0].courses.length} program(s). Please delete or reassign the programs first.`,
+          );
+        } else {
+          const names = withCourses.map((c) => `"${c.name}"`).join(', ');
+          throw new BadRequestException(
+            `Categories ${names} cannot be deleted because they still contain related programs. Please delete or reassign the programs first.`,
+          );
+        }
       }
       await this.deletePhysicalFiles(categories.map((c) => c.icon));
       await repo.remove(categories);
@@ -285,8 +292,9 @@ export class BulkDeleteService {
         (c) => (c.courses || []).length > 0,
       );
       if (withCourses.length > 0) {
+        const names = withCourses.map((c) => `"${c.name}"`).join(', ');
         throw new BadRequestException(
-          `There are ${withCourses.length} categories that still have related programs. Please delete or reassign program data first.`,
+          `Cannot delete all categories because the following category(ies) still contain related programs: ${names}.`,
         );
       }
       await this.deletePhysicalFiles(categories.map((c) => c.icon));

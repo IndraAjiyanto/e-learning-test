@@ -7,7 +7,7 @@ import { CreateCategoriesDto } from './dto/create-categories.dto';
 import { UpdateCategoriesDto } from './dto/update-categories.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from 'src/entities/category.entity';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Course } from 'src/entities/course.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Alumni } from 'src/entities/alumni.entity';
@@ -180,12 +180,16 @@ export class CategoriesService {
     });
   }
 
-  async findAlumniByCategory(categoryId: string) {
-    return await this.alumniRepository.find({
-      where: { course: { category: { id: categoryId } } },
-      relations: ['course', 'course.category'],
-      order: { createdAt: 'DESC' },
-      take: 6,
+  async findCourseByCourseType(typeId: string) {
+    return await this.courseRepository.find({
+      where: { courseType: { id: typeId } },
+      relations: ['category', 'courseType'],
+    });
+  }
+
+  async findBenefitByCategory(categoryId: string) {
+    return await this.benefitCategoryRepository.find({
+      where: { category: { id: categoryId } },
     });
   }
 
@@ -195,9 +199,10 @@ export class CategoriesService {
     });
   }
 
-  async findBenefitByCategory(categoryId: string) {
-    return await this.benefitCategoryRepository.find({
-      where: { category: { id: categoryId } },
+  async findAlumniByCategory(categoryId: string) {
+    return await this.alumniRepository.find({
+      where: { course: { category: { id: categoryId } } },
+      relations: ['course', 'course.category'],
     });
   }
 
@@ -391,7 +396,7 @@ export class CategoriesService {
     const programCount = category.courses?.length || 0;
     if (programCount > 0) {
       throw new BadRequestException(
-        `Category "${category.name}" cannot be deleted because it still has ${programCount} program(s). Please move or delete the programs first.`,
+        `Category "${category.name}" cannot be deleted because it still contains ${programCount} program(s). Please move or delete the programs first.`,
       );
     }
     const removedNo = category.no;
@@ -406,5 +411,47 @@ export class CategoriesService {
       }
     });
     return { message: 'category successfully deleted' };
+  }
+
+  async removeMany(ids: string[]) {
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      throw new BadRequestException(
+        'Please select at least one category to delete.',
+      );
+    }
+
+    const categories = await this.categoryRepository.find({
+      where: { id: In(ids) },
+      relations: ['courses'],
+    });
+    if (!categories || categories.length === 0) {
+      throw new NotFoundException('Selected categories were not found.');
+    }
+
+    const withCourses = categories.filter(
+      (c) => (c.courses || []).length > 0,
+    );
+    if (withCourses.length > 0) {
+      if (withCourses.length === 1) {
+        throw new BadRequestException(
+          `Category "${withCourses[0].name}" cannot be deleted because it still contains ${withCourses[0].courses.length} program(s). Please delete or reassign the programs first.`,
+        );
+      } else {
+        const names = withCourses.map((c) => `"${c.name}"`).join(', ');
+        throw new BadRequestException(
+          `Categories ${names} cannot be deleted because they still contain related programs. Please delete or reassign the programs first.`,
+        );
+      }
+    }
+
+    for (const category of categories) {
+      if (category.icon) await this.deleteFile(category.icon);
+      if (category.hero_section_image) {
+        await this.deleteFile(category.hero_section_image);
+      }
+    }
+
+    await this.categoryRepository.remove(categories);
+    return { success: true, count: categories.length };
   }
 }
