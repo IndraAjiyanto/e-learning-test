@@ -10,6 +10,7 @@ import {
   Req,
   UseInterceptors,
   UseFilters,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoriesDto } from './dto/create-categories.dto';
@@ -241,9 +242,37 @@ export class CategoriesController {
   }
 
   @Roles('super_admin')
+  @Post('bulk-delete')
+  async removeManyPost(@Body('ids') ids: string[], @Res() res: Response) {
+    try {
+      const result = await this.categoriesService.removeMany(ids);
+      return res.json({
+        success: true,
+        message: `Successfully deleted ${result.count} selected category(ies).`,
+        count: result.count,
+      });
+    } catch (error: unknown) {
+      return res.status(400).json({
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Failed to delete selected categories',
+      });
+    }
+  }
+
+  @Roles('super_admin')
+  @Delete('bulk-delete')
+  async removeManyDelete(@Body('ids') ids: string[], @Res() res: Response) {
+    return this.removeManyPost(ids, res);
+  }
+
+  @Roles('super_admin')
   @Get(':categoryId')
   async findOne(
-    @Param('categoryId') categoryId: string,
+    @Param('categoryId', new ParseUUIDPipe({ optional: true }))
+    categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -258,7 +287,8 @@ export class CategoriesController {
   @Roles('super_admin')
   @Get('formEdit/:categoryId')
   async formEdit(
-    @Param('categoryId') categoryId: string,
+    @Param('categoryId', new ParseUUIDPipe({ optional: true }))
+    categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -293,7 +323,8 @@ export class CategoriesController {
     ),
   )
   async update(
-    @Param('categoryId') categoryId: string,
+    @Param('categoryId', new ParseUUIDPipe({ optional: true }))
+    categoryId: string,
     @Body() updateCategoriesDto: UpdateCategoriesDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -376,16 +407,28 @@ export class CategoriesController {
   @Roles('super_admin')
   @Delete(':categoryId')
   async remove(
-    @Param('categoryId') categoryId: string,
+    @Param('categoryId', new ParseUUIDPipe({ optional: true }))
+    categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    const isJson =
+      Boolean(req.xhr) ||
+      req.headers.accept?.includes('application/json') ||
+      req.headers['content-type']?.includes('application/json');
+
     try {
       const category = await this.categoriesService.findOne(categoryId);
       await this.categoriesService.remove(categoryId);
       if (category.icon) await this.categoriesService.deleteFile(category.icon);
       if (category.hero_section_image) {
         await this.categoriesService.deleteFile(category.hero_section_image);
+      }
+      if (isJson) {
+        return res.json({
+          success: true,
+          message: 'Category has been permanently removed.',
+        });
       }
       flashToast(
         req,
@@ -396,6 +439,12 @@ export class CategoriesController {
     } catch (error: unknown) {
       const err = error as Error;
       const errorMessage = err.message || 'category failed to delete';
+      if (isJson) {
+        return res.status(400).json({
+          success: false,
+          message: errorMessage,
+        });
+      }
       flashToastError(req, 'Gagal Menghapus Kategori', errorMessage);
       req.flash('error', errorMessage);
       res.redirect('/category');

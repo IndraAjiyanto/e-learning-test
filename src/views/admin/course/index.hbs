@@ -315,9 +315,9 @@ function kelasTable() {
           },
           body: JSON.stringify({ ids: this.selectedCourses }),
         });
-        const json = await res.json();
+        const json = await res.json().catch(() => null);
 
-        if (json.success) {
+        if (json && json.success) {
           this.selectedCourses = [];
           window.dispatchEvent(
             new CustomEvent('toast:success', {
@@ -333,7 +333,7 @@ function kelasTable() {
             new CustomEvent('toast:error', {
               detail: {
                 title: 'Failed to Delete',
-                description: json.message || 'Failed to delete selected programs.',
+                description: json?.message || 'Failed to delete selected programs.',
               },
             }),
           );
@@ -373,9 +373,9 @@ function kelasTable() {
             'Content-Type': 'application/json',
           },
         });
-        const json = await res.json();
+        const json = await res.json().catch(() => null);
 
-        if (json.success) {
+        if (json && json.success) {
           this.selectedCourses = [];
           this.selectMode = false;
           this.currentPage = 1;
@@ -393,7 +393,7 @@ function kelasTable() {
             new CustomEvent('toast:error', {
               detail: {
                 title: 'Failed to Delete',
-                description: json.message || 'Failed to delete all programs.',
+                description: json?.message || 'Failed to delete all programs.',
               },
             }),
           );
@@ -431,9 +431,9 @@ function kelasTable() {
             'Content-Type': 'application/json',
           },
         });
-        const json = await res.json();
+        const json = await res.json().catch(() => null);
 
-        if (json.success) {
+        if (json && json.success) {
           this.selectedCourses = this.selectedCourses.filter(id => id !== courseId);
           window.dispatchEvent(
             new CustomEvent('toast:success', {
@@ -486,7 +486,7 @@ function kelasTable() {
         params.set('limit', this.size);
 
         const res = await fetch(`/program/filter?${params.toString()}`);
-        const json = await res.json();
+        const json = await res.json().catch(() => null);
 
         this.kelasList = json.data;
         this.totalItems = json.totalItems;
@@ -642,9 +642,9 @@ function kelasTable() {
           },
           body: JSON.stringify({ status: targetStatus }),
         });
-        const json = await res.json();
+        const json = await res.json().catch(() => null);
 
-        if (json.success) {
+        if (json && json.success) {
           this.kelasList[index].status = json.status;
           this.kelasList[index].launch = json.launch;
         } else {
@@ -697,9 +697,9 @@ function kelasTable() {
             'Content-Type': 'application/json',
           },
         });
-        const json = await res.json();
+        const json = await res.json().catch(() => null);
 
-        if (json.success) {
+        if (json && json.success) {
           this.kelasList[index].launch = json.launch;
           if (json.status) this.kelasList[index].status = json.status;
         } else {

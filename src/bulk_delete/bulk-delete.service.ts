@@ -175,9 +175,16 @@ export class BulkDeleteService {
         (c) => (c.courses || []).length > 0,
       );
       if (withCourses.length > 0) {
-        throw new BadRequestException(
-          `Category "${withCourses[0].name}" cannot be deleted because it still has ${withCourses[0].courses.length} related program(s). Please delete or reassign the programs first.`,
-        );
+        if (withCourses.length === 1) {
+          throw new BadRequestException(
+            `Category "${withCourses[0].name}" cannot be deleted because it still contains ${withCourses[0].courses.length} program(s). Please delete or reassign the programs first.`,
+          );
+        } else {
+          const names = withCourses.map((c) => `"${c.name}"`).join(', ');
+          throw new BadRequestException(
+            `Categories ${names} cannot be deleted because they still contain related programs. Please delete or reassign the programs first.`,
+          );
+        }
       }
       await this.deletePhysicalFiles(categories.map((c) => c.icon));
       await repo.remove(categories);
@@ -188,7 +195,35 @@ export class BulkDeleteService {
       };
     }
 
-    // 3. Entity umum
+    // 3. Safety check khusus Course / Program
+    if (
+      key === 'course' ||
+      key === 'courses' ||
+      key === 'program' ||
+      key === 'programs'
+    ) {
+      const courses = (await repo.find({
+        where: { id: In(ids) },
+        relations: ['userCourses'],
+      })) as Course[];
+      const withParticipants = courses.filter(
+        (c) => (c.userCourses || []).length > 0,
+      );
+      if (withParticipants.length > 0) {
+        if (withParticipants.length === 1) {
+          throw new BadRequestException(
+            `Program "${withParticipants[0].name}" cannot be deleted because it already has ${withParticipants[0].userCourses.length} enrolled participant(s).`,
+          );
+        } else {
+          const names = withParticipants.map((c) => `"${c.name}"`).join(', ');
+          throw new BadRequestException(
+            `Programs ${names} cannot be deleted because they already have enrolled participants.`,
+          );
+        }
+      }
+    }
+
+    // 4. Entity umum
     const items = await repo.findBy({ id: In(ids) });
     if (!items || items.length === 0) {
       throw new NotFoundException('Selected items were not found.');
@@ -267,8 +302,9 @@ export class BulkDeleteService {
         (c) => (c.courses || []).length > 0,
       );
       if (withCourses.length > 0) {
+        const names = withCourses.map((c) => `"${c.name}"`).join(', ');
         throw new BadRequestException(
-          `There are ${withCourses.length} categories that still have related programs. Please delete or reassign program data first.`,
+          `Cannot delete all categories because the following category(ies) still contain related programs: ${names}.`,
         );
       }
       await this.deletePhysicalFiles(categories.map((c) => c.icon));
@@ -280,7 +316,34 @@ export class BulkDeleteService {
       };
     }
 
-    // 3. Entity umum
+    // 3. Safety check khusus Course / Program
+    if (
+      key === 'course' ||
+      key === 'courses' ||
+      key === 'program' ||
+      key === 'programs'
+    ) {
+      const courses = (await repo.find({
+        relations: ['userCourses'],
+      })) as Course[];
+      const withParticipants = courses.filter(
+        (c) => (c.userCourses || []).length > 0,
+      );
+      if (withParticipants.length > 0) {
+        if (withParticipants.length === 1) {
+          throw new BadRequestException(
+            `Program "${withParticipants[0].name}" cannot be deleted because it already has ${withParticipants[0].userCourses.length} enrolled participant(s).`,
+          );
+        } else {
+          const names = withParticipants.map((c) => `"${c.name}"`).join(', ');
+          throw new BadRequestException(
+            `Programs ${names} cannot be deleted because they already have enrolled participants.`,
+          );
+        }
+      }
+    }
+
+    // 4. Entity umum
     const items = await repo.find();
     if (!items || items.length === 0) {
       return {
@@ -318,3 +381,4 @@ export class BulkDeleteService {
     };
   }
 }
+

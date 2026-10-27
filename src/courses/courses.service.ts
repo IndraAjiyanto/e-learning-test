@@ -1852,7 +1852,7 @@ export class CoursesService {
     const participantCount = course.userCourses?.length || 0;
     if (participantCount > 0 && !force) {
       throw new BadRequestException(
-        `program "${course.name}" tidak dapat dihapus karena masih memiliki ${participantCount} peserta. Hapus peserta tersebut terlebih dahulu.`,
+        `Program "${course.name}" cannot be deleted because it already has ${participantCount} enrolled participant(s). Please remove the participants first.`,
       );
     }
 
@@ -1862,13 +1862,32 @@ export class CoursesService {
   async removeMany(ids: string[]) {
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       throw new BadRequestException(
-        'Pilih setidaknya satu program untuk dihapus.',
+        'Please select at least one program to delete.',
       );
     }
 
-    const courses = await this.courseRepository.findBy({ id: In(ids) });
+    const courses = await this.courseRepository.find({
+      where: { id: In(ids) },
+      relations: ['userCourses'],
+    });
     if (!courses || courses.length === 0) {
-      throw new NotFoundException('Tidak ada data program yang ditemukan.');
+      throw new NotFoundException('Selected programs were not found.');
+    }
+
+    const withParticipants = courses.filter(
+      (c) => (c.userCourses || []).length > 0,
+    );
+    if (withParticipants.length > 0) {
+      if (withParticipants.length === 1) {
+        throw new BadRequestException(
+          `Program "${withParticipants[0].name}" cannot be deleted because it already has ${withParticipants[0].userCourses.length} enrolled participant(s).`,
+        );
+      } else {
+        const names = withParticipants.map((c) => `"${c.name}"`).join(', ');
+        throw new BadRequestException(
+          `Programs ${names} cannot be deleted because they already have enrolled participants.`,
+        );
+      }
     }
 
     for (const course of courses) {
@@ -1882,9 +1901,21 @@ export class CoursesService {
   }
 
   async removeAll() {
-    const courses = await this.courseRepository.find();
+    const courses = await this.courseRepository.find({
+      relations: ['userCourses'],
+    });
     if (!courses || courses.length === 0) {
       return { success: true, count: 0 };
+    }
+
+    const withParticipants = courses.filter(
+      (c) => (c.userCourses || []).length > 0,
+    );
+    if (withParticipants.length > 0) {
+      const names = withParticipants.map((c) => `"${c.name}"`).join(', ');
+      throw new BadRequestException(
+        `Cannot delete all programs because the following program(s) still have enrolled participants: ${names}.`,
+      );
     }
 
     for (const course of courses) {
