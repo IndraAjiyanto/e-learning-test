@@ -94,15 +94,100 @@
         this.selectedIds = [];
       },
 
+      confirmDeleteSingle(item) {
+        if (!item) return;
+        const itemName = item.name || item.title || 'this item';
+        const label = this.entityName
+          ? (this.entityName.endsWith('ies')
+              ? this.entityName.slice(0, -3) + 'y'
+              : this.entityName.replace(/s$/, ''))
+          : 'item';
+        const capitalizedLabel = label.charAt(0).toUpperCase() + label.slice(1);
+
+        if (typeof openDeleteModal === 'function') {
+          openDeleteModal({
+            title: `Delete ${capitalizedLabel}?`,
+            description: `Are you sure you want to delete ${label} "${itemName}"? This action is permanent and cannot be undone.`,
+            confirmLabel: 'Delete',
+            cancelLabel: 'Cancel',
+            onConfirm: async () => {
+              await this.executeDeleteSingle(item.id);
+            },
+          });
+        }
+      },
+
+      async executeDeleteSingle(id) {
+        try {
+          const entity = this.resolveEntity();
+          const res = await fetch(`/${entity}/${id}`, {
+            method: 'DELETE',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
+          const json = await res.json().catch(() => null);
+
+          if (json && json.success) {
+            this.selectedIds = this.selectedIds.filter(
+              (selectedId) => String(selectedId) !== String(id),
+            );
+            window.dispatchEvent(
+              new CustomEvent('toast:success', {
+                detail: {
+                  title: 'Deleted Successfully',
+                  description:
+                    json.message || 'Item has been deleted successfully.',
+                },
+              }),
+            );
+            if (url) {
+              await this.load();
+            } else {
+              setTimeout(() => {
+                window.location.reload();
+              }, 500);
+            }
+          } else {
+            window.dispatchEvent(
+              new CustomEvent('toast:error', {
+                detail: {
+                  title: 'Failed to Delete',
+                  description: json?.message || 'Failed to delete item.',
+                },
+              }),
+            );
+          }
+        } catch (err) {
+          console.error('Delete single error:', err);
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Error',
+                description:
+                  'A network or server error occurred while deleting item.',
+              },
+            }),
+          );
+        }
+      },
+
       confirmDeleteSelected() {
         const count = this.selectedIds.length;
         if (count === 0) return;
         const label = this.entityName || 'items';
+        const displayLabel =
+          count === 1
+            ? label.endsWith('ies')
+              ? label.slice(0, -3) + 'y'
+              : label.replace(/s$/, '')
+            : label;
 
         if (typeof openDeleteModal === 'function') {
           openDeleteModal({
-            title: `Delete ${count} Selected Items?`,
-            description: `Are you sure you want to delete ${count} selected ${label}? This action is permanent and cannot be undone.`,
+            title: `Delete ${count} Selected ${displayLabel.charAt(0).toUpperCase() + displayLabel.slice(1)}?`,
+            description: `Are you sure you want to delete ${count} selected ${displayLabel}? This action is permanent and cannot be undone.`,
             cancelLabel: 'Cancel',
             confirmLabel: `Delete (${count})`,
             onConfirm: async () => {
@@ -118,21 +203,24 @@
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Accept': 'application/json',
             },
             body: JSON.stringify({
               entity: this.resolveEntity(),
               ids: this.selectedIds,
             }),
           });
-          const json = await res.json();
+          const json = await res.json().catch(() => null);
 
-          if (json.success) {
+          if (json && json.success) {
             this.selectedIds = [];
             window.dispatchEvent(
               new CustomEvent('toast:success', {
                 detail: {
                   title: 'Deleted Successfully',
-                  description: json.message || 'Selected data has been deleted successfully.',
+                  description:
+                    json.message ||
+                    'Selected data has been deleted successfully.',
                 },
               }),
             );
@@ -148,7 +236,9 @@
               new CustomEvent('toast:error', {
                 detail: {
                   title: 'Failed to Delete',
-                  description: json.message || 'An error occurred while deleting data.',
+                  description:
+                    json?.message ||
+                    'An error occurred while deleting data.',
                 },
               }),
             );
@@ -158,7 +248,8 @@
             new CustomEvent('toast:error', {
               detail: {
                 title: 'Error',
-                description: 'A network or server error occurred while deleting data.',
+                description:
+                  'A network or server error occurred while deleting data.',
               },
             }),
           );
@@ -172,7 +263,7 @@
 
         if (typeof openDeleteModal === 'function') {
           openDeleteModal({
-            title: 'Delete ALL Data?',
+            title: `Delete ALL ${label.charAt(0).toUpperCase() + label.slice(1)}?`,
             description: `WARNING: You are about to delete ALL ${label} (${total} items). This action is permanent and cannot be undone!`,
             cancelLabel: 'Cancel',
             confirmLabel: 'Yes, Delete ALL',
@@ -189,21 +280,23 @@
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Accept': 'application/json',
             },
             body: JSON.stringify({
               entity: this.resolveEntity(),
             }),
           });
-          const json = await res.json();
+          const json = await res.json().catch(() => null);
 
-          if (json.success) {
+          if (json && json.success) {
             this.selectedIds = [];
             this.selectMode = false;
             window.dispatchEvent(
               new CustomEvent('toast:success', {
                 detail: {
                   title: 'Deleted Successfully',
-                  description: json.message || 'All data has been deleted successfully.',
+                  description:
+                    json.message || 'All data has been deleted successfully.',
                 },
               }),
             );
@@ -219,7 +312,9 @@
               new CustomEvent('toast:error', {
                 detail: {
                   title: 'Failed to Delete',
-                  description: json.message || 'An error occurred while deleting all data.',
+                  description:
+                    json?.message ||
+                    'An error occurred while deleting all data.',
                 },
               }),
             );
@@ -229,7 +324,8 @@
             new CustomEvent('toast:error', {
               detail: {
                 title: 'Error',
-                description: 'A network or server error occurred while deleting all data.',
+                description:
+                  'A network or server error occurred while deleting all data.',
               },
             }),
           );
