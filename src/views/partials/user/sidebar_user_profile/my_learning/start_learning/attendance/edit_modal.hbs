@@ -77,18 +77,18 @@
       <!-- Buttons -->
       <div class="content-stretch cursor-pointer flex gap-[15px] items-center justify-center relative shrink-0">
         <button
+          @click="showEditModal = false"
+          class="border border-[#003060] border-solid content-stretch flex h-[45px] items-center justify-center p-[10px] relative rounded-[6px] hover:shadow-sm transition-shadow shrink-0 w-[244px] bg-white"
+        >
+          <span class="font-inter font-medium leading-[normal] text-sm text-black">{{default (t 'test.attendance.cancel') 'Cancel'}}</span>
+        </button>
+        <button
           @click="saveAttendance()"
           :disabled="!editStatus"
           :class="!editStatus ? 'opacity-50 cursor-not-allowed' : ''"
           class="bg-[#003060] border border-[#003060] border-solid content-stretch hover:shadow-sm transition-shadow flex h-[45px] items-center justify-center p-[10px] relative rounded-[6px] shrink-0 w-[244px]"
         >
           <span class="font-inter font-medium leading-[normal] text-sm text-white">{{default (t 'test.attendance.saveAttendance') 'Save'}}</span>
-        </button>
-        <button
-          @click="showEditModal = false"
-          class="border border-[#003060] border-solid content-stretch flex h-[45px] items-center justify-center p-[10px] relative rounded-[6px] hover:shadow-sm transition-shadow shrink-0 w-[244px] bg-white"
-        >
-          <span class="font-inter font-medium leading-[normal] text-sm text-black">{{default (t 'test.attendance.cancel') 'Cancel'}}</span>
         </button>
       </div>
 

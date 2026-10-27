@@ -143,6 +143,16 @@
 
         <!-- Action Buttons -->
         <div class='flex items-center gap-4 pt-6'>
+          <a
+            href='/program/{{session.weeks.course.id}}'
+            :disabled='loading'
+            {{!-- Ternary tanpa cabang else bukan JavaScript yang sah, sehingga Alpine
+                 gagal mengompilasi ekspresi ini dan melempar SyntaxError di konsol. --}}
+            :class="loading ? 'opacity-50 cursor-not-allowed' : ''"
+            class='inline-flex h-[44px] items-center justify-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white px-[18px] font-inter text-base font-semibold text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5] flex-1'
+          >
+            {{t 'test.attendance.cancel'}}
+          </a>
           <button
             type='submit'
             class='inline-flex h-[44px] items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-[18px] font-inter text-base font-semibold text-white transition-colors hover:bg-[#00254a] flex-1'
@@ -157,16 +167,6 @@
                 'test.attendance.saveAttendance'
               }}</span>
           </button>
-          <a
-            href='/program/{{session.weeks.course.id}}'
-            :disabled='loading'
-            {{!-- Ternary tanpa cabang else bukan JavaScript yang sah, sehingga Alpine
-                 gagal mengompilasi ekspresi ini dan melempar SyntaxError di konsol. --}}
-            :class="loading ? 'opacity-50 cursor-not-allowed' : ''"
-            class='inline-flex h-[44px] items-center justify-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white px-[18px] font-inter text-base font-semibold text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5] flex-1'
-          >
-            {{t 'test.attendance.cancel'}}
-          </a>
         </div>
       </form>
     </div>
