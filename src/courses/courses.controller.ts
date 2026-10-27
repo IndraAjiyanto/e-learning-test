@@ -205,7 +205,6 @@ export class CoursesController {
     });
   }
 
-  @Roles('admin', 'super_admin')
   @Roles('super_admin')
   @Post('delete-all')
   async removeAllPost(@Res() res: Response) {
@@ -1930,60 +1929,6 @@ export class CoursesController {
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
-  @Roles('super_admin')
-  @Post('delete-all')
-  async removeAllPost(@Res() res: Response) {
-    try {
-      const result = await this.coursesService.removeAll();
-      return res.json({
-        success: true,
-        message: `Successfully deleted all programs (${result.count} data).`,
-        count: result.count,
-      });
-    } catch (error: unknown) {
-      return res.status(400).json({
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : 'Failed to delete all programs',
-      });
-    }
-  }
-
-  @Roles('super_admin')
-  @Delete('delete-all')
-  async removeAllDelete(@Res() res: Response) {
-    return this.removeAllPost(res);
-  }
-
-  @Roles('super_admin')
-  @Post('bulk-delete')
-  async removeManyPost(@Body('ids') ids: string[], @Res() res: Response) {
-    try {
-      const result = await this.coursesService.removeMany(ids);
-      return res.json({
-        success: true,
-        message: `Successfully deleted ${result.count} selected program(s).`,
-        count: result.count,
-      });
-    } catch (error: unknown) {
-      return res.status(400).json({
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : 'Failed to delete selected programs',
-      });
-    }
-  }
-
-  @Roles('super_admin')
-  @Delete('bulk-delete')
-  async removeManyDelete(@Body('ids') ids: string[], @Res() res: Response) {
-    return this.removeManyPost(ids, res);
-  }
-
   @Roles('super_admin')
   @Delete(':courseId/json')
   async removeJson(@Param('courseId') courseId: string, @Res() res: Response) {
