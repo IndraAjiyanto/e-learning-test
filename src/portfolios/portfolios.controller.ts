@@ -207,42 +207,35 @@ export class PortfoliosController {
       ReturnType<PortfoliosService['findCourseForPortfolio']>
     > = null;
     if (courseId) {
+      if (userId) {
+        const existing =
+          await this.portfoliosService.findPortfolioByUserAndCourse(
+            userId,
+            String(courseId),
+          );
+        if (existing) {
+          return res.redirect(`/portfolio/formEdit/${existing.id}`);
+        }
+      }
       course = await this.portfoliosService.findCourseForPortfolio(
         String(courseId),
       );
     }
-    // Hanya program yang benar-benar sudah diselesaikan yang boleh dipilih.
-    // Bootcamp/LPK selesai bila final assignment-nya approved; program berbasis
-    // silabus (non_bootcamp) selesai bila kuis di silabus terakhir lulus dengan
-    // skor minimal. Program yang belum selesai tidak ditampilkan di sini supaya
-    // student tidak memilih program yang nanti ditolak saat menyimpan.
-    // Saat dibuka dari sebuah program, daftar ini tidak dipakai (programnya
-    // dikunci), jadi tidak perlu mengecek seluruh program yang diikuti.
-    const enrolledCourses =
+    // Hanya program yang benar-benar sudah diselesaikan DAN belum memiliki portfolio
+    // yang boleh dipilih saat create dari my portfolio.
+    const courses =
       userId && !isFromCourse
-        ? await this.portfoliosService.findEnrolledCourses(userId)
+        ? await this.portfoliosService.findCompletedCoursesWithoutPortfolio(
+            userId,
+          )
         : [];
-    const completedCourses = userId
-      ? await Promise.all(
-          enrolledCourses.map(async (enrolledCourse) =>
-            (await this.portfoliosService.hasCompletedLearning(
-              userId,
-              enrolledCourse.id,
-            ))
-              ? { value: enrolledCourse.id, label: enrolledCourse.name }
-              : null,
-          ),
-        )
-      : [];
 
     res.render('user/portofolios/create', {
       user: req.user,
       isFromCourse,
       courseId,
       course,
-      courses: completedCourses.filter(
-        (item): item is { value: string; label: string } => item !== null,
-      ),
+      courses,
       bareShell: true,
     });
   }

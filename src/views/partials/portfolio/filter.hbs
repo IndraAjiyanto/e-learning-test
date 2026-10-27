@@ -31,92 +31,174 @@
       </div>
     </div>
 
-    <!-- Kategori Bidang Section -->
+    <!-- Kategori Bidang Section (Search List) -->
     <div class='mt-5'>
       <label class="block font-inter font-semibold text-[14px] leading-none text-[#003060] mb-2.5">
         {{t "test.portfolio.categoryLabel"}}
       </label>
-      <div class='relative' x-data='{ open: false }' @click.outside='open = false'>
+      <div
+        class='relative'
+        x-data='{ open: false, searchCat: "" }'
+        @click.outside='open = false; searchCat = ""'
+        @keydown.escape.window='open = false; searchCat = ""'
+      >
         <button
           type='button'
-          @click='open = !open'
+          @click='open = !open; if (open) $nextTick(() => $refs.catSearchInput?.focus())'
           class='w-full flex items-center justify-between px-4 py-3 bg-white text-xs font-medium text-gray-700 rounded-xl border border-[#D9D9D9] transition-all cursor-pointer outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060]'
           :class="open && 'border-[#003060] ring-1 ring-[#003060]'"
         >
           <span class='truncate text-left' x-text="draftCategoryId ? (allKategori.find(k => String(k.id) === String(draftCategoryId))?.name || '{{t "test.portfolio.allCategory"}}') : '{{t "test.portfolio.allCategory"}}'"></span>
           <i class='fas fa-chevron-down text-xs text-gray-400 transition-transform duration-200 shrink-0 ml-2' :class="open && 'rotate-180'"></i>
         </button>
+
         <div
           x-cloak
           x-show='open'
-          x-transition.opacity
-          class='absolute left-0 z-50 mt-1.5 w-full max-h-60 overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-lg'
+          x-transition.opacity.duration.150ms
+          class='absolute left-0 z-50 mt-1.5 w-full min-w-[220px] max-h-64 overflow-hidden flex flex-col rounded-xl border border-[#E5E7EB] bg-white shadow-lg'
         >
-          <button
-            type='button'
-            @click="draftCategoryId = ''; open = false"
-            class='flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left font-inter text-xs transition'
-            :class="!draftCategoryId ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
-          >
-            <span>{{t "test.portfolio.allCategory"}}</span>
-            <i class='fas fa-check text-xs' x-show='!draftCategoryId'></i>
-          </button>
-          {{#each category}}
+          {{!-- Search Input inside the dropdown --}}
+          <div class="p-2 border-b border-[#F3F4F6] sticky top-0 bg-white z-10">
+            <div class="relative flex items-center">
+              <i class="fas fa-magnifying-glass absolute left-2.5 text-xs text-[#9CA3AF]"></i>
+              <input
+                type="text"
+                x-ref="catSearchInput"
+                x-model="searchCat"
+                @click.stop
+                placeholder='{{t "test.portfolio.searchCategoryPlaceholder"}}'
+                class="w-full pl-7 pr-7 py-1.5 text-xs font-inter border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] text-[#0B1F3B] placeholder-[#9CA3AF]"
+              />
+              <button
+                type="button"
+                x-show="searchCat"
+                x-cloak
+                @click.stop="searchCat = ''; $refs.catSearchInput?.focus()"
+                class="absolute right-2 text-xs text-[#9CA3AF] hover:text-[#0B1F3B]"
+                aria-label="Clear search"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+
+          {{!-- Options List --}}
+          <div class="overflow-y-auto p-1.5 max-h-48 space-y-0.5">
             <button
               type='button'
-              @click="draftCategoryId = '{{this.id}}'; open = false"
-              class='flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left font-inter text-xs transition'
-              :class="String(draftCategoryId) === '{{this.id}}' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+              x-show="!searchCat || '{{t "test.portfolio.allCategory"}}'.toLowerCase().includes(searchCat.toLowerCase().trim())"
+              @click="draftCategoryId = ''; open = false; searchCat = ''"
+              class='flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs transition'
+              :class="!draftCategoryId ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
             >
-              <span class='truncate'>{{this.name}}</span>
-              <i class='fas fa-check text-xs' x-show="String(draftCategoryId) === '{{this.id}}'"></i>
+              <span>{{t "test.portfolio.allCategory"}}</span>
+              <i class='fas fa-check text-xs' x-show='!draftCategoryId'></i>
             </button>
-          {{/each}}
+            <template x-for="cat in allKategori.filter(c => !searchCat || (c.name || '').toLowerCase().includes(searchCat.toLowerCase().trim()))" :key="cat.id">
+              <button
+                type='button'
+                @click="draftCategoryId = String(cat.id); open = false; searchCat = ''"
+                class='flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs transition'
+                :class="String(draftCategoryId) === String(cat.id) ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+              >
+                <span class='truncate' x-text="cat.name"></span>
+                <i class='fas fa-check text-xs' x-show="String(draftCategoryId) === String(cat.id)"></i>
+              </button>
+            </template>
+            <div
+              x-show="allKategori.filter(c => !searchCat || (c.name || '').toLowerCase().includes(searchCat.toLowerCase().trim())).length === 0 && (!searchCat || !'{{t "test.portfolio.allCategory"}}'.toLowerCase().includes(searchCat.toLowerCase().trim()))"
+              class="py-3 px-2 text-center text-xs text-[#9CA3AF] font-inter"
+            >
+              {{default (t 'test.home.programSection.noTypesFound') 'Tidak ada data ditemukan'}}
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Tipe Kelas / Program Section -->
+    <!-- Tipe Kelas / Program Section (Search List) -->
     <div class='mt-5'>
       <label class="block font-inter font-semibold text-[14px] leading-none text-[#003060] mb-2.5">
         {{t "test.portfolio.classTypeLabel"}}
       </label>
-      <div class='relative' x-data='{ open: false }' @click.outside='open = false'>
+      <div
+        class='relative'
+        x-data='{ open: false, searchType: "" }'
+        @click.outside='open = false; searchType = ""'
+        @keydown.escape.window='open = false; searchType = ""'
+      >
         <button
           type='button'
-          @click='open = !open'
+          @click='open = !open; if (open) $nextTick(() => $refs.typeSearchInput?.focus())'
           class='w-full flex items-center justify-between px-4 py-3 bg-white text-xs font-medium text-gray-700 rounded-xl border border-[#D9D9D9] transition-all cursor-pointer outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060]'
           :class="open && 'border-[#003060] ring-1 ring-[#003060]'"
         >
           <span class='truncate text-left' x-text="draftCourseTypeId ? (getByLang(allJenisKelas.find(j => String(j.id) === String(draftCourseTypeId))?.nameClassesType, lang) || '{{t "test.portfolio.allClassType"}}') : '{{t "test.portfolio.allClassType"}}'"></span>
           <i class='fas fa-chevron-down text-xs text-gray-400 transition-transform duration-200 shrink-0 ml-2' :class="open && 'rotate-180'"></i>
         </button>
+
         <div
           x-cloak
           x-show='open'
-          x-transition.opacity
-          class='absolute left-0 z-50 mt-1.5 w-full max-h-60 overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-lg'
+          x-transition.opacity.duration.150ms
+          class='absolute left-0 z-50 mt-1.5 w-full min-w-[220px] max-h-64 overflow-hidden flex flex-col rounded-xl border border-[#E5E7EB] bg-white shadow-lg'
         >
-          <button
-            type='button'
-            @click="draftCourseTypeId = ''; open = false"
-            class='flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left font-inter text-xs transition'
-            :class="!draftCourseTypeId ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
-          >
-            <span>{{t "test.portfolio.allClassType"}}</span>
-            <i class='fas fa-check text-xs' x-show='!draftCourseTypeId'></i>
-          </button>
-          {{#each courseType}}
+          {{!-- Search Input inside the dropdown --}}
+          <div class="p-2 border-b border-[#F3F4F6] sticky top-0 bg-white z-10">
+            <div class="relative flex items-center">
+              <i class="fas fa-magnifying-glass absolute left-2.5 text-xs text-[#9CA3AF]"></i>
+              <input
+                type="text"
+                x-ref="typeSearchInput"
+                x-model="searchType"
+                @click.stop
+                placeholder='{{t "test.portfolio.searchClassTypePlaceholder"}}'
+                class="w-full pl-7 pr-7 py-1.5 text-xs font-inter border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] text-[#0B1F3B] placeholder-[#9CA3AF]"
+              />
+              <button
+                type="button"
+                x-show="searchType"
+                x-cloak
+                @click.stop="searchType = ''; $refs.typeSearchInput?.focus()"
+                class="absolute right-2 text-xs text-[#9CA3AF] hover:text-[#0B1F3B]"
+                aria-label="Clear search"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+
+          {{!-- Options List --}}
+          <div class="overflow-y-auto p-1.5 max-h-48 space-y-0.5">
             <button
               type='button'
-              @click="draftCourseTypeId = '{{this.id}}'; open = false"
-              class='flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left font-inter text-xs transition'
-              :class="String(draftCourseTypeId) === '{{this.id}}' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+              x-show="!searchType || '{{t "test.portfolio.allClassType"}}'.toLowerCase().includes(searchType.toLowerCase().trim())"
+              @click="draftCourseTypeId = ''; open = false; searchType = ''"
+              class='flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs transition'
+              :class="!draftCourseTypeId ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
             >
-              <span class='truncate'>{{getByLang this.nameClassesType @root.lang}}</span>
-              <i class='fas fa-check text-xs' x-show="String(draftCourseTypeId) === '{{this.id}}'"></i>
+              <span>{{t "test.portfolio.allClassType"}}</span>
+              <i class='fas fa-check text-xs' x-show='!draftCourseTypeId'></i>
             </button>
-          {{/each}}
+            <template x-for="jenis in allJenisKelas.filter(j => !searchType || (getByLang(j.nameClassesType, lang) || '').toLowerCase().includes(searchType.toLowerCase().trim()))" :key="jenis.id">
+              <button
+                type='button'
+                @click="draftCourseTypeId = String(jenis.id); open = false; searchType = ''"
+                class='flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs transition'
+                :class="String(draftCourseTypeId) === String(jenis.id) ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+              >
+                <span class='truncate' x-text="getByLang(jenis.nameClassesType, lang)"></span>
+                <i class='fas fa-check text-xs' x-show="String(draftCourseTypeId) === String(jenis.id)"></i>
+              </button>
+            </template>
+            <div
+              x-show="allJenisKelas.filter(j => !searchType || (getByLang(j.nameClassesType, lang) || '').toLowerCase().includes(searchType.toLowerCase().trim())).length === 0 && (!searchType || !'{{t "test.portfolio.allClassType"}}'.toLowerCase().includes(searchType.toLowerCase().trim()))"
+              class="py-3 px-2 text-center text-xs text-[#9CA3AF] font-inter"
+            >
+              {{default (t 'test.home.programSection.noTypesFound') 'Tidak ada data ditemukan'}}
+            </div>
+          </div>
         </div>
       </div>
     </div>

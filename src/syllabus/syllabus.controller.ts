@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { join } from 'path';
 import { existsSync } from 'fs';
+import axios from 'axios';
 import { SyllabusService } from './syllabus.service';
 import { CreateSyllabusDto } from './dto/create-syllabus.dto';
 import { UpdateSyllabusDto } from './dto/update-syllabus.dto';
@@ -407,6 +408,74 @@ export class SyllabusController {
     const material = (detail.materials || []).find((m) => m.id === materialId);
     if (!material || !material.file) {
       req.flash('error', 'Berkas materi tidak ditemukan.');
+      return res.redirect(`/syllabus/learn/${syllabusId}`);
+    }
+
+    const isPpt = material.fileType === 'ppt';
+
+    if (isPpt) {
+      let downloadUrl = material.downloadUrl?.trim();
+      if (!downloadUrl) {
+        req.flash(
+          'error',
+          'Tautan unduhan belum disediakan untuk materi slide ini.',
+        );
+        return res.redirect(`/syllabus/learn/${syllabusId}`);
+      }
+
+      const match = downloadUrl.match(/\/presentation\/d\/(?!e\/)([^/?#]+)/);
+      if (match && !downloadUrl.includes('/export/pptx')) {
+        downloadUrl = `https://docs.google.com/presentation/d/${match[1]}/export/pptx`;
+      }
+
+      const defaultBase = material.title || 'materi-silabus';
+      const safeFilename =
+        material.originalFileName && material.originalFileName.endsWith('.pptx')
+          ? material.originalFileName
+          : `${material.originalFileName || defaultBase}.pptx`;
+
+      if (
+        downloadUrl.startsWith('http://') ||
+        downloadUrl.startsWith('https://')
+      ) {
+        try {
+          const response = await axios.get(downloadUrl, {
+            responseType: 'stream',
+            timeout: 30000,
+          });
+
+          res.set({
+            'Content-Type':
+              'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'Content-Disposition': `attachment; filename="${encodeURIComponent(safeFilename)}"`,
+          });
+
+          return response.data.pipe(res);
+        } catch {
+          req.flash(
+            'error',
+            'Gagal mengunduh berkas presentasi dari tautan penyedia.',
+          );
+          return res.redirect(`/syllabus/learn/${syllabusId}`);
+        }
+      }
+
+      const rel = downloadUrl.startsWith('/')
+        ? downloadUrl.slice(1)
+        : downloadUrl;
+      const candidates = [
+        join(process.cwd(), rel),
+        join(process.cwd(), 'uploads', rel),
+        join(process.cwd(), 'public', rel),
+      ];
+
+      for (const filePath of candidates) {
+        if (existsSync(filePath)) {
+          return res.download(filePath, safeFilename);
+        }
+      }
+
+      req.flash('error', 'Berkas fisik tidak ditemukan di server.');
       return res.redirect(`/syllabus/learn/${syllabusId}`);
     }
 

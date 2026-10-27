@@ -279,6 +279,51 @@ export class PortfoliosService {
       .filter((c): c is Course => Boolean(c));
   }
 
+  async findPortfolioByUserAndCourse(userId: string, courseId: string) {
+    if (!userId || !courseId) return null;
+    return await this.portfolioRepository.findOne({
+      where: {
+        user: { id: userId },
+        course: { id: courseId },
+      },
+    });
+  }
+
+  async findCompletedCoursesWithoutPortfolio(userId: string) {
+    if (!userId) return [];
+    const enrolledCourses = await this.findEnrolledCourses(userId);
+    if (!enrolledCourses.length) return [];
+
+    const userPortfolios = await this.portfolioRepository.find({
+      where: { user: { id: userId } },
+      relations: ['course'],
+      select: {
+        id: true,
+        course: { id: true },
+      },
+    });
+    const existingCourseIds = new Set(
+      userPortfolios
+        .map((p) => p.course?.id)
+        .filter((id): id is string => Boolean(id)),
+    );
+
+    const availableCourses = enrolledCourses.filter(
+      (course) => !existingCourseIds.has(course.id),
+    );
+
+    const completed = await Promise.all(
+      availableCourses.map(async (course) => {
+        const isCompleted = await this.hasCompletedLearning(userId, course.id);
+        return isCompleted ? { value: course.id, label: course.name } : null;
+      }),
+    );
+
+    return completed.filter(
+      (item): item is { value: string; label: string } => item !== null,
+    );
+  }
+
   /**
    * Student hanya boleh melihat galeri program yang ia ikuti. Tanpa ini
    * `courseId` pada rute fragment bisa diisi program mana saja dan isi

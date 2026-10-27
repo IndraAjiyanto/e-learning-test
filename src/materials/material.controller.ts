@@ -15,6 +15,7 @@ import {
   UseFilters,
 } from '@nestjs/common';
 import { existsSync } from 'node:fs';
+import axios from 'axios';
 import { join } from 'node:path';
 import { MaterialService } from './material.service';
 import { CreateMaterialDto } from './dto/create-material.dto';
@@ -44,6 +45,20 @@ export class MaterialController {
     private readonly materialService: MaterialService,
     private readonly googleSlidesService: GoogleSlidesService,
   ) {}
+
+  private validateDownloadUrl(downloadUrl?: string | null): string {
+    const trimmed = (downloadUrl || '').trim();
+    if (!trimmed) {
+      throw new Error('Please enter a Google Slides download URL.');
+    }
+    const googleSlidePattern = /^https:\/\/docs\.google\.com\/presentation\//;
+    if (!googleSlidePattern.test(trimmed)) {
+      throw new Error(
+        'Download URL must be a valid Google Slides link (https://docs.google.com/presentation/...).',
+      );
+    }
+    return trimmed;
+  }
 
   private resolvePptLink(dto: CreateMaterialDto | UpdateMaterialDto): string {
     const link = (dto.link || '').trim();
@@ -158,6 +173,9 @@ export class MaterialController {
       }
       createMaterialDto.originalFileName = file?.originalname;
       createMaterialDto.fileSizeBytes = file?.size;
+      createMaterialDto.downloadUrl = this.validateDownloadUrl(
+        createMaterialDto.downloadUrl,
+      );
       createMaterialDto.sessionId = sessionId;
       createMaterialDto.fileType = 'ppt';
 
@@ -301,6 +319,9 @@ export class MaterialController {
       }
       createMaterialDto.originalFileName = file?.originalname;
       createMaterialDto.fileSizeBytes = file?.size;
+      createMaterialDto.downloadUrl = this.validateDownloadUrl(
+        createMaterialDto.downloadUrl,
+      );
       createMaterialDto.syllabusId = syllabusId;
       createMaterialDto.sessionId = undefined;
       createMaterialDto.fileType = 'ppt';
@@ -440,6 +461,123 @@ export class MaterialController {
   // findMateriByKelas(@Param('sessionId') sessionId: string) {
   //   return this.materisService.findMateriBypertemuan(sessionId);
   // }
+
+  @Roles('user', 'admin', 'super_admin')
+  @Get(':id/download')
+  async downloadMaterial(
+    @Param('id') id: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const material = await this.materialService.findOne(id);
+    if (!material) {
+      req.flash('error', 'Berkas materi tidak ditemukan.');
+      return res.redirect('back');
+    }
+
+    if (material.fileType === 'video') {
+      req.flash('error', 'Berkas video tidak dapat diunduh.');
+      return res.redirect('back');
+    }
+
+    const isPpt = material.fileType === 'ppt';
+    const ext = isPpt ? '.pptx' : '.pdf';
+    const defaultBase = isPpt
+      ? material.title || 'materi-presentasi'
+      : material.title || 'materi-pdf';
+    const safeFilename =
+      material.originalFileName && material.originalFileName.endsWith(ext)
+        ? material.originalFileName
+        : `${material.originalFileName || defaultBase}${ext}`;
+
+    if (isPpt) {
+      let downloadUrl = material.downloadUrl?.trim();
+      if (!downloadUrl) {
+        req.flash(
+          'error',
+          'Tautan unduhan belum disediakan untuk materi slide ini.',
+        );
+        return res.redirect('back');
+      }
+
+      // Jika admin memasukkan link Google Slides share/edit/embed, ubah otomatis ke export/pptx
+      const match = downloadUrl.match(/\/presentation\/d\/(?!e\/)([^/?#]+)/);
+      if (match && !downloadUrl.includes('/export/pptx')) {
+        downloadUrl = `https://docs.google.com/presentation/d/${match[1]}/export/pptx`;
+      }
+
+      if (
+        downloadUrl.startsWith('http://') ||
+        downloadUrl.startsWith('https://')
+      ) {
+        try {
+          const response = await axios.get(downloadUrl, {
+            responseType: 'stream',
+            timeout: 30000,
+          });
+
+          res.set({
+            'Content-Type':
+              'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'Content-Disposition': `attachment; filename="${encodeURIComponent(safeFilename)}"`,
+          });
+
+          return response.data.pipe(res);
+        } catch (err: unknown) {
+          req.flash(
+            'error',
+            'Gagal mengunduh berkas presentasi dari tautan penyedia.',
+          );
+          return res.redirect('back');
+        }
+      }
+
+      const rel = downloadUrl.startsWith('/')
+        ? downloadUrl.slice(1)
+        : downloadUrl;
+      const candidates = [
+        join(process.cwd(), rel),
+        join(process.cwd(), 'uploads', rel),
+        join(process.cwd(), 'public', rel),
+      ];
+
+      for (const filePath of candidates) {
+        if (existsSync(filePath)) {
+          return res.download(filePath, safeFilename);
+        }
+      }
+
+      req.flash('error', 'Berkas fisik tidak ditemukan di server.');
+      return res.redirect('back');
+    }
+
+    // Untuk file PDF
+    const fileUrl = material.file;
+    if (!fileUrl) {
+      req.flash('error', 'Tautan unduhan tidak tersedia.');
+      return res.redirect('back');
+    }
+
+    if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
+      return res.redirect(fileUrl);
+    }
+
+    const rel = fileUrl.startsWith('/') ? fileUrl.slice(1) : fileUrl;
+    const candidates = [
+      join(process.cwd(), rel),
+      join(process.cwd(), 'uploads', rel),
+      join(process.cwd(), 'public', rel),
+    ];
+
+    for (const filePath of candidates) {
+      if (existsSync(filePath)) {
+        return res.download(filePath, safeFilename);
+      }
+    }
+
+    req.flash('error', 'Berkas fisik tidak ditemukan di server.');
+    return res.redirect('back');
+  }
 
   @Roles('admin', 'user', 'super_admin')
   @Get(':fileType/:sessionId')
@@ -622,6 +760,11 @@ export class MaterialController {
       } else {
         updateMaterialDto.file = material.file;
       }
+      updateMaterialDto.downloadUrl = this.validateDownloadUrl(
+        updateMaterialDto.downloadUrl !== undefined
+          ? updateMaterialDto.downloadUrl
+          : material.downloadUrl,
+      );
       await this.materialService.update(id, updateMaterialDto);
       flashToast(req, 'Changes Saved', 'The PPT material has been updated.');
       res.redirect(redirectPath);

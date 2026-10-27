@@ -27,6 +27,7 @@
     {{> components/ui/filter/program_filter/index
         label=(t 'test.gallery.filterByProgram')
         searchModel="search"
+        searchEvent="isExpanded = false; currentPage = 1;"
         searchPlaceholder=(t 'test.gallery.searchPlaceholder')
         items="programs"
         selected="selectedProgram"
@@ -37,7 +38,7 @@
         clearLabel=(t 'test.gallery.clearFilter') }}
 
     {{!-- ============ ACTIVITIES ============ --}}
-    <div class="flex w-full flex-col items-center gap-8 lg:gap-10">
+    <div id="activities-section" class="flex w-full flex-col items-center gap-8 lg:gap-10">
       <div class="flex flex-col items-center gap-2 text-center">
         <h2 class="{{sizeClass 'h2'}} font-inter font-bold text-[#0F172A]">{{t 'test.gallery.activitiesTitle'}}</h2>
         <p class="{{sizeClass 'body'}} max-w-[560px] font-inter text-[#475569]">{{t 'test.gallery.activitiesSubtitle'}}</p>
@@ -76,14 +77,24 @@
           </template>
         </div>
 
-        {{!-- "View All Activities": no dedicated activities page exists yet, so it points to the landing page for now --}}
-        <a
-          x-show="amount > 0"
-          href="/dashboard"
-          class="mt-8 self-center font-inter text-base font-semibold text-[#003060] underline decoration-1 underline-offset-4 transition hover:text-[#00244a]"
+        {{!-- "View All Activities": menampilkan data gallery selanjutnya --}}
+        <button
+          type="button"
+          x-show="!isExpanded && amount > initialLimit"
+          @click="viewAllActivities()"
+          class="mt-8 self-center font-inter text-base font-semibold text-[#003060] underline decoration-1 underline-offset-4 transition hover:text-[#00244a] cursor-pointer focus:outline-none"
         >
           {{t 'test.gallery.viewAllActivities'}}
-        </a>
+        </button>
+
+        {{!-- Pagination jika data kelebihan untuk ditampilkan di satu halaman --}}
+        <div x-show="isExpanded && totalPages > 1" class="w-full">
+          {{> components/ui/pagination/index
+            currentPage="currentPage"
+            totalPages="totalPages"
+            onPageChange="changePage"
+          }}
+        </div>
 
         {{> components/ui/empty_state/index
           show="amount === 0"
@@ -111,6 +122,13 @@ function galleryTable(data) {
     selectedProgram: null,
     colCount: 3,
 
+    initialLimit: 6,
+    maxSinglePage: 9,
+    pageSize: 9,
+
+    isExpanded: false,
+    currentPage: 1,
+
     lang: '{{lang}}' || 'id',
 
     init() {
@@ -119,6 +137,13 @@ function galleryTable(data) {
       };
       sync();
       window.addEventListener('resize', sync);
+
+      if (this.$watch) {
+        this.$watch('search', () => {
+          this.isExpanded = false;
+          this.currentPage = 1;
+        });
+      }
     },
 
     getByLang(obj, lang) {
@@ -134,7 +159,7 @@ function galleryTable(data) {
           .toLowerCase()
           .includes(this.search.toLowerCase());
 
-        const matchProgram =
+        const matchProgram = 
           this.selectedProgram === null ||
           String(item.category?.id) === String(this.selectedProgram);
 
@@ -150,19 +175,55 @@ function galleryTable(data) {
       return !!this.search || this.selectedProgram !== null;
     },
 
+    get totalPages() {
+      if (!this.isExpanded || this.amount <= this.maxSinglePage) return 1;
+      return Math.max(1, Math.ceil(this.amount / this.pageSize));
+    },
+
+    get displayedGallery() {
+      if (!this.isExpanded) {
+        return this.filteredGalleryFull.slice(0, this.initialLimit);
+      }
+      if (this.amount <= this.maxSinglePage) {
+        return this.filteredGalleryFull;
+      }
+      const total = this.totalPages;
+      const safePage = Math.min(Math.max(1, this.currentPage), total);
+      const start = (safePage - 1) * this.pageSize;
+      return this.filteredGalleryFull.slice(start, start + this.pageSize);
+    },
+
     get masonryColumns() {
       const cols = Array.from({ length: this.colCount }, () => []);
-      this.filteredGalleryFull.forEach((item, i) => cols[i % this.colCount].push(item));
+      this.displayedGallery.forEach((item, i) => cols[i % this.colCount].push(item));
       return cols;
+    },
+
+    viewAllActivities() {
+      this.isExpanded = true;
+      this.currentPage = 1;
+    },
+
+    changePage(page) {
+      if (page < 1 || page > this.totalPages) return;
+      this.currentPage = page;
+      const el = document.getElementById('activities-section') || document.querySelector('.page-shell');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
     },
 
     resetFilters() {
       this.search = "";
       this.selectedProgram = null;
+      this.isExpanded = false;
+      this.currentPage = 1;
     },
 
     selectProgram(id) {
       this.selectedProgram = id === null ? null : String(id);
+      this.isExpanded = false;
+      this.currentPage = 1;
     },
   };
 }
