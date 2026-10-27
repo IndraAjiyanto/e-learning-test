@@ -52,6 +52,19 @@
     background-color: #F8FAFC !important;
     padding: 8px 12px !important;
   }
+  /* Ensure bulleted lists in Quill 2 show bullets and never numbers */
+  .quill-editor-container .ql-editor li[data-list=bullet] > .ql-ui:before {
+    content: '\2022' !important;
+  }
+  .quill-editor-container .ql-editor li[data-list=bullet]:before {
+    content: none !important;
+  }
+  .quill-editor-container .ql-editor li[data-list=ordered]:before {
+    content: none !important;
+  }
+  .quill-editor-container .ql-editor li:not([data-list=ordered]):before {
+    content: none !important;
+  }
   .quill-editor-container .ql-editor {
     min-height: 160px !important;
     font-family: 'Inter', sans-serif !important;

@@ -656,3 +656,24 @@ body {
 
 
 
+
+/* Ensure bulleted and numbered lists in rendered rich text have proper bullets and numbers */
+.prose ul:not(.list-none),
+.content-preview-container ul:not(.list-none),
+.final-assignment-content ul:not(.list-none),
+.syllabus-theory-content ul:not(.list-none) {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.prose ol:not(.list-none),
+.content-preview-container ol:not(.list-none),
+.final-assignment-content ol:not(.list-none),
+.syllabus-theory-content ol:not(.list-none) {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
