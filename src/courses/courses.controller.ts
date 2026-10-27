@@ -205,7 +205,6 @@ export class CoursesController {
     });
   }
 
-  @Roles('admin', 'super_admin')
   @Roles('super_admin')
   @Post('delete-all')
   async removeAllPost(@Res() res: Response) {
@@ -1930,7 +1929,6 @@ export class CoursesController {
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
-
   @Roles('super_admin')
   @Delete(':courseId/json')
   async removeJson(@Param('courseId') courseId: string, @Res() res: Response) {
