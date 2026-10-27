@@ -37,6 +37,9 @@ export class Material {
   @Column({ type: 'varchar', nullable: true })
   driveFileId?: string | null;
 
+  @Column({ type: 'text', nullable: true })
+  downloadUrl?: string | null;
+
   @Column({ nullable: true })
   originalFileName?: string;
 

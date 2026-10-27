@@ -155,6 +155,10 @@
         isValid: false,
         hasInput: false,
         slideUrl: {{#if material}}{{json material.file}}{{else}}''{{/if}},
+        downloadUrl: {{#if material.downloadUrl}}{{json material.downloadUrl}}{{else}}''{{/if}},
+        downloadUrlError: '',
+        downloadUrlValid: false,
+        downloadUrlHasInput: false,
         editMode: {{#if editMode}}true{{else}}false{{/if}},
         sourceMode: {{#if editMode}}{{#if material.driveFileId}}'file'{{else}}'link'{{/if}}{{else}}'link'{{/if}},
         hasExistingFile: {{#if material.driveFileId}}true{{else}}false{{/if}},
@@ -183,13 +187,27 @@
             return;
           }
 
-          if (!value.includes('/pub') && !value.includes('/embed')) {
-            this.errorMessage = 'Please use the published/embed URL. In Google Slides: File → Share → Publish to web → Embed';
-            this.isValid = false;
+          this.isValid = true;
+        },
+        validateDownloadUrl(value) {
+          this.downloadUrlError = '';
+          this.downloadUrl = value || '';
+          this.downloadUrlHasInput = (value || '').trim().length > 0;
+
+          if (!this.downloadUrlHasInput) {
+            this.downloadUrlValid = false;
+            this.downloadUrlError = 'Please enter a Google Slides download URL.';
             return;
           }
 
-          this.isValid = true;
+          const googleSlidePattern = /^https:\/\/docs\.google\.com\/presentation\//;
+          if (!googleSlidePattern.test(this.downloadUrl.trim())) {
+            this.downloadUrlError = 'Download URL must be a valid Google Slides link (https://docs.google.com/presentation/...).';
+            this.downloadUrlValid = false;
+            return;
+          }
+
+          this.downloadUrlValid = true;
         },
         switchSource(target) {
           if (this.sourceMode === target) return;
@@ -228,6 +246,7 @@
         },
         canSubmit() {
           if (!this.formValid) return false;
+          if (!this.downloadUrlValid) return false;
 
           if (this.sourceMode === 'file') {
             return this.hasFile || (this.editMode && this.hasExistingFile);
@@ -236,13 +255,14 @@
           return this.isValid || (this.editMode && this.hasExistingLink);
         },
         submitPpt(event) {
+          this.attempted = true;
+          this.validateDownloadUrl(this.downloadUrl);
           return this.submitGate(event, () => {
-            this.attempted = true;
             return this.canSubmit();
           });
         }
       }"
-      x-init="recomputeFormValid(); if (sourceMode === 'link' && slideUrl) { validateLink(slideUrl); if ($refs.linkInput) $refs.linkInput.value = slideUrl; }"
+      x-init="recomputeFormValid(); if (sourceMode === 'link' && slideUrl) { validateLink(slideUrl); if ($refs.linkInput) $refs.linkInput.value = slideUrl; } if (downloadUrl) { validateDownloadUrl(downloadUrl); }"
       @input="recomputeFormValid()"
       @change="recomputeFormValid()"
       novalidate @focusout="markField($event.target)" @submit="submitPpt($event)"
@@ -308,11 +328,11 @@
 
         <div x-show="sourceMode === 'link'" x-cloak class='flex flex-col gap-[12px]'>
           {{#> components/ui/admin/form/form-field label='Google Slides Link' for="link"}}
-            <input x-ref='linkInput' type='url' id='link' name='link' placeholder='https://docs.google.com/presentation/d/e/.../pub'
+            <input x-ref='linkInput' type='url' id='link' name='link' placeholder='https://docs.google.com/presentation/d/...'
               :disabled="sourceMode !== 'link'"
               @input='validateLink($event.target.value)'
               class='block w-full rounded-[6px] border border-[#D4D4D4] bg-white px-3 py-2 font-inter text-sm text-[#171717]' />
-            <p class='text-[14px]/[normal] text-[#525252] font-inter font-normal'>Paste a published Google Slides URL (File → Share → Publish to web).</p>
+            <p class='text-[14px]/[normal] text-[#525252] font-inter font-normal'>Paste a Google Slides URL (Share link or Publish to web).</p>
           {{/components/ui/admin/form/form-field}}
 
           <template x-if='hasInput && !isValid && errorMessage'>
@@ -352,6 +372,41 @@
           </template>
         </div>
 
+        <div class='flex flex-col gap-[12px]'>
+          {{#> components/ui/admin/form/form-field label="Download URL*" for="downloadUrl"}}
+            {{> components/ui/admin/form/text-input
+              type="url"
+              id="downloadUrl"
+              name="downloadUrl"
+              required=true
+              pattern="https:\/\/docs\.google\.com\/presentation\/.*"
+              placeholder="https://docs.google.com/presentation/d/..."
+              value=material.downloadUrl
+              onInput="validateDownloadUrl($event.target.value); recomputeFormValid()"
+            }}
+            <p class='text-[14px]/[normal] text-[#525252] font-inter font-normal'>Direct Google Slides link for participants to download the presentation.</p>
+          {{/components/ui/admin/form/form-field}}
+
+          <template x-if='downloadUrlHasInput && !downloadUrlValid && downloadUrlError'>
+            <div class='flex items-start gap-[6px] px-[10px] py-[6px] bg-[#FEF2F2] border border-[#FECACA] rounded-[6px]'>
+              <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='mt-0.5 shrink-0'><circle cx='12' cy='12' r='10'/><line x1='12' x2='12' y1='8' y2='12'/><line x1='12' x2='12.01' y1='16' y2='16'/></svg>
+              <span class='text-[12px]/[normal] font-inter text-[#DC2626]' x-text='downloadUrlError'></span>
+            </div>
+          </template>
+          <template x-if='downloadUrlHasInput && downloadUrlValid'>
+            <div class='flex items-center gap-[6px] px-[10px] py-[6px] bg-[#F0FDF4] border border-[#BBF7D0] rounded-[6px]'>
+              <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#16A34A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>
+              <span class='text-[12px]/[normal] font-inter text-[#16A34A]'>Valid Google Slides URL</span>
+            </div>
+          </template>
+          <template x-if='attempted && !downloadUrlHasInput'>
+            <div class='flex items-start gap-[6px] px-[10px] py-[6px] bg-[#FEF2F2] border border-[#FECACA] rounded-[6px]'>
+              <svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='mt-0.5 shrink-0'><circle cx='12' cy='12' r='10'/><line x1='12' x2='12' y1='8' y2='12'/><line x1='12' x2='12.01' y1='16' y2='16'/></svg>
+              <span class='text-[12px]/[normal] font-inter text-[#DC2626]'>Please enter a Google Slides download URL.</span>
+            </div>
+          </template>
+        </div>
+
         {{> components/ui/admin/material/material-info-box}}
       {{/components/ui/admin/form/form-card}}
 
@@ -367,6 +422,15 @@
           <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/><path d='M12 9v4'/><path d='M12 17h.01'/></svg>
           <p class='text-[14px] text-[#DC2626] font-inter'>
             <span class='font-semibold'>Cannot submit:</span> <span x-text='errorMessage'></span>
+          </p>
+        </div>
+      </template>
+
+      <template x-if='downloadUrlHasInput && !downloadUrlValid'>
+        <div class='flex items-center gap-[8px] p-[12px] bg-[#FEF2F2] [outline:1px_solid_#DC2626] rounded-[8px]'>
+          <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='#DC2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/><path d='M12 9v4'/><path d='M12 17h.01'/></svg>
+          <p class='text-[14px] text-[#DC2626] font-inter'>
+            <span class='font-semibold'>Cannot submit:</span> <span x-text='downloadUrlError'></span>
           </p>
         </div>
       </template>

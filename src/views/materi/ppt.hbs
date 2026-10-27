@@ -25,14 +25,15 @@
   }"
 >
 
-  <!-- Page Header: Only material title -->
-  <div class="w-full flex flex-col items-start">
+  <!-- Page Header: Material title & Download button -->
+  <div class="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] pb-4">
     <h1
       class="font-inter font-bold text-2xl sm:text-[34px] leading-tight sm:leading-[42px] text-[#003060]"
       x-text="slideTitle || '{{t "test.startLearning.presentation"}}'"
     >
       {{#if selected.title}}{{selected.title}}{{else}}{{t 'test.startLearning.presentation'}}{{/if}}
     </h1>
+
   </div>
 
   <!-- My Learning page / Learning workspace card -->
@@ -164,6 +165,16 @@
                       {{title}}
                     </span>
                   </div>
+
+                  <!-- Download Button Beside Item -->
+                  <a
+                    href="/learning-material/{{id}}/download"
+                    @click.stop
+                    class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#EFF6FF] text-[#003060] hover:bg-[#003060] hover:text-white transition-colors"
+                    title="Unduh Slide PPTX"
+                  >
+                    <i class="fa-solid fa-download text-xs"></i>
+                  </a>
                 </div>
               {{/each}}
             {{else}}

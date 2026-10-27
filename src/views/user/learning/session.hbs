@@ -146,10 +146,10 @@
 
               <ul class="flex flex-col gap-2">
                 {{#each this.items}}
-                  <li>
+                  <li class="flex items-center gap-2">
                     {{#if ../../materialsLocked}}
                       <span
-                        class="flex cursor-not-allowed items-center gap-3 rounded-lg border border-dashed border-[#D4D4D4] bg-[#FAFAFA] px-4 py-3"
+                        class="flex w-full cursor-not-allowed items-center gap-3 rounded-lg border border-dashed border-[#D4D4D4] bg-[#FAFAFA] px-4 py-3"
                         aria-disabled="true"
                       >
                         <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E5E5E5] text-[#a3a3a3]">
@@ -160,7 +160,7 @@
                     {{else}}
                       <a
                         href="/learning-material/{{../this.type}}/{{../../session.id}}?materialId={{this.id}}"
-                        class="group flex items-center gap-3 rounded-lg border border-[#D4D4D4] bg-white px-4 py-3 no-underline shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:border-[#003060] hover:bg-[#F5F5F5]"
+                        class="group flex min-w-0 flex-1 items-center gap-3 rounded-lg border border-[#D4D4D4] bg-white px-4 py-3 no-underline shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:border-[#003060] hover:bg-[#F5F5F5]"
                       >
                         <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] text-[#003060]">
                           <i class="fa-solid {{../this.icon}} text-sm"></i>
@@ -168,6 +168,15 @@
                         <span class="min-w-0 flex-1 truncate font-inter text-sm font-medium text-[#003060]">{{this.title}}</span>
                         <i class="fa-solid fa-arrow-right shrink-0 text-xs text-[#718096] transition-transform group-hover:translate-x-0.5"></i>
                       </a>
+                      {{#unless (eq ../this.type 'video')}}
+                        <a
+                          href="/learning-material/{{this.id}}/download"
+                          class="grid size-11 shrink-0 place-items-center rounded-lg border border-[#D4D4D4] bg-white text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:border-[#003060] hover:bg-[#003060] hover:text-white"
+                          title="Unduh Berkas {{#if (eq ../this.type 'ppt')}}Slide (.pptx){{else}}PDF{{/if}}"
+                        >
+                          <i class="fa-solid fa-download text-sm"></i>
+                        </a>
+                      {{/unless}}
                     {{/if}}
                   </li>
                 {{/each}}

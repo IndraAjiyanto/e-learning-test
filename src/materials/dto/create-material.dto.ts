@@ -26,6 +26,10 @@ export class CreateMaterialDto {
 
   @IsOptional()
   @IsString()
+  downloadUrl?: string | null;
+
+  @IsOptional()
+  @IsString()
   originalFileName?: string;
 
   @IsOptional()
