@@ -132,7 +132,9 @@ export class BulkDeleteService {
     currentUser?: { id?: string; role?: string },
   ) {
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      throw new BadRequestException('Please select at least one item to delete.');
+      throw new BadRequestException(
+        'Please select at least one item to delete.',
+      );
     }
 
     const key = this.normalizeKey(entityKey);
@@ -228,7 +230,15 @@ export class BulkDeleteService {
     }
 
     // Cleanup file gambar/media jika ada
-    const fileKeys = ['image', 'icon', 'logo', 'file', 'profile', 'banner', 'video'];
+    const fileKeys = [
+      'image',
+      'icon',
+      'logo',
+      'file',
+      'profile',
+      'banner',
+      'video',
+    ];
     const filesToClean: string[] = [];
     for (const item of items) {
       for (const field of fileKeys) {
@@ -343,7 +353,15 @@ export class BulkDeleteService {
       };
     }
 
-    const fileKeys = ['image', 'icon', 'logo', 'file', 'profile', 'banner', 'video'];
+    const fileKeys = [
+      'image',
+      'icon',
+      'logo',
+      'file',
+      'profile',
+      'banner',
+      'video',
+    ];
     const filesToClean: string[] = [];
     for (const item of items) {
       for (const field of fileKeys) {

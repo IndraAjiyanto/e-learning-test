@@ -235,10 +235,7 @@ export class CoursesController {
 
   @Roles('super_admin')
   @Post('bulk-delete')
-  async removeManyPost(
-    @Body('ids') ids: string[],
-    @Res() res: Response,
-  ) {
+  async removeManyPost(@Body('ids') ids: string[], @Res() res: Response) {
     try {
       const result = await this.coursesService.removeMany(ids);
       return res.json({
@@ -259,10 +256,7 @@ export class CoursesController {
 
   @Roles('super_admin')
   @Delete('bulk-delete')
-  async removeManyDelete(
-    @Body('ids') ids: string[],
-    @Res() res: Response,
-  ) {
+  async removeManyDelete(@Body('ids') ids: string[], @Res() res: Response) {
     return this.removeManyPost(ids, res);
   }
 
@@ -1939,10 +1933,7 @@ export class CoursesController {
 
   @Roles('super_admin')
   @Delete(':courseId/json')
-  async removeJson(
-    @Param('courseId') courseId: string,
-    @Res() res: Response,
-  ) {
+  async removeJson(@Param('courseId') courseId: string, @Res() res: Response) {
     try {
       const course = await this.coursesService.findOne(courseId);
       if (!course) {

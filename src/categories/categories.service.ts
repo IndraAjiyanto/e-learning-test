@@ -428,9 +428,7 @@ export class CategoriesService {
       throw new NotFoundException('Selected categories were not found.');
     }
 
-    const withCourses = categories.filter(
-      (c) => (c.courses || []).length > 0,
-    );
+    const withCourses = categories.filter((c) => (c.courses || []).length > 0);
     if (withCourses.length > 0) {
       if (withCourses.length === 1) {
         throw new BadRequestException(

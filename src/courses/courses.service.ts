@@ -1864,7 +1864,9 @@ export class CoursesService {
 
   async removeMany(ids: string[]) {
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      throw new BadRequestException('Please select at least one program to delete.');
+      throw new BadRequestException(
+        'Please select at least one program to delete.',
+      );
     }
 
     const courses = await this.courseRepository.find({
