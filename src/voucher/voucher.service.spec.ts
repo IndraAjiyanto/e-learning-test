@@ -149,8 +149,8 @@ describe('VoucherService', () => {
       );
       voucherRepo.save.mockImplementation((data: Voucher) =>
         Promise.resolve({
-          id: 'new-id',
           ...data,
+          id: 'new-id',
         }),
       );
 

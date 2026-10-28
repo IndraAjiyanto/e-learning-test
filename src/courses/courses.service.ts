@@ -1557,7 +1557,8 @@ export class CoursesService {
   async findCourseRegistrations(courseId: string) {
     return await this.registrationRepository.find({
       where: { course: { id: courseId } },
-      relations: ['user', 'course'],
+      relations: ['user', 'course', 'course.category'],
+      order: { createdAt: 'DESC' },
     });
   }
 

@@ -145,63 +145,90 @@ export class RegistrationsController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    const isJson =
+      Boolean(req.xhr) ||
+      Boolean(req.headers.accept?.includes('application/json')) ||
+      Boolean(req.headers['content-type']?.includes('application/json')) ||
+      req.headers['x-requested-with'] === 'XMLHttpRequest';
+
     try {
       const registration =
         await this.registrationsService.findOne(registrationId);
       if (!registration) {
-        return null;
+        if (isJson) {
+          return res
+            .status(404)
+            .json({ success: false, message: 'Registration not found' });
+        }
+        return res.redirect('/program');
       }
+
+      const userId = registration['user']?.['id'];
+      const courseId = registration['course']?.['id'];
+
       if (processStatus === 'approved' || processStatus === 'acc') {
         updateRegistrationDto.file = registration['file'];
-        updateRegistrationDto.userId = registration['user']['id'];
-        updateRegistrationDto.courseId = registration['course']['id'];
+        if (userId) updateRegistrationDto.userId = userId;
+        if (courseId) updateRegistrationDto.courseId = courseId;
         updateRegistrationDto.process = 'approved';
         await this.registrationsService.update(
           registrationId,
           updateRegistrationDto,
         );
-        try {
-          await this.registrationsService.addUserToCourse(
-            registration['user']['id'],
-            registration['course']['id'],
-          );
-        } catch {
-          // ignore
+        if (userId && courseId) {
+          try {
+            await this.registrationsService.addUserToCourse(userId, courseId);
+          } catch {
+            // ignore
+          }
         }
 
         req.flash('success', 'Process successfully changed to approved');
-        res.redirect(
-          `/program/detail/program/admin/${registration['course']['id']}`,
-        );
+        if (isJson) {
+          return res.status(200).json({
+            success: true,
+            message: 'Process successfully changed to approved',
+          });
+        }
+        return res.redirect(`/program/detail/program/admin/${courseId || ''}`);
       } else if (processStatus === 'rejected') {
         updateRegistrationDto.file = registration['file'];
-        updateRegistrationDto.userId = registration['user']['id'];
-        updateRegistrationDto.courseId = registration['course']['id'];
+        if (userId) updateRegistrationDto.userId = userId;
+        if (courseId) updateRegistrationDto.courseId = courseId;
         updateRegistrationDto.process = 'rejected';
         await this.registrationsService.update(
           registrationId,
           updateRegistrationDto,
         );
-        try {
-          await this.registrationsService.removeCourseUser(
-            registration['user']['id'],
-            registration['course']['id'],
-          );
-        } catch {
-          // ignore
+        if (userId && courseId) {
+          try {
+            await this.registrationsService.removeCourseUser(userId, courseId);
+          } catch {
+            // ignore
+          }
         }
         req.flash('success', 'Process successfully changed to rejected');
-        res.redirect(
-          `/program/detail/program/admin/${registration['course']['id']}`,
-        );
+        if (isJson) {
+          return res.status(200).json({
+            success: true,
+            message: 'Process successfully changed to rejected',
+          });
+        }
+        return res.redirect(`/program/detail/program/admin/${courseId || ''}`);
       }
     } catch (error: unknown) {
       const err = error as Error;
+      if (isJson) {
+        return res.status(400).json({
+          success: false,
+          message: err.message || 'Failed to update process',
+        });
+      }
       const registration =
         await this.registrationsService.findOne(registrationId);
       req.flash('error', err.message || 'Failed to update process');
-      res.redirect(
-        `/program/detail/program/admin/${registration['course']['id']}`,
+      return res.redirect(
+        `/program/detail/program/admin/${registration?.['course']?.['id'] || ''}`,
       );
     }
   }
