@@ -25,12 +25,110 @@
     <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[14px] justify-start items-stretch'>
 
       {{!-- Toolbar --}}
-      <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[12px] justify-between items-stretch sm:h-[44px] sm:flex-row sm:items-center'>
-        <div class='flex flex-col sm:flex-row gap-[12px] items-stretch sm:items-center flex-1'>
-          {{> components/ui/admin/form/search-input placeholder='Search program...' value='searchInput'}}
+      <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[12px] justify-start items-stretch'>
+        {{!-- Top Row: Search & Actions --}}
+        <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[12px] justify-between items-stretch sm:h-[44px] sm:flex-row sm:items-center'>
+          <div class='w-full sm:max-w-[420px]'>
+            {{> components/ui/admin/form/search-input placeholder='Search program...' value='searchInput' widthClass='w-full'}}
+          </div>
 
-          {{!-- Status Filter Dropdown --}}
-          <div class='relative w-full sm:w-[200px] shrink-0' x-data='{ openStatus: false }' @click.outside='openStatus = false'>
+          <div class='flex flex-row items-center gap-[10px] shrink-0 self-end sm:self-auto'>
+            {{#if isSuperAdmin}}
+            <button
+              type='button'
+              @click='toggleSelectMode()'
+              class='box-border h-[44px] flex flex-row items-center rounded-[8px] font-inter text-[14px] font-semibold transition-all shadow-[0px_1px_2px_rgba(0,0,0,0.05)] cursor-pointer'
+              :class="selectMode ? 'bg-[#F5F5F5] border border-[#D4D4D4] hover:bg-[#E5E5E5] text-[#404040] w-11 px-0 justify-center' : 'bg-white border border-[#D4D4D4] hover:border-[#DC2626] hover:bg-[#FEF2F2] text-[#404040] hover:text-[#DC2626] px-[16px]'"
+              :title="selectMode ? 'Close' : 'Manage Delete'"
+              :aria-label="selectMode ? 'Close' : 'Manage Delete'"
+            >
+              <template x-if='!selectMode'>
+                <div class='flex items-center gap-2'>
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#DC2626]'>
+                    <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+                  </svg>
+                  <span>Manage Delete</span>
+                </div>
+              </template>
+              <template x-if='selectMode'>
+                <div class='flex items-center justify-center'>
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#525252]'>
+                    <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
+                  </svg>
+                </div>
+              </template>
+            </button>
+            {{/if}}
+
+            <div class='w-[158px] shrink-0'>
+              {{> components/ui/admin/button/primary-button text='Create Program' href='/program/create'}}
+            </div>
+          </div>
+        </div>
+
+        {{!-- Bottom Row: Filters (di bawah search) --}}
+        <div class='box-border w-full h-fit shrink-0 flex flex-wrap items-center gap-[10px]'>
+          {{!-- Status (Approval) Filter Dropdown: Accepted & Pending --}}
+          <div class='relative w-full sm:w-[180px] shrink-0' x-data='{ openProcess: false }' @click.outside='openProcess = false'>
+            <button
+              type='button'
+              @click='openProcess = !openProcess'
+              class='box-border flex flex-row justify-between items-center px-[16px] py-[10px] w-full h-[42px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] focus:outline-none transition-colors cursor-pointer text-left'
+            >
+              <span
+                class='flex-1 truncate font-inter text-[14px] leading-[20px] font-normal'
+                :class="selectedProcess ? 'text-[#1A202C]' : 'text-[#718096]'"
+                x-text="processOptions.find(o => o.value === selectedProcess)?.label || 'All Status'"
+              ></span>
+              <svg
+                class='w-[10px] h-[5px] shrink-0 ml-2 transition-transform duration-200'
+                :class="openProcess ? 'rotate-180' : ''"
+                viewBox='0 0 10 5'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+              >
+                <path d='M1 1L5 4L9 1' stroke='#718096' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/>
+              </svg>
+            </button>
+
+            {{!-- Dropdown Menu Options --}}
+            <div
+              x-show='openProcess'
+              x-transition:enter='transition ease-out duration-100'
+              x-transition:enter-start='transform opacity-0 scale-95'
+              x-transition:enter-end='transform opacity-100 scale-100'
+              x-transition:leave='transition ease-in duration-75'
+              x-transition:leave-start='transform opacity-100 scale-100'
+              x-transition:leave-end='transform opacity-0 scale-95'
+              class='absolute left-0 mt-1 w-full bg-white rounded-[8px] border border-[#D9D9D9] shadow-lg py-1 z-50 overflow-hidden'
+              style='display: none;'
+            >
+              <button
+                type='button'
+                @click="filterProcess(''); openProcess = false"
+                class='w-full px-[16px] py-[10px] text-left font-inter text-[14px] leading-[20px] hover:bg-[#F7FAFC] flex items-center justify-between transition-colors'
+                :class="!selectedProcess ? 'bg-[#EDF2F7] text-[#1A202C] font-medium' : 'text-[#4A5568]'"
+              >
+                <span>All Status</span>
+                <i x-show='!selectedProcess' class='fas fa-check text-xs text-[#2B6CB0]'></i>
+              </button>
+
+              <template x-for='option in processOptions' :key='option.value'>
+                <button
+                  type='button'
+                  @click="filterProcess(option.value); openProcess = false"
+                  class='w-full px-[16px] py-[10px] text-left font-inter text-[14px] leading-[20px] hover:bg-[#F7FAFC] flex items-center justify-between transition-colors'
+                  :class="selectedProcess === option.value ? 'bg-[#EDF2F7] text-[#1A202C] font-medium' : 'text-[#4A5568]'"
+                >
+                  <span x-text='option.label'></span>
+                  <i x-show='selectedProcess === option.value' class='fas fa-check text-xs text-[#2B6CB0]'></i>
+                </button>
+              </template>
+            </div>
+          </div>
+
+          {{!-- Status Program (Lifecycle) Filter Dropdown --}}
+          <div class='relative w-full sm:w-[210px] shrink-0' x-data='{ openStatus: false }' @click.outside='openStatus = false'>
             <button
               type='button'
               @click='openStatus = !openStatus'
@@ -39,7 +137,7 @@
               <span
                 class='flex-1 truncate font-inter text-[14px] leading-[20px] font-normal'
                 :class="selectedStatus ? 'text-[#1A202C]' : 'text-[#718096]'"
-                x-text="statusOptions.find(o => o.value === selectedStatus)?.label || 'All Status'"
+                x-text="statusOptions.find(o => o.value === selectedStatus)?.label || 'All Program Status'"
               ></span>
               <svg
                 class='w-[10px] h-[5px] shrink-0 ml-2 transition-transform duration-200'
@@ -70,7 +168,7 @@
                 class='w-full px-[16px] py-[10px] text-left font-inter text-[14px] leading-[20px] hover:bg-[#F7FAFC] flex items-center justify-between transition-colors'
                 :class="!selectedStatus ? 'bg-[#EDF2F7] text-[#1A202C] font-medium' : 'text-[#4A5568]'"
               >
-                <span>All Status</span>
+                <span>All Program Status</span>
                 <i x-show='!selectedStatus' class='fas fa-check text-xs text-[#2B6CB0]'></i>
               </button>
 
@@ -100,39 +198,22 @@
             wrapperClass='w-full sm:w-[200px] shrink-0'
           }}
           {{/if}}
-        </div>
 
-        <div class='flex flex-row items-center gap-[10px] shrink-0 self-end sm:self-auto'>
-          {{#if isSuperAdmin}}
+          {{!-- Reset Filters Button --}}
           <button
             type='button'
-            @click='toggleSelectMode()'
-            class='box-border h-[44px] flex flex-row items-center rounded-[8px] font-inter text-[14px] font-semibold transition-all shadow-[0px_1px_2px_rgba(0,0,0,0.05)] cursor-pointer'
-            :class="selectMode ? 'bg-[#F5F5F5] border border-[#D4D4D4] hover:bg-[#E5E5E5] text-[#404040] w-11 px-0 justify-center' : 'bg-white border border-[#D4D4D4] hover:border-[#DC2626] hover:bg-[#FEF2F2] text-[#404040] hover:text-[#DC2626] px-[16px]'"
-            :title="selectMode ? 'Close' : 'Manage Delete'"
-            :aria-label="selectMode ? 'Close' : 'Manage Delete'"
+            x-show='selectedProcess || selectedStatus || selectedMentor'
+            x-cloak
+            @click='resetFilters()'
+            class='h-[42px] px-3.5 flex items-center gap-1.5 text-[13px] text-[#DC2626] bg-white hover:bg-[#FEF2F2] rounded-[8px] border border-[#FCA5A5] transition-colors cursor-pointer font-medium shrink-0'
+            title='Reset Filters'
           >
-            <template x-if='!selectMode'>
-              <div class='flex items-center gap-2'>
-                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#DC2626]'>
-                  <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
-                </svg>
-                <span>Manage Delete</span>
-              </div>
-            </template>
-            <template x-if='selectMode'>
-              <div class='flex items-center justify-center'>
-                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#525252]'>
-                  <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
-                </svg>
-              </div>
-            </template>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-3.5 h-3.5'>
+              <path d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'/>
+              <path d='M3 3v5h5'/>
+            </svg>
+            <span>Reset Filter</span>
           </button>
-          {{/if}}
-
-          <div class='w-[158px] shrink-0'>
-            {{> components/ui/admin/button/primary-button text='Create Program' href='/program/create'}}
-          </div>
         </div>
       </div>
 
@@ -236,11 +317,16 @@ function kelasTable() {
     selectMode: false,
     selectedCourses: [],
     searchInput: '',
+    selectedProcess: '',
     selectedStatus: '',
     selectedMentor: '',
     mentorOptions: [
       { value: '', label: 'All Mentor' },
       ...({{#if mentorings}}{{{json mentorings}}}{{else}}[]{{/if}}).map(m => ({ value: m.id, label: m.username })),
+    ],
+    processOptions: [
+      { value: 'approved', label: 'Approved' },
+      { value: 'process', label: 'Pending' },
     ],
     statusOptions: [
       { value: 'unlaunch', label: 'Unpublished' },
@@ -468,6 +554,10 @@ function kelasTable() {
     },
 
     init() {
+      this.$watch('selectedProcess', () => {
+        this.currentPage = 1;
+        this.fetchKelas();
+      });
       this.$watch('selectedMentor', () => {
         this.currentPage = 1;
         this.fetchKelas();
@@ -480,6 +570,7 @@ function kelasTable() {
       try {
         const params = new URLSearchParams();
         if (this.searchInput.trim()) params.set('search', this.searchInput.trim());
+        if (this.selectedProcess) params.set('process', this.selectedProcess);
         if (this.selectedStatus) params.set('status', this.selectedStatus);
         if (this.selectedMentor) params.set('mentor', this.selectedMentor);
         params.set('page', this.currentPage);
@@ -505,6 +596,20 @@ function kelasTable() {
         this.currentPage = 1;
         this.fetchKelas();
       }, 300);
+    },
+
+    filterProcess(process) {
+      this.selectedProcess = process || '';
+      this.currentPage = 1;
+      this.fetchKelas();
+    },
+
+    resetFilters() {
+      this.selectedProcess = '';
+      this.selectedStatus = '';
+      this.selectedMentor = '';
+      this.currentPage = 1;
+      this.fetchKelas();
     },
 
     filterStatus(status) {
