@@ -339,7 +339,6 @@ function kelasTable() {
           );
         }
       } catch (err) {
-        console.error('Bulk delete error:', err);
         window.dispatchEvent(
           new CustomEvent('toast:error', {
             detail: {
@@ -399,7 +398,6 @@ function kelasTable() {
           );
         }
       } catch (err) {
-        console.error('Delete all error:', err);
         window.dispatchEvent(
           new CustomEvent('toast:error', {
             detail: {
@@ -455,7 +453,6 @@ function kelasTable() {
           );
         }
       } catch (err) {
-        console.error('Delete single error:', err);
         window.dispatchEvent(
           new CustomEvent('toast:error', {
             detail: {
@@ -493,7 +490,6 @@ function kelasTable() {
         this.totalPages = json.totalPages;
         this.currentPage = json.currentPage;
       } catch (err) {
-        console.error('Fetch course error:', err);
       } finally {
         this.loading = false;
       }
@@ -661,7 +657,6 @@ function kelasTable() {
             }),
           );
         } else {
-          console.error('Update status failed:', json.message);
           window.dispatchEvent(
             new CustomEvent('toast:error', {
               detail: {
@@ -672,7 +667,6 @@ function kelasTable() {
           );
         }
       } catch (err) {
-        console.error('Update status error:', err);
         window.dispatchEvent(
           new CustomEvent('toast:error', {
             detail: {
@@ -730,7 +724,6 @@ function kelasTable() {
           );
         } else {
           this.kelasList[index].launch = prev;
-          console.error('Toggle launch failed:', json.message);
           window.dispatchEvent(
             new CustomEvent('toast:error', {
               detail: {
@@ -742,7 +735,6 @@ function kelasTable() {
         }
       } catch (err) {
         this.kelasList[index].launch = prev;
-        console.error('Toggle launch error:', err);
         window.dispatchEvent(
           new CustomEvent('toast:error', {
             detail: {
