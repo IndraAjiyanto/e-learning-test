@@ -1,4 +1,4 @@
-{{!-- Toast sukses (flash `toast`) untuk aksi yang redirect ke /users/profile:
+﻿{{!-- Toast sukses (flash `toast`) untuk aksi yang redirect ke /users/profile:
      change password, update profile, dan update akun. Ditaruh di luar
      percabangan role supaya kedua varian halaman profil (admin & user)
      memakainya, dan di luar x-data lain sesuai kontrak komponen. --}}
@@ -12,230 +12,265 @@
 
 {{!-- USER PROFILE INDEX VIEW --}}
 <script>
-  window.userLogbooks = {{{json logbooks}}};
-  window.userCourses = {{{json userWithCourses.userCourses}}};
-  window.portfolioCourseIds = {{{json portfolioCourseIds}}};
-  window.certificateCourseIds = {{{json certificateCourseIds}}};
-  window.hasBiodata = {{{json hasBiodata}}};
-  window.certificateTemplates = {{{json certificateTemplates}}};
+  window.userLogbooks = {{{jsonSafe logbooks}}};
+  window.userCourses = {{{jsonSafe userWithCourses.userCourses}}};
+  window.portfolioCourseIds = {{{jsonSafe portfolioCourseIds}}};
+  window.certificateCourseIds = {{{jsonSafe certificateCourseIds}}};
+  window.hasBiodata = {{{jsonSafe hasBiodata}}};
+  window.certificateTemplates = {{{jsonSafe certificateTemplates}}};
   // Kapabilitas per program, dihitung server (courses/program-type.ts). Sisi
   // klien TIDAK menghitung ulang aturannya - kalau ia ikut menghitung, aturan
   // yang sama hidup di dua tempat dan akan berbeda suatu hari.
-  window.programCaps = {{{json programCaps}}};
+  window.programCaps = {{{jsonSafe programCaps}}};
   // Sakelar logbook dipasang pada <html> SEBELUM Alpine jalan: sessionUnlock
   // membacanya untuk memutuskan apakah logbook ikut mengunci sesi berikutnya,
   // dan keputusan itu sudah dipakai pada gambar pertama.
   (function () {
-    var caps = {{{json caps}}};
+    var caps = {{{jsonSafe caps}}};
     document.documentElement.dataset.logbookRequired =
       caps && caps.logbookEnabled === false ? 'false' : 'true';
   })();
+
+  function userProfileShell() {
+    return {
+      lang: '{{lang}}',
+      activeSection: (() => {
+        const p = new URLSearchParams(window.location.search);
+        const t = p.get('tab');
+        if (t === 'portfolio' && p.get('courseId')) return 'course-portfolio';
+        return t || '{{activeSection}}' || '{{#if (or (eq user.role "admin") (eq user.role "super_admin"))}}profile{{else}}dashboard{{/if}}';
+      })(),
+      openMyLearning: true,
+      openRoblox: false,
+      openedCourses: {},
+      activeCourseId: {{#if activeCourse}}'{{activeCourse.id}}'{{else}}null{{/if}},
+      userCourses: window.userCourses || [],
+      portfolioCourseIds: window.portfolioCourseIds || [],
+      certificateCourseIds: window.certificateCourseIds || [],
+      hasBiodata: window.hasBiodata === true,
+      certificateTemplates: window.certificateTemplates || {},
+      allLogbooks: window.userLogbooks || [],
+      logbookSearchInput: '',
+      logbookCurrentPage: 1,
+      logbookItemsPerPage: 10,
+      logbookImageErrors: {},
+      handledSections: [
+        'dashboard', 'profile', 'password', 'learning', 'uiux', 'portfolio', 'course-portfolio', 'history-payment',
+        'assignment', 'logbook', 'quiz', 'quiz-start', 'certificate',
+        'group-class', 'presentation', 'portfolio-guide', 'detail-program'
+      ],
+      sidebarFragmentConfig: {
+        dashboard: { url: '/users/profile/fragment/dashboard', container: 'dashboard-container' },
+        profile: { url: '/users/profile/fragment/profile', container: 'profile-container' },
+        password: { url: '/users/profile/fragment/password', container: 'password-container' },
+        learning: { url: '/users/profile/fragment/learning', container: 'learning-container' },
+        portfolio: { url: '/users/profile/fragment/portfolio', container: 'portfolio-container' },
+        'history-payment': { url: '/users/profile/fragment/history-payment', container: 'history-payment-container' }
+      },
+      loadedSidebarSections: {
+        {{#if (eq initialSection 'dashboard')}}dashboard: true,{{/if}}
+      },
+      async loadSidebarFragment(section) {
+        if (this.loadedSidebarSections[section]) return;
+        const config = this.sidebarFragmentConfig[section];
+        if (!config) return;
+        const container = document.getElementById(config.container);
+        if (!container) return;
+        const skeleton = document.getElementById('learning-skeleton-source');
+        container.innerHTML = skeleton ? skeleton.innerHTML : '<div class="p-12 text-center text-gray-400">Loading...</div>';
+        try {
+          const res = await fetch(config.url);
+          if (res.redirected) {
+            window.location.href = res.url;
+            return;
+          }
+          if (!res.ok) throw new Error('Request failed');
+          const html = await res.text();
+          container.style.minHeight = container.offsetHeight + 'px';
+          container.innerHTML = html;
+          container.querySelectorAll('script').forEach((oldScript) => {
+            const newScript = document.createElement('script');
+            Array.from(oldScript.attributes).forEach((attr) => newScript.setAttribute(attr.name, attr.value));
+            newScript.textContent = oldScript.textContent;
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+          });
+          this.loadedSidebarSections[section] = true;
+          Alpine.initTree(container);
+          requestAnimationFrame(() => { container.style.minHeight = ''; });
+        } catch (e) {
+          console.error('Failed to load fragment for ' + section, e);
+          container.innerHTML = '<div class="p-12 text-center text-red-500">Failed to load. Please try again.</div>';
+        }
+      },
+      sectionFragmentConfig: {
+        uiux: { url: '/program/myProgram/{{user.id}}/fragment', container: 'start-learning-container' },
+        assignment: { url: '/program/myProgram/{{user.id}}/fragment/assignment', container: 'assignment-container' },
+        presentation: { url: '/program/myProgram/{{user.id}}/fragment/presentation', container: 'presentation-container' },
+        quiz: { url: '/program/myProgram/{{user.id}}/fragment/quiz', container: 'quiz-container' },
+        'portfolio-guide': { url: '/program/myProgram/{{user.id}}/fragment/portfolio-guide', container: 'portfolio-guide-container' },
+        'detail-program': { url: '/program/myProgram/{{user.id}}/fragment/detail-program', container: 'detail-program-container' },
+        'course-portfolio': { url: '/portfolio/fragment', container: 'course-portfolio-container' }
+      },
+      toggleActiveSection(section, status) {
+        if (section === 'logbook' && this.activeCaps.logbookEnabled === false) {
+          section = 'uiux';
+        }
+        if (section === 'assignment' && !this.activeCaps.finalAssignment && this.activeCaps.structure !== 'weeks') {
+          section = 'uiux';
+        }
+        this.isPortfolioDetail = false;
+        this.activeSection = section;
+
+        const url = new URL(window.location);
+        if (section === 'dashboard') {
+          url.searchParams.delete('tab');
+        } else {
+          url.searchParams.set('tab', section);
+        }
+
+        if (section === 'learning' && status) {
+          if (status !== 'all') url.searchParams.set('status', status);
+          else url.searchParams.delete('status');
+        }
+        if (section === 'certificate' && this.activeCourseId) {
+          url.searchParams.set('tab', 'certificate');
+          url.searchParams.set('courseId', this.activeCourseId);
+        }
+        history.replaceState({}, '', url);
+
+        window.dispatchEvent(new CustomEvent('section-changed', { detail: { section } }));
+
+        if (this.sidebarFragmentConfig[section] && !this.loadedSidebarSections[section]) {
+          this.loadSidebarFragment(section);
+        }
+
+        if (this.sectionFragmentConfig[section]) {
+          const courseId = this.activeCourseId || (this.userCourses[0] && this.userCourses[0].course && this.userCourses[0].course.id);
+          if (courseId) {
+            this.activeCourseId = courseId;
+            this.loadCourseFragment(section, courseId);
+          }
+        }
+      },
+      goToLearningSection(section, status = 'all') {
+        this.toggleActiveSection(section, status);
+      },
+      programSections: ['uiux', 'presentation', 'assignment', 'quiz', 'course-portfolio', 'portfolio-guide', 'logbook', 'certificate', 'group-class', 'quiz-start', 'detail-program'],
+      get isProgramSection() {
+        return this.programSections.includes(this.activeSection);
+      },
+      get activeCourseData() {
+        const found = this.userCourses.find((uc) => uc.course && uc.course.id === this.activeCourseId);
+        if (found) return found.course;
+        return this.userCourses[0] ? this.userCourses[0].course : null;
+      },
+      byLang(obj) {
+        if (!obj || typeof obj !== 'object') return '';
+        return obj[this.lang] || obj.id || obj.en || '';
+      },
+      get activeCourseName() {
+        const found = this.userCourses.find((uc) => uc.course && uc.course.id === this.activeCourseId);
+        return found ? found.course.name : 'My Program';
+      },
+      get hasActiveCoursePortfolio() {
+        return this.portfolioCourseIds
+          .map((courseId) => String(courseId))
+          .includes(String(this.activeCourseId));
+      },
+      get hasActiveCourseCertificate() {
+        return this.certificateCourseIds
+          .map((courseId) => String(courseId))
+          .includes(String(this.activeCourseId));
+      },
+      get hasCertificateRequirements() {
+        return this.hasActiveCourseCertificate ||
+          (this.hasActiveCoursePortfolio && this.hasBiodata);
+      },
+      get activeCertificateTemplate() {
+        return this.certificateTemplates[this.activeCourseId] || 'bootcamp.html';
+      },
+      get filteredLogbooks() {
+        if (!this.activeCourseId) return [];
+        const search = this.logbookSearchInput.trim().toLowerCase();
+        return this.allLogbooks.filter((lb) => {
+          const courseId = lb.session && lb.session.weeks && lb.session.weeks.course ? lb.session.weeks.course.id : null;
+          if (courseId !== this.activeCourseId) return false;
+          if (!search) return true;
+          return (lb.activity || '').toLowerCase().includes(search) ||
+            (lb.activityDetails || '').toLowerCase().includes(search) ||
+            (lb.obstacles || '').toLowerCase().includes(search);
+        });
+      },
+      get totalLogbookPages() {
+        return Math.max(1, Math.ceil(this.filteredLogbooks.length / this.logbookItemsPerPage));
+      },
+      get paginatedLogbooks() {
+        const start = (this.logbookCurrentPage - 1) * this.logbookItemsPerPage;
+        return this.filteredLogbooks.slice(start, start + this.logbookItemsPerPage);
+      },
+      async loadCourseFragment(section, courseId) {
+        const config = this.sectionFragmentConfig[section];
+        if (!config) return;
+        const container = document.getElementById(config.container);
+        if (!container) return;
+        const skeleton = document.getElementById('learning-skeleton-source');
+        container.innerHTML = skeleton ? skeleton.innerHTML : '';
+        try {
+          const res = await fetch(config.url + '?courseId=' + courseId);
+          if (res.redirected) {
+            window.location.href = res.url;
+            return;
+          }
+          if (!res.ok) throw new Error('Request failed');
+          const html = await res.text();
+          container.style.minHeight = container.offsetHeight + 'px';
+          container.innerHTML = html;
+          container.querySelectorAll('script').forEach((oldScript) => {
+            const newScript = document.createElement('script');
+            Array.from(oldScript.attributes).forEach((attr) => newScript.setAttribute(attr.name, attr.value));
+            newScript.textContent = oldScript.textContent;
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+          });
+          Alpine.initTree(container);
+          requestAnimationFrame(() => { container.style.minHeight = ''; });
+        } catch (e) {
+          container.innerHTML = '<div class="p-12 text-center text-red-500">Failed to load. Please try again.</div>';
+        }
+      },
+      syncProgramCaps() {
+        const caps = (window.programCaps || {})[this.activeCourseId];
+        document.documentElement.dataset.logbookRequired =
+          caps && caps.logbookEnabled === false ? 'false' : 'true';
+      },
+      get activeCaps() {
+        return (window.programCaps || {})[this.activeCourseId] || {};
+      },
+      async selectCourseSection(courseId, section) {
+        this.activeCourseId = courseId;
+        this.logbookCurrentPage = 1;
+        this.syncProgramCaps();
+        this.toggleActiveSection(section);
+      },
+      async selectCourse(courseId) {
+        this.openedCourses = this.openedCourses[courseId] ? {} : { [courseId]: true };
+        await this.selectCourseSection(courseId, 'uiux');
+      },
+      init() {
+        if (this.activeSection === 'logbook' && this.activeCaps.logbookEnabled === false) { this.activeSection = 'uiux'; }
+        if (this.activeSection === 'assignment' && !this.activeCaps.finalAssignment && this.activeCaps.structure !== 'weeks') { this.activeSection = 'uiux'; }
+        if (this.sidebarFragmentConfig[this.activeSection] && !this.loadedSidebarSections[this.activeSection]) {
+          this.loadSidebarFragment(this.activeSection);
+        }
+        if (this.sectionFragmentConfig[this.activeSection] && this.activeCourseId) {
+          this.loadCourseFragment(this.activeSection, this.activeCourseId);
+        }
+      }
+    };
+  }
 </script>
 <div 
   class="relative h-screen supports-[height:100dvh]:h-[100dvh] flex flex-col bg-[#F2F2F3] font-inter overflow-hidden"
-  x-data="{
-    lang: '{{lang}}',
-    activeSection: (() => {
-      const p = new URLSearchParams(window.location.search);
-      const t = p.get('tab');
-      if (t === 'portfolio' && p.get('courseId')) return 'course-portfolio';
-      return t || '{{activeSection}}' || '{{#if (or (eq user.role "admin") (eq user.role "super_admin"))}}profile{{else}}dashboard{{/if}}';
-    })(),
-    openMyLearning: true,
-    openRoblox: false,
-    openedCourses: {},
-    activeCourseId: {{#if activeCourse}}'{{activeCourse.id}}'{{else}}null{{/if}},
-    userCourses: window.userCourses || [],
-    portfolioCourseIds: window.portfolioCourseIds || [],
-    certificateCourseIds: window.certificateCourseIds || [],
-    hasBiodata: window.hasBiodata === true,
-    certificateTemplates: window.certificateTemplates || {},
-    allLogbooks: window.userLogbooks || [],
-    logbookSearchInput: '',
-    logbookCurrentPage: 1,
-    logbookItemsPerPage: 10,
-    logbookImageErrors: {},
-    handledSections: [
-      'dashboard', 'profile', 'password', 'learning', 'uiux', 'portfolio', 'course-portfolio', 'history-payment',
-      'assignment', 'logbook', 'quiz', 'quiz-start', 'certificate',
-      'group-class', 'presentation', 'portfolio-guide', 'detail-program'
-    ],
-    sectionFragmentConfig: {
-      uiux: { url: '/program/myProgram/{{user.id}}/fragment', container: 'start-learning-container' },
-      assignment: { url: '/program/myProgram/{{user.id}}/fragment/assignment', container: 'assignment-container' },
-      presentation: { url: '/program/myProgram/{{user.id}}/fragment/presentation', container: 'presentation-container' },
-      quiz: { url: '/program/myProgram/{{user.id}}/fragment/quiz', container: 'quiz-container' },
-      'portfolio-guide': { url: '/program/myProgram/{{user.id}}/fragment/portfolio-guide', container: 'portfolio-guide-container' },
-      'detail-program': { url: '/program/myProgram/{{user.id}}/fragment/detail-program', container: 'detail-program-container' },
-      'course-portfolio': { url: '/portfolio/fragment', container: 'course-portfolio-container' }
-    },
-    toggleActiveSection(section, status) {
-      // Student bisa sampai di ?tab=logbook lewat tautan lama atau riwayat
-      // peramban, termasuk untuk program yang logbooknya dimatikan. Tanpa
-      // penjagaan ini ia mendapat panel kosong tanpa penjelasan.
-      if (section === 'logbook' && this.activeCaps.logbookEnabled === false) {
-        section = 'uiux';
-      }
-      if (section === 'assignment' && !this.activeCaps.finalAssignment && this.activeCaps.structure !== 'weeks') {
-        section = 'uiux';
-      }
-      this.activeSection = section;
-      if (section === 'learning' && status) {
-        const url = new URL(window.location);
-        if (status !== 'all') url.searchParams.set('status', status);
-        else url.searchParams.delete('status');
-        history.replaceState({}, '', url);
-      }
-      if (section === 'certificate' && this.activeCourseId) {
-        const url = new URL(window.location);
-        url.searchParams.set('tab', 'certificate');
-        url.searchParams.set('courseId', this.activeCourseId);
-        history.replaceState({}, '', url);
-      }
-      window.dispatchEvent(new CustomEvent('section-changed', { detail: { section } }));
-      if (this.sectionFragmentConfig[section]) {
-        const courseId = this.activeCourseId || (this.userCourses[0] && this.userCourses[0].course && this.userCourses[0].course.id);
-        if (courseId) {
-          this.activeCourseId = courseId;
-          this.loadCourseFragment(section, courseId);
-        }
-      }
-    },
-
-    goToLearningSection(section, status = 'all') {
-      const url = new URL(window.location.href);
-      url.searchParams.set('tab', section);
-      if (status && status !== 'all') {
-        url.searchParams.set('status', status);
-      } else {
-        url.searchParams.delete('status');
-      }
-      window.location.href = url.toString();
-    },
-    {{!-- Bagian yang memang milik sebuah program. Kepala program dan baris tab
-         hanya muncul untuk section ini; Dashboard, Profile, My Portfolio, dan
-         Payment History tidak boleh kebagian gambar program. --}}
-    programSections: ['uiux', 'presentation', 'assignment', 'quiz', 'course-portfolio', 'portfolio-guide', 'logbook', 'certificate', 'group-class', 'quiz-start', 'detail-program'],
-    get isProgramSection() {
-      return this.programSections.includes(this.activeSection);
-    },
-
-    {{!-- Course yang sedang dibuka, diambil dari data yang SUDAH ada di sisi
-         klien (window.userCourses). Dengan begitu kepala program ikut benar di
-         kedua rute yang merender shell, tanpa menyentuh controller. --}}
-    get activeCourseData() {
-      const found = this.userCourses.find((uc) => uc.course && uc.course.id === this.activeCourseId);
-      if (found) return found.course;
-      return this.userCourses[0] ? this.userCourses[0].course : null;
-    },
-    byLang(obj) {
-      if (!obj || typeof obj !== 'object') return '';
-      return obj[this.lang] || obj.id || obj.en || '';
-    },
-
-    get activeCourseName() {
-      const found = this.userCourses.find((uc) => uc.course && uc.course.id === this.activeCourseId);
-      return found ? found.course.name : 'My Program';
-    },
-    get hasActiveCoursePortfolio() {
-      return this.portfolioCourseIds
-        .map((courseId) => String(courseId))
-        .includes(String(this.activeCourseId));
-    },
-    get hasActiveCourseCertificate() {
-      return this.certificateCourseIds
-        .map((courseId) => String(courseId))
-        .includes(String(this.activeCourseId));
-    },
-    get hasCertificateRequirements() {
-      return this.hasActiveCourseCertificate ||
-        (this.hasActiveCoursePortfolio && this.hasBiodata);
-    },
-    get activeCertificateTemplate() {
-      return this.certificateTemplates[this.activeCourseId] || 'bootcamp.html';
-    },
-    get filteredLogbooks() {
-      if (!this.activeCourseId) return [];
-      const search = this.logbookSearchInput.trim().toLowerCase();
-      return this.allLogbooks.filter((lb) => {
-        const courseId = lb.session && lb.session.weeks && lb.session.weeks.course ? lb.session.weeks.course.id : null;
-        if (courseId !== this.activeCourseId) return false;
-        if (!search) return true;
-        return (lb.activity || '').toLowerCase().includes(search) ||
-          (lb.activityDetails || '').toLowerCase().includes(search) ||
-          (lb.obstacles || '').toLowerCase().includes(search);
-      });
-    },
-    get totalLogbookPages() {
-      return Math.max(1, Math.ceil(this.filteredLogbooks.length / this.logbookItemsPerPage));
-    },
-    get paginatedLogbooks() {
-      const start = (this.logbookCurrentPage - 1) * this.logbookItemsPerPage;
-      return this.filteredLogbooks.slice(start, start + this.logbookItemsPerPage);
-    },
-    async loadCourseFragment(section, courseId) {
-      const config = this.sectionFragmentConfig[section];
-      if (!config) return;
-      const container = document.getElementById(config.container);
-      if (!container) return;
-      // Penahan tempat memakai skeleton yang tingginya mendekati isi akhirnya.
-      // Sebelumnya hanya tulisan 'Loading...' setinggi ~120px, sementara isinya
-      // ~1026px - selisih itulah yang terlihat sebagai halaman melompat.
-      const skeleton = document.getElementById('learning-skeleton-source');
-      container.innerHTML = skeleton ? skeleton.innerHTML : '';
-      try {
-        const res = await fetch(config.url + '?courseId=' + courseId);
-
-        // Sesi berumur satu jam. Begitu kedaluwarsa, AuthMiddleware mengalihkan
-        // permintaan fragment ke /login, dan fetch MENGIKUTI pengalihan itu
-        // secara diam-diam. Tanpa penjagaan ini seluruh halaman login ikut
-        // disuntikkan ke dalam panel, lengkap dengan navbar publiknya, sementara
-        // shell di sekelilingnya masih tampak seperti sudah login.
-        if (res.redirected) {
-          window.location.href = res.url;
-          return;
-        }
-        if (!res.ok) throw new Error('Request failed');
-
-        const html = await res.text();
-        // Tinggi wadah dikunci sepanjang pertukaran isi. Tanpa ini ada satu
-        // frame ketika skeleton sudah dilepas tetapi isi barunya belum selesai
-        // ditata, dan wadahnya sempat memendek - satu frame itu saja sudah
-        // terhitung sebagai pergeseran tata letak.
-        container.style.minHeight = container.offsetHeight + 'px';
-        container.innerHTML = html;
-        Alpine.initTree(container);
-        requestAnimationFrame(() => { container.style.minHeight = ''; });
-      } catch (e) {
-        container.innerHTML = '<div class=\'p-12 text-center text-red-500\'>Failed to load. Please try again.</div>';
-      }
-    },
-    {{!-- Program berikutnya bisa punya sakelar logbook yang berbeda, dan
-         berpindah program tidak memuat ulang halaman. --}}
-    syncProgramCaps() {
-      const caps = (window.programCaps || {})[this.activeCourseId];
-      document.documentElement.dataset.logbookRequired =
-        caps && caps.logbookEnabled === false ? 'false' : 'true';
-    },
-    get activeCaps() {
-      return (window.programCaps || {})[this.activeCourseId] || {};
-    },
-    async selectCourseSection(courseId, section) {
-      this.activeCourseId = courseId;
-      this.logbookCurrentPage = 1;
-      this.syncProgramCaps();
-      this.toggleActiveSection(section);
-    },
-    async selectCourse(courseId) {
-      this.openedCourses = this.openedCourses[courseId] ? {} : { [courseId]: true };
-      await this.selectCourseSection(courseId, 'uiux');
-    }
-  }"
-  x-init="
-    if (activeSection === 'logbook' && activeCaps.logbookEnabled === false) { activeSection = 'uiux'; }
-    if (activeSection === 'assignment' && !activeCaps.finalAssignment && activeCaps.structure !== 'weeks') { activeSection = 'uiux'; }
-    if (sectionFragmentConfig[activeSection] && activeCourseId) { loadCourseFragment(activeSection, activeCourseId); }
-  "
+  x-data="userProfileShell()"
 >
   {{!-- Application bar. Markup ada di partial supaya halaman student
        standalone memakai bar yang sama; gating role admin/super_admin ada di dalamnya. --}}
@@ -605,23 +640,27 @@
         </div>
 
         <!-- Dashboard Tab Content -->
-        <div x-show="activeSection === 'dashboard'"{{#unless (eq initialSection 'dashboard')}} style="display:none"{{/unless}}>
-          {{> user/sidebar_user_profile/dashboard/index }}
+        <div x-show="activeSection === 'dashboard'" id="dashboard-container" class="w-full"{{#unless (eq initialSection 'dashboard')}} style="display:none"{{/unless}}>
+          {{#if (eq initialSection 'dashboard')}}
+            {{> user/sidebar_user_profile/dashboard/index }}
+          {{else}}
+            {{> components/ui/learning/skeleton/index }}
+          {{/if}}
         </div>
 
-        <!-- Profile Tab Content -->
-        <div x-show="activeSection === 'profile'"{{#unless (eq initialSection 'profile')}} style="display:none"{{/unless}}>
-          {{> user/sidebar_user_profile/profile/index }}
+        <!-- Profile Tab Content (loaded via loadSidebarFragment) -->
+        <div x-show="activeSection === 'profile'" id="profile-container" class="w-full"{{#unless (eq initialSection 'profile')}} style="display:none"{{/unless}}>
+          {{> components/ui/learning/skeleton/index }}
         </div>
 
-        <!-- Change Password Tab Content -->
-        <div x-show="activeSection === 'password'"{{#unless (eq initialSection 'password')}} style="display:none"{{/unless}}>
-          {{> components/ui/profile/change_password/index user=user isTab=true }}
+        <!-- Change Password Tab Content (loaded via loadSidebarFragment) -->
+        <div x-show="activeSection === 'password'" id="password-container" class="w-full"{{#unless (eq initialSection 'password')}} style="display:none"{{/unless}}>
+          {{> components/ui/learning/skeleton/index }}
         </div>
 
-        <!-- My Learning Tab Content -->
-        <div x-show="activeSection === 'learning'"{{#unless (eq initialSection 'learning')}} style="display:none"{{/unless}}>
-          {{> user/sidebar_user_profile/my_learning/index }}
+        <!-- My Learning Tab Content (loaded via loadSidebarFragment) -->
+        <div x-show="activeSection === 'learning'" id="learning-container" class="w-full"{{#unless (eq initialSection 'learning')}} style="display:none"{{/unless}}>
+          {{> components/ui/learning/skeleton/index }}
         </div>
 
         <!-- Start Learning Tab Content -->
@@ -647,9 +686,9 @@
           {{> components/ui/learning/skeleton/index }}
         </div>
 
-        <!-- My Portfolio Tab Content (User Profile) -->
-        <div x-show="activeSection === 'portfolio'"{{#unless (eq initialSection 'portfolio')}} style="display:none"{{/unless}}>
-          {{> user/sidebar_user_profile/profile_portfolio/index }}
+        <!-- My Portfolio Tab Content (loaded via loadSidebarFragment) -->
+        <div x-show="activeSection === 'portfolio'" id="portfolio-container" class="w-full"{{#unless (eq initialSection 'portfolio')}} style="display:none"{{/unless}}>
+          {{> components/ui/learning/skeleton/index }}
         </div>
 
         <!-- Course Portfolio Tab Content (Start Learning level, loaded per course via loadCourseFragment) -->
@@ -672,9 +711,9 @@
           {{> components/ui/learning/skeleton/index }}
         </div>
 
-        <!-- History Payment Tab Content -->
-        <div x-show="activeSection === 'history-payment'"{{#unless (eq initialSection 'history-payment')}} style="display:none"{{/unless}}>
-          {{> user/sidebar_user_profile/history_payment/index }}
+        <!-- History Payment Tab Content (loaded via loadSidebarFragment) -->
+        <div x-show="activeSection === 'history-payment'" id="history-payment-container" class="w-full"{{#unless (eq initialSection 'history-payment')}} style="display:none"{{/unless}}>
+          {{> components/ui/learning/skeleton/index }}
         </div>
 
         <!-- Assignment Tab Content (loaded per course via loadCourseFragment) -->
@@ -825,4 +864,3 @@
 {{/if}}
 
 {{> components/ui/user/modal/logout_confirm/index }}
-
