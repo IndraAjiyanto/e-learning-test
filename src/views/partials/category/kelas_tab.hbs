@@ -63,7 +63,7 @@
                 <path d='M9 22v-4h6v4' />
                 <path d='M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01' />
               </svg>
-              <span x-text="kelasItem.method === 'online' ? 'Online Class' : 'Offline Class'"></span>
+              <span x-text="kelasItem.method === 'online' ? 'Online Class' : ((kelasItem.method === 'hybrid' || kelasItem.method === 'hybird') ? 'Hybrid Class' : 'Offline Class')"></span>
             </span>
           </div>
         </div>

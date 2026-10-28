@@ -35,7 +35,7 @@ export class CreateCoursesDto {
   )
   group: string;
 
-  @IsEnum(['online', 'offline'])
+  @IsEnum(['online', 'offline', 'hybrid'])
   method: Method;
 
   @IsUUID()
