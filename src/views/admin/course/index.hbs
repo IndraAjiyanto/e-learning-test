@@ -647,6 +647,19 @@ function kelasTable() {
         if (json && json.success) {
           this.kelasList[index].status = json.status;
           this.kelasList[index].launch = json.launch;
+
+          const courseName = this.kelasList[index]?.name;
+          const statusLabel = this.getStatusLabel(json.status);
+          window.dispatchEvent(
+            new CustomEvent('toast:success', {
+              detail: {
+                title: 'Status Updated',
+                description: courseName
+                  ? `Program "${courseName}" status changed to ${statusLabel}.`
+                  : `Program status changed to ${statusLabel}.`,
+              },
+            }),
+          );
         } else {
           console.error('Update status failed:', json.message);
           window.dispatchEvent(
@@ -702,13 +715,42 @@ function kelasTable() {
         if (json && json.success) {
           this.kelasList[index].launch = json.launch;
           if (json.status) this.kelasList[index].status = json.status;
+
+          const courseName = this.kelasList[index]?.name;
+          const isLaunched = json.launch;
+          window.dispatchEvent(
+            new CustomEvent('toast:success', {
+              detail: {
+                title: isLaunched ? 'Program Published' : 'Program Unpublished',
+                description: courseName
+                  ? `Program "${courseName}" has been ${isLaunched ? 'published' : 'unpublished'}.`
+                  : `Program has been ${isLaunched ? 'published' : 'unpublished'}.`,
+              },
+            }),
+          );
         } else {
           this.kelasList[index].launch = prev;
           console.error('Toggle launch failed:', json.message);
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Failed',
+                description: json?.message || 'Failed to toggle program launch status.',
+              },
+            }),
+          );
         }
       } catch (err) {
         this.kelasList[index].launch = prev;
         console.error('Toggle launch error:', err);
+        window.dispatchEvent(
+          new CustomEvent('toast:error', {
+            detail: {
+              title: 'Error',
+              description: 'Network or server error while toggling program launch status.',
+            },
+          }),
+        );
       }
     },
   }
