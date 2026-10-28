@@ -362,6 +362,7 @@ export class CoursesController {
     @Query('search') search?: string,
     @Query('alphabet') alphabet?: string,
     @Query('status') status?: string,
+    @Query('process') process?: string,
     @Query('mentor') mentor?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -373,6 +374,7 @@ export class CoursesController {
       search: search || undefined,
       alphabet: alphabet || undefined,
       status: status || undefined,
+      process: process || undefined,
       mentor:
         req.user!.role === 'super_admin' ? mentor || undefined : undefined,
       page: currentPage,

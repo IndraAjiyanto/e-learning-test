@@ -1,16 +1,95 @@
 <!-- DETAIL PORTOFOLIO PARTIAL -->
 <div class="w-full max-w-6xl mx-auto pb-12 font-inter mb-28">
 
-  <!-- Back Button -->
-  <div class="mb-6">
+  <!-- Back Button & Breadcrumbs Navigation -->
+  <div class="mb-6 flex flex-wrap items-center gap-x-3 gap-y-2">
     <button
       type="button"
-      @click="showDetail = false"
-      class="inline-flex items-center gap-2 font-inter font-medium text-sm sm:text-base text-[#003060] hover:text-[#001f3f] transition-colors cursor-pointer"
+      @click="showDetail = false; $dispatch('portfolio-view-detail', false); window.scrollTo({ top: 0, behavior: 'smooth' });"
+      class="inline-flex h-9 shrink-0 items-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white px-3.5 font-inter text-sm font-semibold text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5] cursor-pointer"
     >
-      <i class="fa-solid fa-arrow-left text-sm"></i>
-      <span>{{t "test.myPortfolio.detailPortfolio.backToList"}}</span>
+      <i class="fa-solid fa-arrow-left text-xs"></i>
+      <span>{{default (t "test.common.back") "Kembali"}}</span>
     </button>
+
+    <nav aria-label="{{t 'test.common.breadcrumb'}}" class="min-w-0">
+      <template x-if="activeSection === 'course-portfolio'">
+        <ol class="flex flex-wrap items-center gap-2 font-inter text-xs text-[#718096]">
+          <li class="flex items-center gap-1.5">
+            <button
+              type="button"
+              @click="toggleActiveSection('dashboard')"
+              class="inline-flex items-center gap-1.5 cursor-pointer font-medium text-[#718096] hover:text-[#003060] hover:underline"
+            >
+              <i class="ph ph-house text-xs text-[#718096]"></i>
+              <span>{{t 'test.common.home'}}</span>
+            </button>
+          </li>
+          <li class="flex items-center gap-2">
+            <span aria-hidden="true" class="text-[#718096]">/</span>
+            <button
+              type="button"
+              @click="toggleActiveSection('learning')"
+              class="inline-flex items-center gap-1.5 cursor-pointer font-medium text-[#718096] hover:text-[#003060] hover:underline"
+            >
+              <i class="ph ph-book-open text-xs text-[#718096]"></i>
+              <span>{{t 'test.userSidebar.myLearning'}}</span>
+            </button>
+          </li>
+          <li class="flex items-center gap-2">
+            <span aria-hidden="true" class="text-[#718096]">/</span>
+            <button
+              type="button"
+              @click="showDetail = false; $dispatch('portfolio-view-detail', false); window.scrollTo({ top: 0, behavior: 'smooth' });"
+              class="inline-flex items-center gap-1.5 cursor-pointer font-medium text-[#718096] hover:text-[#003060] hover:underline"
+            >
+              <i class="ph ph-briefcase text-xs text-[#718096]"></i>
+              <span>{{t 'test.startLearning.portfolio'}}</span>
+            </button>
+          </li>
+          <li class="flex items-center gap-2">
+            <span aria-hidden="true" class="text-[#718096]">/</span>
+            <span class="inline-flex items-center gap-1.5 font-semibold text-[#003060]">
+              <i class="ph ph-file-text text-xs text-[#003060]"></i>
+              <span aria-current="page" class="max-w-[180px] sm:max-w-xs truncate" x-text="selectedPortfolio ? selectedPortfolio.title : '{{default (t 'test.detailPortfolio.pageTitle') 'Detail Portofolio'}}'"></span>
+            </span>
+          </li>
+        </ol>
+      </template>
+
+      <template x-if="activeSection !== 'course-portfolio'">
+        <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 font-inter text-sm text-[#737373]">
+          <li class="flex items-center gap-1.5">
+            <button
+              type="button"
+              @click="toggleActiveSection('dashboard')"
+              class="inline-flex items-center gap-1.5 cursor-pointer text-[#525252] transition-colors hover:text-[#003060] hover:underline"
+            >
+              <i class="ph ph-house text-sm text-[#737373]"></i>
+              <span>{{t 'test.common.home'}}</span>
+            </button>
+          </li>
+          <li class="flex min-w-0 items-center gap-2">
+            <span aria-hidden="true" class="text-[#D4D4D4]">/</span>
+            <button
+              type="button"
+              @click="showDetail = false; $dispatch('portfolio-view-detail', false); window.scrollTo({ top: 0, behavior: 'smooth' });"
+              class="inline-flex items-center gap-1.5 cursor-pointer text-[#525252] transition-colors hover:text-[#003060] hover:underline"
+            >
+              <i class="ph ph-briefcase text-sm text-[#737373]"></i>
+              <span>{{t 'test.startLearning.portfolio'}}</span>
+            </button>
+          </li>
+          <li class="flex min-w-0 items-center gap-2">
+            <span aria-hidden="true" class="text-[#D4D4D4]">/</span>
+            <span aria-current="page" class="inline-flex items-center gap-1.5 truncate font-semibold text-[#003060] max-w-[200px] sm:max-w-md">
+              <i class="ph ph-file-text text-sm text-[#003060]"></i>
+              <span class="truncate" x-text="selectedPortfolio ? selectedPortfolio.title : '{{default (t 'test.detailPortfolio.pageTitle') 'Detail Portofolio'}}'"></span>
+            </span>
+          </li>
+        </ol>
+      </template>
+    </nav>
   </div>
 
   <!-- Header -->

@@ -61,5 +61,25 @@
         <span class="font-inter font-medium text-sm leading-5 text-[#404040] truncate" x-text="item.referal_source || item.referalSource || item.keyword || '—'"></span>
       </div>
     </div>
+
+    {{!-- Row 3: Quick Action Buttons (Accept & Reject) - Disimpan untuk cadangan bila nanti dibutuhkan:
+    <!-- Row 3: Quick Action Buttons (Accept & Reject) -->
+    <div @click.stop class="flex items-center justify-end gap-2 pt-2.5 border-t border-[#E5E5E5]">
+      <button
+        type="button"
+        disabled
+        class="px-3 py-1.5 rounded bg-[#16A34A] text-white text-xs font-semibold opacity-50 cursor-not-allowed"
+      >
+        <i class="fa-solid fa-check mr-1"></i>Accept
+      </button>
+      <button
+        type="button"
+        disabled
+        class="px-3 py-1.5 rounded bg-[#EF4444] text-white text-xs font-semibold opacity-50 cursor-not-allowed"
+      >
+        <i class="fa-solid fa-xmark mr-1"></i>Reject
+      </button>
+    </div>
+    --}}
   </div>
 </div>

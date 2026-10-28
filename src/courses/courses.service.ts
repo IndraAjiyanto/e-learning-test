@@ -1228,6 +1228,7 @@ export class CoursesService {
     search?: string;
     alphabet?: string;
     status?: string;
+    process?: string;
     mentor?: string;
     page: number;
     limit: number;
@@ -1270,8 +1271,36 @@ export class CoursesService {
       });
     }
 
+    if (params.process) {
+      if (params.process === 'accepted' || params.process === 'approved') {
+        query.andWhere('course.process = :courseProcess', {
+          courseProcess: 'approved',
+        });
+      } else if (params.process === 'pending' || params.process === 'process') {
+        query.andWhere(
+          '(course.process != :notApprovedProcess OR course.process IS NULL)',
+          { notApprovedProcess: 'approved' },
+        );
+      } else {
+        query.andWhere('course.process = :courseProcess', {
+          courseProcess: params.process,
+        });
+      }
+    }
+
     if (params.status) {
-      query.andWhere('course.status = :status', { status: params.status });
+      if (params.status === 'accepted' || params.status === 'approved') {
+        query.andWhere('course.process = :statusProcess', {
+          statusProcess: 'approved',
+        });
+      } else if (params.status === 'pending' || params.status === 'process') {
+        query.andWhere(
+          '(course.process != :notApprovedStatusProcess OR course.process IS NULL)',
+          { notApprovedStatusProcess: 'approved' },
+        );
+      } else {
+        query.andWhere('course.status = :status', { status: params.status });
+      }
     }
 
     query.skip((params.page - 1) * params.limit).take(params.limit);
@@ -1557,7 +1586,8 @@ export class CoursesService {
   async findCourseRegistrations(courseId: string) {
     return await this.registrationRepository.find({
       where: { course: { id: courseId } },
-      relations: ['user', 'course'],
+      relations: ['user', 'course', 'course.category'],
+      order: { createdAt: 'DESC' },
     });
   }
 

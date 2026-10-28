@@ -19,17 +19,15 @@
     return {
       search: '',
       selectedMethod: '',
-      selectedType: '',
       selectedStructure: '',
       selectedPayment: '',
-      typeSearch: '',
       activeDropdown: null,
       showPayment: {{#if (eq showPayment false)}}false{{else}}true{{/if}},
       limit: 12,
       initialLimit: 12,
       init() {
         var self = this;
-        ['search', 'selectedMethod', 'selectedType', 'selectedStructure', 'selectedPayment'].forEach(function(prop) {
+        ['search', 'selectedMethod', 'selectedStructure', 'selectedPayment'].forEach(function(prop) {
           self.$watch(prop, function() {
             self.limit = self.initialLimit;
           });
@@ -56,30 +54,21 @@
         }{{#unless @last}},{{/unless}}
         {{/each}}
       ],
-      get programTypes() {
-        return [...new Set(this.items.map(function(i) { return i.courseType; }).filter(Boolean))].sort();
-      },
-      get filteredProgramTypes() {
-        if (!this.typeSearch) return this.programTypes;
-        var q = this.typeSearch.trim().toLowerCase();
-        return this.programTypes.filter(function(t) { return t.toLowerCase().includes(q); });
-      },
       get hasActiveFilters() {
-        return Boolean(this.search || this.selectedMethod || this.selectedType || this.selectedStructure || (this.showPayment && this.selectedPayment));
+        return Boolean(this.search || this.selectedMethod || this.selectedStructure || (this.showPayment && this.selectedPayment));
       },
       resetFilters() {
         this.search = '';
         this.selectedMethod = '';
-        this.selectedType = '';
         this.selectedStructure = '';
         this.selectedPayment = '';
-        this.typeSearch = '';
         this.activeDropdown = null;
         this.limit = this.initialLimit;
       },
       getMethodLabel() {
         if (this.selectedMethod === 'online') return "{{default (t 'test.home.programSection.online') 'Online'}}";
         if (this.selectedMethod === 'offline') return "{{default (t 'test.home.programSection.offline') 'Offline'}}";
+        if (this.selectedMethod === 'hybird' || this.selectedMethod === 'hybrid') return "{{default (t 'test.home.programSection.hybrid') (default (t 'test.home.programSection.hybird') 'Hybrid')}}";
         return "{{default (t 'test.home.programSection.allMethod') 'Semua Metode'}}";
       },
       getStructureLabel() {
@@ -97,8 +86,15 @@
         var self = this;
         return this.items.filter(function(item) {
           if (q && !item.name.toLowerCase().includes(q)) return false;
-          if (self.selectedMethod && item.method !== self.selectedMethod) return false;
-          if (self.selectedType && item.courseType !== self.selectedType) return false;
+          if (self.selectedMethod) {
+            var selM = self.selectedMethod.toLowerCase();
+            var itmM = (item.method || '').toLowerCase();
+            if (selM === 'hybird' || selM === 'hybrid') {
+              if (itmM !== 'hybird' && itmM !== 'hybrid') return false;
+            } else if (itmM !== selM) {
+              return false;
+            }
+          }
           if (self.selectedStructure === 'week' && !(item.structure === 'bootcamp' || item.structure === 'lpk' || item.structure === 'week')) return false;
           if (self.selectedStructure === 'silabus' && !(item.structure === 'non_bootcamp' || item.structure === 'silabus' || item.structure === 'syllabus')) return false;
           if (self.showPayment && self.selectedPayment === 'paid' && !item.isPaid) return false;
@@ -116,11 +112,11 @@
 <div
   class="w-full max-w-[1568px] flex flex-col items-center gap-8 lg:gap-10"
   x-data="courseCatalogFilter_{{default filterId 'main'}}()"
-  @keydown.escape.window="activeDropdown = null; typeSearch = ''"
+  @keydown.escape.window="activeDropdown = null"
 >
   {{!-- Filter Bar Container --}}
   <div class="w-full bg-[#FFFFFF] rounded-2xl border border-[#E5E7EB] p-4 sm:p-5 shadow-sm flex flex-col gap-3.5">
-    <div class="grid grid-cols-1 sm:grid-cols-2 {{#if (eq showPayment false)}}lg:grid-cols-4{{else}}lg:grid-cols-5{{/if}} gap-3 sm:gap-4 items-end">
+    <div class="grid grid-cols-1 sm:grid-cols-2 {{#if (eq showPayment false)}}lg:grid-cols-3{{else}} lg:grid-cols-4{{/if}} gap-3 sm:gap-4 items-end">
 
       {{!-- 1. Search Nama Program --}}
       <div class="relative w-full">
@@ -201,94 +197,19 @@
             <span>{{default (t 'test.home.programSection.offline') 'Offline'}}</span>
             <i class="fas fa-check text-xs" x-show="selectedMethod === 'offline'"></i>
           </button>
+          <button
+            type="button"
+            @click="selectedMethod = 'hybird'; activeDropdown = null"
+            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
+            :class="(selectedMethod === 'hybird' || selectedMethod === 'hybrid') ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+          >
+            <span>{{default (t 'test.home.programSection.hybrid') (default (t 'test.home.programSection.hybird') 'Hybrid')}}</span>
+            <i class="fas fa-check text-xs" x-show="selectedMethod === 'hybird' || selectedMethod === 'hybrid'"></i>
+          </button>
         </div>
       </div>
 
-      {{!-- 3. Program Type (Search List) --}}
-      <div
-        class="relative w-full"
-        @click.outside="if (activeDropdown === 'type') { activeDropdown = null; typeSearch = ''; }"
-      >
-        <label class="block font-inter font-semibold text-xs text-[#003060] mb-1.5">
-          <i class="fas fa-layer-group text-[#6EB6E5] mr-1"></i>
-          {{default (t 'test.home.programSection.programType') 'Tipe Program'}}
-        </label>
-        <button
-          type="button"
-          @click="activeDropdown = activeDropdown === 'type' ? null : 'type'; if (activeDropdown === 'type') $nextTick(() => $refs.typeSearchInput?.focus())"
-          class="w-full h-11 flex items-center justify-between px-3.5 bg-white text-xs sm:text-sm font-medium text-[#0B1F3B] rounded-xl border border-[#E5E7EB] transition-all cursor-pointer outline-none hover:border-[#003060] focus:border-[#003060] focus:ring-1 focus:ring-[#003060]"
-          :class="activeDropdown === 'type' && 'border-[#003060] ring-1 ring-[#003060]'"
-        >
-          <span class="truncate text-left" x-text="selectedType || '{{default (t 'test.home.programSection.allTypes') 'Semua Tipe'}}'"></span>
-          <i class="fas fa-chevron-down text-xs text-[#9CA3AF] transition-transform duration-200 shrink-0 ml-2" :class="activeDropdown === 'type' && 'rotate-180'"></i>
-        </button>
-
-        <div
-          x-cloak
-          x-show="activeDropdown === 'type'"
-          x-transition.opacity.duration.150ms
-          class="absolute left-0 z-50 mt-1.5 w-full min-w-[220px] max-h-64 overflow-hidden flex flex-col rounded-xl border border-[#E5E7EB] bg-white shadow-lg"
-        >
-          {{!-- Search Input inside the list --}}
-          <div class="p-2 border-b border-[#F3F4F6] sticky top-0 bg-white z-10">
-            <div class="relative flex items-center">
-              <i class="fas fa-magnifying-glass absolute left-2.5 text-xs text-[#9CA3AF]"></i>
-              <input
-                type="text"
-                x-ref="typeSearchInput"
-                x-model="typeSearch"
-                @click.stop
-                placeholder="{{default (t 'test.home.programSection.searchTypePlaceholder') 'Cari tipe program...'}}"
-                class="w-full pl-7 pr-7 py-1.5 text-xs font-inter border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] text-[#0B1F3B] placeholder-[#9CA3AF]"
-              />
-              <button
-                type="button"
-                x-show="typeSearch"
-                x-cloak
-                @click.stop="typeSearch = ''; $refs.typeSearchInput?.focus()"
-                class="absolute right-2 text-xs text-[#9CA3AF] hover:text-[#0B1F3B]"
-                aria-label="{{default (t 'test.home.programSection.clearTypeSearch') 'Hapus pencarian tipe'}}"
-              >
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-          </div>
-
-          {{!-- Options List --}}
-          <div class="overflow-y-auto p-1.5 max-h-48 space-y-0.5">
-            <button
-              type="button"
-              @click="selectedType = ''; activeDropdown = null; typeSearch = ''"
-              class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
-              :class="!selectedType ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
-            >
-              <span>{{default (t 'test.home.programSection.allTypes') 'Semua Tipe'}}</span>
-              <i class="fas fa-check text-xs" x-show="!selectedType"></i>
-            </button>
-
-            <template x-for="type in filteredProgramTypes" :key="type">
-              <button
-                type="button"
-                @click="selectedType = type; activeDropdown = null; typeSearch = ''"
-                class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
-                :class="selectedType === type ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
-              >
-                <span class="truncate" x-text="type"></span>
-                <i class="fas fa-check text-xs" x-show="selectedType === type"></i>
-              </button>
-            </template>
-
-            <div
-              x-show="filteredProgramTypes.length === 0"
-              class="py-3 px-2 text-center text-xs text-[#9CA3AF] font-inter"
-            >
-              {{default (t 'test.home.programSection.noTypesFound') 'Tidak ada tipe ditemukan'}}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {{!-- 4. Learning Structure Dropdown --}}
+      {{!-- 3. Learning Structure Dropdown --}}
       <div
         class="relative w-full"
         @click.outside="if (activeDropdown === 'structure') activeDropdown = null"
@@ -343,7 +264,7 @@
         </div>
       </div>
 
-      {{!-- 5. Payment Dropdown (Opsional: disembunyikan jika showPayment=false) --}}
+      {{!-- 4. Payment Dropdown (Opsional: disembunyikan jika showPayment=false) --}}
       {{#unless (eq showPayment false)}}
       <div
         class="relative w-full"
@@ -479,4 +400,3 @@
     </button>
   </div>
 </div>
-

@@ -33,7 +33,7 @@
         {{> components/ui/super_admin/detail/field/index label='Program Type' value=course.courseType.nameClassesType }}
 
         {{#> components/ui/super_admin/detail/field/index label='Method'}}
-          <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if (eq course.method 'online')}}Online{{else if (eq course.method 'offline')}}Offline{{else}}-{{/if}}</p>
+          <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if (eq course.method 'online')}}Online{{else if (eq course.method 'offline')}}Offline{{else if (roles course.method 'hybrid' 'hybird')}}Hybrid{{else}}-{{/if}}</p>
         {{/components/ui/super_admin/detail/field/index}}
 
         {{> components/ui/super_admin/detail/field/index label='Location' value=(getByLang course.locations 'en') }}
