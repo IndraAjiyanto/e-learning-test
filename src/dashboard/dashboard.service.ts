@@ -153,7 +153,9 @@ export class DashboardService {
       });
     }
     if (params.method) {
-      query.andWhere('course.method = :method', { method: params.method });
+      query.andWhere('course.method = :method', {
+        method: params.method === 'hybird' ? 'hybrid' : params.method,
+      });
     }
     if (params.search) {
       query.andWhere('course.name ILIKE :search', {

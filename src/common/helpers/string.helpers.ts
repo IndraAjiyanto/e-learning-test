@@ -36,7 +36,7 @@ export const stringHelpers = {
     return args.slice(0, -1);
   },
   lookup: (str: unknown[], index: number) => (str ? str[index] : ''),
-  json: (context: unknown) => JSON.stringify(context),
+  json: (context: unknown) => JSON.stringify(context ?? null),
   // Untuk data island: <script type="application/json">{{{jsonSafe x}}}</script>.
   //
   // `json` polosnya bisa berisi urutan `</script>`, dan browser memotong blok

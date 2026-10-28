@@ -22,6 +22,7 @@
   <div class="w-full bg-white border border-[#D9D9D9] rounded-xl p-3 sm:p-5 flex flex-col gap-5">
     <!-- Status Filter Sub-Tabs & Search Bar -->
     <div class="flex flex-col gap-4 w-full">
+      {{!-- Status Tabs (Frame 2147229582) - Disimpan untuk cadangan bila nanti dibutuhkan:
       <!-- Status Tabs (Frame 2147229582) -->
       <nav role="tablist" class="flex border-b border-[#D9D9D9] w-full overflow-x-auto">
         <button
@@ -76,6 +77,7 @@
           Rejected
         </button>
       </nav>
+      --}}
 
       <!-- Search Input Bar (Frame 2147229616) -->
       <div class="w-full">
@@ -191,7 +193,7 @@
       </div>
       <div class="flex flex-col gap-0.5">
         <span class="font-inter text-xs text-[#737373]">Referral / Keyword</span>
-        <span class="font-inter text-sm font-medium text-[#171717]" x-text="row.referal_source || '—'"></span>
+        <span class="font-inter text-sm font-medium text-[#171717]" x-text="row.referal_source || row.referalSource || row.keyword || '—'"></span>
       </div>
       <div class="flex flex-col gap-0.5">
         <span class="font-inter text-xs text-[#737373]">Attend Program</span>
@@ -209,30 +211,26 @@
       </div>
     </template>
 
+    {{!-- Super Admin Actions (Accept / Reject) - Disimpan untuk cadangan bila nanti dibutuhkan:
     <!-- Super Admin Actions (Accept / Reject) -->
     <div class="flex items-center gap-3 pt-3 border-t border-[#E5E5E5]">
-      <template x-if="row.process !== 'approved' && row.process !== 'acc'">
-        <form :action="'/registration/approved/' + row.id + '?_method=PATCH'" method="post" class="flex-1">
-          <button
-            type="submit"
-            class="inline-flex h-11 w-full items-center justify-center rounded-lg border border-[#16a34a] bg-[#16a34a] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#15803d] hover:bg-[#15803d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16a34a]/40"
-          >
-            Accept
-          </button>
-        </form>
-      </template>
+      <button
+        type="button"
+        disabled
+        class="inline-flex h-11 flex-1 items-center justify-center rounded-lg border border-[#16a34a] bg-[#16a34a] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] opacity-50 cursor-not-allowed"
+      >
+        Accept
+      </button>
 
-      <template x-if="row.process !== 'rejected'">
-        <form :action="'/registration/rejected/' + row.id + '?_method=PATCH'" method="post" class="flex-1">
-          <button
-            type="submit"
-            class="inline-flex h-11 w-full items-center justify-center rounded-lg border border-[#d4d4d4] bg-white px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-[#dc2626] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#dc2626] hover:bg-[#fef2f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626]/40"
-          >
-            Reject
-          </button>
-        </form>
-      </template>
+      <button
+        type="button"
+        disabled
+        class="inline-flex h-11 flex-1 items-center justify-center rounded-lg border border-[#d4d4d4] bg-white px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-[#dc2626] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] opacity-50 cursor-not-allowed"
+      >
+        Reject
+      </button>
     </div>
+    --}}
   </div>
 {{/components/ui/super_admin/modal/detail/index}}
 
@@ -254,6 +252,10 @@
         this.loading = true;
         try {
           const response = await fetch('/program/register/' + courseId);
+          if (response.redirected) {
+            window.location.href = response.url;
+            return;
+          }
           if (!response.ok) throw new Error('Request failed with status ' + response.status);
 
           const data = await response.json();
@@ -301,14 +303,14 @@
           const username = (item.user_fullname || item.user?.fullname || item.user?.username || '').toLowerCase();
           const email = (item.user_email || item.user?.email || '').toLowerCase();
           const phone = (item.user_no || item.user?.no || '').toLowerCase();
-          const currentStatus = (item.current_status || '').toLowerCase();
+          const statusValue = currentStatus.toLowerCase();
           const keyword = referralSource.toLowerCase();
 
           return (
             username.includes(q) ||
             email.includes(q) ||
             phone.includes(q) ||
-            currentStatus.includes(q) ||
+            statusValue.includes(q) ||
             keyword.includes(q)
           );
         });
@@ -319,6 +321,57 @@
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         return new Date(value).toLocaleDateString('id-ID', options);
       },
+
+      reviewRegistration(item, action) {
+        reviewRegistration(item, action);
+      },
     };
+  }
+
+  function reviewRegistration(item, action) {
+    if (!item?.id) return;
+    const approve = action === 'approved' || action === 'acc';
+    const actionKey = approve ? 'approved' : 'rejected';
+    openConfirmModal({
+      title: approve ? 'Accept Registration?' : 'Reject Registration?',
+      description: approve
+        ? 'Are you sure you want to accept this registration? The user will be automatically enrolled in the program.'
+        : 'Are you sure you want to reject this registration?',
+      confirmLabel: approve ? 'Accept' : 'Reject',
+      cancelLabel: 'Cancel',
+      onConfirm: () => submitReviewRegistration(item, actionKey),
+    });
+  }
+
+  async function submitReviewRegistration(item, action) {
+    try {
+      const res = await fetch(`/registration/${action}/${item.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: '{}',
+        redirect: 'manual',
+      });
+      if (res.ok || res.type === 'opaqueredirect') {
+        location.reload();
+      } else {
+        const errorMsg = 'Failed to update registration status. Please try again.';
+        if (typeof showErrorToast === 'function') {
+          showErrorToast('Failed to Update Registration Status', errorMsg);
+        } else {
+          alert(errorMsg);
+        }
+      }
+    } catch (error) {
+      console.error('Review registration error:', error);
+      const errorMsg = 'Connection error to server.';
+      if (typeof showErrorToast === 'function') {
+        showErrorToast('Failed to Update Registration Status', errorMsg);
+      } else {
+        alert(errorMsg);
+      }
+    }
   }
 </script>

@@ -60,7 +60,7 @@ const pickMultilang = (
     result.ja = asText(obj.ja);
   }
 
-  // Bentuk flat: description_id / lokasi_id (form baru) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â menang atas nested
+  // Bentuk flat: description_id / lokasi_id (form baru) — menang atas nested
   if (body[`${flatPrefix}_id`] !== undefined) {
     result.id = asText(body[`${flatPrefix}_id`]);
   }
@@ -95,7 +95,11 @@ const toBool = (value: unknown): boolean | undefined => {
 };
 
 const toMethod = (value: unknown): Method =>
-  value === 'offline' ? 'offline' : 'online';
+  asText(value).toLowerCase() === 'offline'
+    ? 'offline'
+    : asText(value).toLowerCase() === 'hybrid' || asText(value).toLowerCase() === 'hybird'
+      ? 'hybrid'
+      : 'online';
 
 /**
  * Nilai enum tipe program dari form. Nilai yang tidak dikenal (termasuk medan
@@ -170,7 +174,7 @@ export function mapCreateProgram(
     dto.criteriaJa = criteriaJa;
   }
 
-  // Schedule: month (paid) XOR day (free) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â samakan semantik controller lama:
+  // Schedule: month (paid) XOR day (free) — samakan semantik controller lama:
   // bila month terisi, day dinolkan; bila day terisi, month dinolkan.
   const month = toInt(body.month);
   const day = toInt(body.day);
@@ -236,7 +240,7 @@ export function mapCreateProgram(
  * locations[id|en|ja], materialsId[]/En[]/Ja[], dst. Hasilnya adalah partial
  * DTO (hanya field yang dikirim) agar PATCH tidak menghapus kolom lain.
  * Flag `technologiesIds_sent` (hidden di form edit) menandakan section
- * technology memang dirender ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â bila tidak ada technologiesIds terpilih,
+ * technology memang dirender — bila tidak ada technologiesIds terpilih,
  * kembalikan array kosong (clear), samakan semantik controller lama.
  */
 export function mapUpdateProgram(
@@ -247,8 +251,14 @@ export function mapUpdateProgram(
 
   if (body.name !== undefined) dto.name = asText(body.name);
   if (body.group !== undefined) dto.group = asText(body.group);
-  if (body.method === 'online' || body.method === 'offline') {
-    dto.method = body.method;
+  if (
+    body.method === 'online' ||
+    body.method === 'offline' ||
+    body.method === 'hybrid' ||
+    body.method === 'hybird'
+  ) {
+    dto.method =
+      body.method === 'hybird' ? 'hybrid' : (body.method as Method);
   }
 
   const categoryId = asText(body.categoryId);

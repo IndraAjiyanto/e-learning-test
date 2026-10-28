@@ -85,6 +85,7 @@
       }
     },
     async init() {
+      window.addEventListener('section-changed', () => { this.showDetail = false; });
       if (window.backendPortfolioData && Array.isArray(window.backendPortfolioData) && window.backendPortfolioData.length > 0) {
         this.portfolios = window.backendPortfolioData.map(p => this.mapPortfolioItem(p));
       } else {
@@ -497,13 +498,12 @@
                sudah dibuat tidak bisa disunting maupun dihapus student, padahal
                rute PATCH dan DELETE-nya sudah lama ada. --}}
           <div class="flex flex-col gap-2">
-            <button 
-              type="button" 
-              @click="selectedPortfolio = item; showDetail = true;"
-              class="w-full h-11 rounded-xl bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-medium text-sm leading-none flex items-center justify-center text-center transition-all cursor-pointer shadow-md"
+            <a 
+              :href="'/portfolio/detail/' + item.id"
+              class="w-full h-11 rounded-xl bg-[#003060] hover:bg-[#001f3f] text-white font-inter font-medium text-sm leading-none flex items-center justify-center text-center transition-all cursor-pointer shadow-md no-underline"
             >
               {{t "test.myPortfolio.detailButton"}}
-            </button>
+            </a>
             <div class="flex items-center gap-2">
               <a
                 :href="'/portfolio/formEdit/' + item.id"

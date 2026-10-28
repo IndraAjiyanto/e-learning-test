@@ -175,7 +175,14 @@ export class CategoriesService {
   async findCourseByCategoryAll(categoryId: string) {
     return await this.courseRepository.find({
       where: { category: { id: categoryId } },
-      relations: ['courseType', 'category', 'userCourses'],
+      relations: [
+        'courseType',
+        'category',
+        'userCourses',
+        'mentorings',
+        'mentorings.user',
+        'mentors',
+      ],
       order: { launch: 'DESC' },
     });
   }

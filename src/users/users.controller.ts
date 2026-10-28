@@ -1,4 +1,4 @@
-import {
+﻿import {
   HttpException,
   Controller,
   Get,
@@ -423,21 +423,225 @@ export class UsersController {
       return res.redirect('/login');
     }
     const user = await this.usersService.findOne(req.user.id);
+    if (!user) {
+      return res.redirect('/login');
+    }
+    const hasBiodata = Boolean(user.biodata?.fullName?.trim());
+
+    if (user.role === 'admin' || user.role === 'super_admin') {
+      return res.render('user/user_profile/index', {
+        user,
+        hasBiodata,
+        initialSection: 'profile',
+        bareShell: true,
+      });
+    }
+
+    const requestedCourseId =
+      typeof req.query.courseId === 'string' ? req.query.courseId : '';
+    let initialSection =
+      typeof req.query.tab === 'string' && req.query.tab
+        ? req.query.tab
+        : 'dashboard';
+
+    const programSections = [
+      'uiux',
+      'presentation',
+      'assignment',
+      'quiz',
+      'course-portfolio',
+      'portfolio-guide',
+      'logbook',
+      'certificate',
+      'group-class',
+      'quiz-start',
+      'detail-program',
+    ];
+    const isProgramSec =
+      programSections.includes(initialSection) || Boolean(requestedCourseId);
+
+    if (isProgramSec) {
+      const userWithCourses = await this.usersService.findWithCourses(
+        req.user.id,
+      );
+      const logbooks = await this.usersService.findAllLogbooks(req.user.id);
+      const portfolio = await this.usersService.findPortfolio(req.user.id);
+      const certificateCourseIds =
+        await this.usersService.findCertificateCourseIds(req.user.id);
+      const portfolioCourseIds = portfolio
+        .map((item) => item.course?.id)
+        .filter((courseId): courseId is string => Boolean(courseId));
+      const course = (userWithCourses?.userCourses ?? []).map(
+        (uc) => uc.course,
+      );
+      const certificateTemplates = Object.fromEntries(
+        course.map((item) => [item.id, certificateTemplateForCourse(item)]),
+      );
+      const category = [
+        ...new Map(
+          course
+            .filter((c) => c.category)
+            .map((c) => [c.category.id, c.category]),
+        ).values(),
+      ];
+      const courseType = [
+        ...new Map(
+          course
+            .filter((c) => c.courseType)
+            .map((c) => [c.courseType.id, c.courseType]),
+        ).values(),
+      ];
+      const activeCourse =
+        course.find((c) => c.id === requestedCourseId) ??
+        (initialSection === 'certificate'
+          ? course.find(
+              (c) =>
+                certificateCourseIds.includes(c.id) ||
+                portfolioCourseIds.includes(c.id),
+            )
+          : null) ??
+        course[0] ??
+        null;
+      const stats = null;
+      const activeCourseCompleted = !!userWithCourses?.userCourses?.find(
+        (uc) => uc.course?.id === activeCourse?.id && uc.progress,
+      );
+      const caps = capabilitiesForCourse(activeCourse);
+
+      if (initialSection === 'portfolio' && requestedCourseId) {
+        initialSection = 'course-portfolio';
+      }
+      if (
+        initialSection === 'assignment' &&
+        !caps.finalAssignment &&
+        caps.structure !== 'weeks'
+      ) {
+        initialSection = 'dashboard';
+      }
+      const programCaps = Object.fromEntries(
+        course.map((c) => [c.id, capabilitiesForCourse(c)]),
+      );
+
+      return res.render('user/user_profile/index', {
+        user,
+        userWithCourses,
+        logbooks,
+        portfolio,
+        portfolioCourseIds,
+        certificateCourseIds,
+        hasBiodata,
+        certificateTemplates,
+        course,
+        category,
+        courseType,
+        initialSection,
+        stats,
+        activeCourse,
+        activeCourseCompleted,
+        caps,
+        programCaps,
+        bareShell: true,
+      });
+    }
+
     const userWithCourses = await this.usersService.findWithCourses(
       req.user.id,
     );
-    const logbooks = await this.usersService.findAllLogbooks(req.user.id);
-    const portfolio = await this.usersService.findPortfolio(req.user.id);
-    const certificateCourseIds =
-      await this.usersService.findCertificateCourseIds(req.user.id);
-    const hasBiodata = Boolean(user.biodata?.fullName?.trim());
-    const portfolioCourseIds = portfolio
-      .map((item) => item.course?.id)
-      .filter((courseId): courseId is string => Boolean(courseId));
     const course = (userWithCourses?.userCourses ?? []).map((uc) => uc.course);
     const certificateTemplates = Object.fromEntries(
       course.map((item) => [item.id, certificateTemplateForCourse(item)]),
     );
+    const programCaps = Object.fromEntries(
+      course.map((c) => [c.id, capabilitiesForCourse(c)]),
+    );
+    const activeCourse = course[0] ?? null;
+    const caps = capabilitiesForCourse(activeCourse);
+
+    let dashboardStats: any = null;
+    let ongoingCourses: any[] = [];
+    let programComposition: any[] = [];
+    let portfolio: any[] = [];
+
+    if (initialSection === 'dashboard') {
+      const dbData = await this.usersService.getDashboardData(req.user.id);
+      dashboardStats = dbData.dashboardStats;
+      ongoingCourses = dbData.ongoingCourses;
+      programComposition = dbData.programComposition;
+      portfolio = await this.usersService.findPortfolio(req.user.id);
+    }
+
+    // Default fast shell render for sidebar navigation
+    return res.render('user/user_profile/index', {
+      user,
+      hasBiodata,
+      userWithCourses,
+      course,
+      certificateTemplates,
+      programCaps,
+      activeCourse,
+      caps,
+      initialSection,
+      dashboardStats,
+      ongoingCourses,
+      programComposition,
+      portfolio,
+      bareShell: true,
+    });
+  }
+
+  @Roles('user', 'admin', 'super_admin')
+  @Get('profile/fragment/dashboard')
+  async dashboardFragment(@Req() req: Request, @Res() res: Response) {
+    if (!req.user) return res.send('');
+    const user = await this.usersService.findOne(req.user.id);
+    const { dashboardStats, ongoingCourses, programComposition } =
+      await this.usersService.getDashboardData(req.user.id);
+    const portfolio = await this.usersService.findPortfolio(req.user.id);
+    const userWithCourses = await this.usersService.findWithCourses(
+      req.user.id,
+    );
+
+    return res.render('partials/user/sidebar_user_profile/dashboard/index', {
+      user,
+      dashboardStats,
+      ongoingCourses,
+      programComposition,
+      portfolio,
+      userWithCourses,
+      layout: false,
+    });
+  }
+
+  @Roles('user', 'admin', 'super_admin')
+  @Get('profile/fragment/profile')
+  async profileFragment(@Req() req: Request, @Res() res: Response) {
+    if (!req.user) return res.send('');
+    const user = await this.usersService.findOne(req.user.id);
+    return res.render('partials/user/sidebar_user_profile/profile/index', {
+      user,
+      layout: false,
+    });
+  }
+
+  @Roles('user', 'admin', 'super_admin')
+  @Get('profile/fragment/password')
+  passwordFragment(@Req() req: Request, @Res() res: Response) {
+    if (!req.user) return res.send('');
+    return res.render('partials/components/ui/profile/change_password/index', {
+      user: req.user,
+      isTab: true,
+      layout: false,
+    });
+  }
+
+  @Roles('user', 'admin', 'super_admin')
+  @Get('profile/fragment/learning')
+  async learningFragment(@Req() req: Request, @Res() res: Response) {
+    if (!req.user) return res.send('');
+    const userWithCourses = await this.usersService.findWithCourses(
+      req.user.id,
+    );
+    const course = (userWithCourses?.userCourses ?? []).map((uc) => uc.course);
     const category = [
       ...new Map(
         course
@@ -445,9 +649,6 @@ export class UsersController {
           .map((c) => [c.category.id, c.category]),
       ).values(),
     ];
-    // Dropdown "All Type" pada frame My Learning. Sama seperti `category`,
-    // isinya diturunkan dari program yang benar-benar diikuti student, jadi
-    // filter tidak pernah menawarkan tipe yang tak punya hasil.
     const courseType = [
       ...new Map(
         course
@@ -455,76 +656,49 @@ export class UsersController {
           .map((c) => [c.courseType.id, c.courseType]),
       ).values(),
     ];
-    const { dashboardStats, ongoingCourses, programComposition } =
-      await this.usersService.getDashboardData(user.id);
-    const requestedCourseId =
-      typeof req.query.courseId === 'string' ? req.query.courseId : '';
-    let initialSection =
-      typeof req.query.tab === 'string' && req.query.tab
-        ? req.query.tab
-        : 'dashboard';
-    const activeCourse =
-      course.find((c) => c.id === requestedCourseId) ??
-      (initialSection === 'certificate'
-        ? course.find(
-            (c) =>
-              certificateCourseIds.includes(c.id) ||
-              portfolioCourseIds.includes(c.id),
-          )
-        : null) ??
-      course[0] ??
-      null;
-    const stats = null;
-    const activeCourseCompleted = !!userWithCourses?.userCourses?.find(
-      (uc) => uc.course?.id === activeCourse?.id && uc.progress,
-    );
-    // Kapabilitas per tipe program. Template TIDAK PERNAH menyebut nama tipe
-    // programnya; ia membaca caps. Lihat courses/program-type.ts.
-    const caps = capabilitiesForCourse(activeCourse);
 
-    // Panel mana yang aktif pada gambar PERTAMA. Template memakai ini untuk
-    // memasang style="display:none" pada panel yang tidak aktif, supaya sebelum
-    // Alpine berjalan halaman tidak menampilkan SEMUA panel bertumpuk lalu
-    // menyembunyikannya - itulah yang terlihat sebagai halaman melompat.
-    if (initialSection === 'portfolio' && requestedCourseId) {
-      initialSection = 'course-portfolio';
-    }
-    if (
-      initialSection === 'assignment' &&
-      !caps.finalAssignment &&
-      caps.structure !== 'weeks'
-    ) {
-      initialSection = 'dashboard';
-    }
-    // Peta untuk sisi klien: student bisa berpindah program tanpa memuat ulang
-    // halaman, jadi sakelar logbook harus ikut berpindah bersamanya.
-    const programCaps = Object.fromEntries(
-      course.map((c) => [c.id, capabilitiesForCourse(c)]),
-    );
+    const cookies = req.cookies as { lang?: string } | undefined;
+    const lang = cookies?.lang || (res.locals?.lang as string) || 'id';
 
-    return res.render('user/user_profile/index', {
-      user: user,
-      userWithCourses,
-      logbooks,
-      portfolio,
-      portfolioCourseIds,
-      certificateCourseIds,
-      hasBiodata,
-      certificateTemplates,
-      course,
+    return res.render('partials/user/sidebar_user_profile/my_learning/index', {
+      user: req.user,
       category,
       courseType,
-      dashboardStats,
-      ongoingCourses,
-      programComposition,
-      initialSection,
-      stats,
-      activeCourse,
-      activeCourseCompleted,
-      caps,
-      programCaps,
-      bareShell: true,
+      lang,
+      layout: false,
     });
+  }
+
+  @Roles('user', 'admin', 'super_admin')
+  @Get('profile/fragment/portfolio')
+  async portfolioFragment(@Req() req: Request, @Res() res: Response) {
+    if (!req.user) return res.send('');
+    const portfolio = await this.usersService.findPortfolio(req.user.id);
+    const userWithCourses = await this.usersService.findWithCourses(
+      req.user.id,
+    );
+    return res.render(
+      'partials/user/sidebar_user_profile/profile_portfolio/index',
+      {
+        user: req.user,
+        portfolio,
+        userWithCourses,
+        layout: false,
+      },
+    );
+  }
+
+  @Roles('user', 'admin', 'super_admin')
+  @Get('profile/fragment/history-payment')
+  historyPaymentFragment(@Req() req: Request, @Res() res: Response) {
+    if (!req.user) return res.send('');
+    return res.render(
+      'partials/user/sidebar_user_profile/history_payment/index',
+      {
+        user: req.user,
+        layout: false,
+      },
+    );
   }
 
   @Roles('user', 'admin', 'super_admin')

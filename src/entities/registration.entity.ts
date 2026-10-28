@@ -79,5 +79,6 @@ export class Registration {
     onDelete: 'CASCADE',
   })
   @Exclude()
+  @JoinColumn({ name: 'courseId' })
   course: Course;
 }
