@@ -10,7 +10,11 @@
 <div data-status='{{this.process}}' x-data='cardData()' class='box-border w-full bg-white rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] overflow-hidden'>
 
   {{!-- Header (h64 #FAFAFA p8 14 gap6) --}}
-  <div @click='isOpen = !isOpen; $dispatch("review-select", { userId: "{{this.user.id}}", username: "{{this.user.username}}", file: "{{this.file}}" })'
+  <div
+    data-user-id='{{this.user.id}}'
+    data-username='{{this.user.username}}'
+    data-file='{{this.file}}'
+    @click='isOpen = !isOpen; $dispatch("review-select", { userId: $el.dataset.userId, username: $el.dataset.username, file: $el.dataset.file })'
     class='box-border w-full h-[64px] flex flex-row gap-[6px] p-[8px_14px] justify-between items-center bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#D9D9D9] cursor-pointer hover:bg-[#F5F5F5] transition-colors'>
     
     {{!-- Avatar label group (Uz9Uh) --}}
@@ -97,8 +101,8 @@
           <span class='text-[16px]/[normal] text-[#B91C1C] font-inter font-semibold whitespace-nowrap'>Reject</span>
         </button>
       </div>
+      {{/unless}}
     </form>
-    {{/unless}}
 
     {{!-- Container Comment History --}}
     {{#if this.comment}}
