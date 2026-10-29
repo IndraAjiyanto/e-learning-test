@@ -1624,7 +1624,8 @@ export class CoursesController {
         const course_flows = await this.coursesService.findCourseFlows(id);
         res.render('detail_program/paid_program/index', {
           course,
-          category: course.category,
+          userActivePayment: null,
+            category: course.category,
           kelass,
           studentList,
           courseQuestions,
@@ -1706,6 +1707,9 @@ export class CoursesController {
         } else {
           const course_flows = await this.coursesService.findCourseFlows(id);
           res.render('detail_program/paid_program/index', {
+            userActivePayment: req.user
+              ? await this.coursesService.findUserActivePayment(req.user.id, id)
+              : null,
             user: req.user,
             course,
             category: course.category,

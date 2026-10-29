@@ -525,6 +525,21 @@ export class CoursesService {
     }
   }
 
+  async findUserActivePayment(
+    userId: string,
+    courseId: string,
+  ): Promise<Payment | null> {
+    return this.paymentRepository.findOne({
+      where: {
+        user: { id: userId },
+        course: { id: courseId },
+        process: In(['process', 'approved']),
+      },
+      order: { createdAt: 'DESC' },
+      relations: ['installment', 'invoice'],
+    });
+  }
+
   async findMyCourse(userId: string) {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
