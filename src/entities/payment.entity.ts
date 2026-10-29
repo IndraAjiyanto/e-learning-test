@@ -14,6 +14,7 @@ import { Course } from './course.entity';
 import { Installment } from './installment.entity';
 import { Invoice } from './invoice.entity';
 import { InstallmentPayment } from './installment-payment.entity';
+import { Registration } from './registration.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
 import { REFERAL_SOURCES } from './types/referal-source';
@@ -128,4 +129,10 @@ export class Payment {
     (installmentPayment) => installmentPayment.payment,
   )
   installmentPayments: InstallmentPayment[];
+
+  @OneToOne(() => Registration, (registration) => registration.payment, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  registration: Registration;
 }

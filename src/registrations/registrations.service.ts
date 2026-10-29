@@ -11,6 +11,8 @@ import { Not, Repository } from 'typeorm';
 import { Course } from 'src/entities/course.entity';
 import { User } from 'src/entities/user.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
+import { Payment } from 'src/entities/payment.entity';
+import { InvoiceService } from 'src/invoice/invoice.service';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -25,11 +27,15 @@ export class RegistrationsService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserCourse)
     private readonly userCourseRepository: Repository<UserCourse>,
+    @InjectRepository(Payment)
+    private readonly paymentRepository: Repository<Payment>,
+    private readonly invoiceService: InvoiceService,
   ) {}
 
   async create(createRegistrationDto: CreateRegistrationsDto) {
     const user = await this.userRepository.findOne({
       where: { id: createRegistrationDto.userId },
+      relations: ['biodata'],
     });
     if (!user) {
       return;
@@ -37,6 +43,7 @@ export class RegistrationsService {
 
     const course = await this.courseRepository.findOne({
       where: { id: createRegistrationDto.courseId },
+      relations: ['category'],
     });
     if (!course) {
       return;
@@ -48,14 +55,55 @@ export class RegistrationsService {
     );
     if (check == false) {
       return false;
-    } else {
-      const registration = this.registrationRepository.create({
-        ...createRegistrationDto,
-        user: user,
-        course: course,
-      });
-      return await this.registrationRepository.save(registration);
     }
+
+    // 1. Generate nomor faktur resmi format WSA-KA.xxx/KW/{Bulan}/{Tahun}
+    const invoiceNumber = await this.invoiceService.generateInvoiceNumber();
+
+    // 2. Buat record Payment untuk menghubungkan registrasi dengan sistem pembayaran
+    const payment = this.paymentRepository.create({
+      no: invoiceNumber,
+      user: user,
+      course: course,
+      file: createRegistrationDto.file || undefined,
+      process: createRegistrationDto.process || 'approved',
+      user_fullname:
+        createRegistrationDto.user_fullname ||
+        (user.biodata as { fullName?: string })?.fullName ||
+        user.username,
+      user_email: createRegistrationDto.user_email || user.email,
+      user_no:
+        createRegistrationDto.user_no ||
+        (user.biodata as { no?: string })?.no ||
+        undefined,
+      current_status:
+        (createRegistrationDto.current_status as any) || undefined,
+      referalSource: createRegistrationDto.referal_source || undefined,
+      attend_program: Boolean(createRegistrationDto.attend_program),
+    });
+    const savedPayment = await this.paymentRepository.save(payment);
+
+    // 3. Generate Invoice resmi melalui InvoiceService
+    const invoice = await this.invoiceService.createInvoiceForRegistration(
+      savedPayment,
+      course,
+      user,
+      createRegistrationDto,
+    );
+    const finalInvoiceNumber = invoice.invoice_number || invoiceNumber;
+
+    // 4. Simpan record Registration dengan nomor invoice dan relasi payment
+    const registration = this.registrationRepository.create({
+      ...createRegistrationDto,
+      no: finalInvoiceNumber,
+      payment: savedPayment,
+      user: user,
+      course: course,
+    });
+    const savedRegistration =
+      await this.registrationRepository.save(registration);
+
+    return savedRegistration;
   }
 
   async checkRegistration(userId: string, courseId: string) {
@@ -86,19 +134,22 @@ export class RegistrationsService {
   }
 
   async findAll() {
-    return await this.registrationRepository.find();
+    return await this.registrationRepository.find({
+      relations: ['user', 'course', 'payment', 'payment.invoice'],
+    });
   }
 
   async findRegistration(userId: string) {
     return await this.registrationRepository.find({
       where: { user: { id: userId } },
+      relations: ['course', 'course.category', 'payment', 'payment.invoice'],
     });
   }
 
   async findOne(id: string) {
     const registration = await this.registrationRepository.findOne({
       where: { id },
-      relations: ['user', 'course'],
+      relations: ['user', 'course', 'payment', 'payment.invoice'],
     });
     if (!registration) {
       throw new NotFoundException('registration not found');
@@ -178,6 +229,23 @@ export class RegistrationsService {
       return;
     }
     Object.assign(registration, updateRegistrationDto);
-    return await this.registrationRepository.save(registration);
+    const saved = await this.registrationRepository.save(registration);
+
+    // Sinkronisasi status payment dan invoice terkait jika ada
+    if (registration.payment && updateRegistrationDto.process) {
+      registration.payment.process = updateRegistrationDto.process;
+      if (registration.payment.invoice) {
+        if (updateRegistrationDto.process === 'approved') {
+          registration.payment.invoice.status = 'paid';
+          registration.payment.invoice.paid_at = new Date();
+        } else if (updateRegistrationDto.process === 'rejected') {
+          registration.payment.invoice.status = 'expired';
+        }
+        await this.invoiceService.saveInvoice(registration.payment.invoice);
+      }
+      await this.paymentRepository.save(registration.payment);
+    }
+
+    return saved;
   }
 }
