@@ -7,7 +7,7 @@
   >
     <h2
       class='text-3xl font-bold text-gray-900 text-center md:text-left'
-    >Cicilan Management</h2>
+    >Installment Management</h2>
 
     <div class='flex items-center gap-3'>
       <div class='relative w-full md:w-64'>
@@ -43,7 +43,7 @@
         href='/installment/formCreate'
         class='bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition'
       >
-        Create Cicilan
+        Create Installment
       </a>
     </div>
   </div>
@@ -76,13 +76,13 @@
           >No</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Kelas</th>
+          >Course</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Durasi</th>
+          >Duration</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
-          >Tanggal Tenggat</th>
+          >Due Date</th>
           <th
             class='px-6 py-3 text-left text-sm font-semibold text-gray-700'
           >Price/Month</th>
@@ -104,7 +104,7 @@
             <td class='px-6 py-4 text-sm text-gray-800'>{{month}} Months</td>
             <td class='px-6 py-4 text-sm text-gray-800'>
               {{#each dueDates}}
-                <span class='mr-1'>B{{addOne @index}}: {{this}}</span>
+                <span class='mr-1'>M{{addOne @index}}: {{this}}</span>
               {{/each}}
             </td>
             <td class='px-6 py-4 text-sm text-gray-700'>
@@ -221,6 +221,6 @@
   { if (this.pageNumber < this.pageCount()-1) this.pageNumber++; }, prevPage() {
   if (this.pageNumber > 0) this.pageNumber--; }, viewPage(index) {
   this.pageNumber = index; }, } } function confirmDelete(button) { if
-  (confirm('Are you sure you want to delete this installments?')) {
+  (confirm('Are you sure you want to delete this installment?')) {
   button.closest('form').submit(); } }
 </script>

@@ -79,6 +79,10 @@
                 if (pp && (pp.absen === true || pp.absen === 1)) return true;
                 if (session.attendances && session.attendances.length > 0) return true;
                 if (session.absen && session.absen.length > 0) return true;
+                if (this.sessions && index > 0 && this.sessions[index - 1]) {
+                  const prev = this.sessions[index - 1];
+                  if (this.isSessionCompleted(prev)) return true;
+                }
                 return false;
               },
 

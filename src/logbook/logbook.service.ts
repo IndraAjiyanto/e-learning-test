@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateLogbookDto } from './dto/create-logbook.dto';
 import { UpdateLogbookDto } from './dto/update-logbook.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,6 +18,7 @@ import { Quiz } from 'src/entities/quiz.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { QuizProgress } from 'src/entities/quiz_progress.entity';
+import { Attendance } from 'src/entities/attendance.entity';
 
 @Injectable()
 export class LogbookService {
@@ -33,6 +38,9 @@ export class LogbookService {
   private readonly quizRepository: Repository<Quiz>;
   @InjectRepository(QuizProgress)
   private readonly progresQuizRepository: Repository<QuizProgress>;
+  @InjectRepository(Attendance)
+  private readonly attendanceRepository: Repository<Attendance>;
+
   async create(createLogbookDto: CreateLogbookDto) {
     const user = await this.userRepository.findOne({
       where: { id: createLogbookDto.userId },
@@ -47,12 +55,141 @@ export class LogbookService {
       throw new Error('session tidak ada');
     }
 
+    const existingLogbook = await this.logBookRepository.findOne({
+      where: {
+        user: { id: user.id },
+        session: { id: session.id },
+      },
+    });
+    if (existingLogbook) {
+      throw new BadRequestException(
+        'This user already has a logbook for this session.',
+      );
+    }
+
     const logbooks = this.logBookRepository.create({
       ...createLogbookDto,
       user: user,
       session: session,
     });
-    return await this.logBookRepository.save(logbooks);
+    const saved = await this.logBookRepository.save(logbooks);
+
+    if (createLogbookDto.process === 'approved') {
+      await this.applyLogbookApproved(user.id, session.id);
+    }
+
+    return saved;
+  }
+
+  private async applyLogbookApproved(userId: string, sessionId: string) {
+    const existingProgress = await this.sessionProgressRepository.findOne({
+      where: {
+        user: { id: userId },
+        session: { id: sessionId },
+      },
+      relations: ['session', 'session.weeks'],
+    });
+
+    if (existingProgress) {
+      await this.sessionProgressRepository.update(existingProgress.id, {
+        logbook: true,
+        isAttended: true,
+      });
+    } else {
+      await this.sessionProgressRepository.save({
+        user: { id: userId },
+        session: { id: sessionId },
+        logbook: true,
+        isAttended: true,
+      });
+    }
+
+    const existingAttendance = await this.attendanceRepository.findOne({
+      where: {
+        user: { id: userId },
+        session: { id: sessionId },
+      },
+    });
+    if (!existingAttendance) {
+      await this.attendanceRepository.save(
+        this.attendanceRepository.create({
+          user: { id: userId },
+          session: { id: sessionId },
+          status: 'present',
+          attendanceTime: new Date(),
+          notes: 'Hadir (diverifikasi admin melalui logbook)',
+        }),
+      );
+    }
+
+    const session = await this.sessionRepository.findOne({
+      where: { id: sessionId },
+      relations: ['weeks', 'weeks.course'],
+    });
+    if (session) {
+      if (session.isFinal) {
+        const quiz = await this.quizRepository.findOne({
+          where: {
+            weeks: { id: session.weeks.id },
+          },
+        });
+        if (quiz) {
+          const existingQuizProgress = await this.progresQuizRepository.findOne({
+            where: {
+              quiz: { id: quiz.id },
+              user: { id: userId },
+            },
+          });
+          if (existingQuizProgress) {
+            await this.progresQuizRepository.save({
+              id: existingQuizProgress.id,
+              quiz: { id: quiz.id },
+              user: { id: userId },
+              process: true,
+            });
+          } else {
+            await this.progresQuizRepository.save({
+              quiz: { id: quiz.id },
+              user: { id: userId },
+              process: true,
+            });
+          }
+        }
+      } else {
+        const nextSession = await this.sessionRepository.findOne({
+          where: {
+            sessionOrder: session.sessionOrder + 1,
+            weeks: { id: session.weeks.id },
+          },
+        });
+
+        if (nextSession) {
+          const existingSessionProgress =
+            await this.sessionProgressRepository.findOne({
+              where: {
+                user: { id: userId },
+                session: { id: nextSession.id },
+              },
+            });
+          if (existingSessionProgress) {
+            await this.sessionProgressRepository.save({
+              id: existingSessionProgress.id,
+              session: { id: nextSession.id },
+              user: { id: userId },
+              isAttended: true,
+              logbook: existingSessionProgress.logbook ?? false,
+            });
+          } else {
+            await this.sessionProgressRepository.save({
+              session: { id: nextSession.id },
+              user: { id: userId },
+              isAttended: true,
+              logbook: false,
+            });
+          }
+        }
+      }
+    }
   }
 
   async findByUser(userId: string) {
@@ -110,19 +247,30 @@ export class LogbookService {
   }
 
   async findUsers(sessionId: string) {
-    return await this.userRepository.find({
-      where: {
-        userCourses: {
-          course: { weeks: { session: { id: sessionId } } },
-        },
-      },
-      relations: [
-        'userCourses',
-        'userCourses.user',
-        'userCourses.course',
-        'biodata',
-      ],
+    const existingLogbooks = await this.logBookRepository.find({
+      where: { session: { id: sessionId } },
+      relations: ['user'],
     });
+    const userIdsWithLogbook = new Set(
+      existingLogbooks.map((lb) => lb.user?.id).filter(Boolean),
+    );
+
+    const attendances = await this.attendanceRepository.find({
+      where: { session: { id: sessionId } },
+      relations: ['user', 'user.biodata'],
+    });
+
+    const uniqueUsersMap = new Map<string, User>();
+    for (const att of attendances) {
+      const u = att.user;
+      if (u && !userIdsWithLogbook.has(u.id)) {
+        if (!uniqueUsersMap.has(u.id)) {
+          uniqueUsersMap.set(u.id, u);
+        }
+      }
+    }
+
+    return Array.from(uniqueUsersMap.values());
   }
 
   async findSession(sessionId: string) {
@@ -219,96 +367,7 @@ export class LogbookService {
     Object.assign(logbooks, updateLogbookDto);
 
     if (updateLogbookDto.process === 'approved') {
-      const existingProgress = await this.sessionProgressRepository.findOne({
-        where: {
-          user: { id: logbooks.user.id },
-          session: { id: logbooks.session.id },
-        },
-        relations: ['session', 'session.weeks'],
-      });
-
-      if (existingProgress) {
-        await this.sessionProgressRepository.update(existingProgress.id, {
-          logbook: true,
-        });
-      } else {
-        await this.sessionProgressRepository.save({
-          user: { id: logbooks.user.id },
-          session: { id: logbooks.session.id },
-          logbook: true,
-          isAttended: true,
-        });
-      }
-
-      const session = await this.sessionRepository.findOne({
-        where: { id: logbooks.session.id },
-        relations: ['weeks', 'weeks.course'],
-      });
-      if (session) {
-        if (session.isFinal) {
-          const quiz = await this.quizRepository.findOne({
-            where: {
-              weeks: { id: session.weeks.id },
-            },
-          });
-          if (quiz) {
-            const existingQuizProgress =
-              await this.progresQuizRepository.findOne({
-                where: {
-                  quiz: { id: quiz.id },
-                  user: { id: logbooks.user.id },
-                },
-              });
-            if (existingQuizProgress) {
-              await this.progresQuizRepository.save({
-                id: existingQuizProgress.id,
-                quiz: { id: quiz.id },
-                user: { id: logbooks.user.id },
-                process: true,
-              });
-            } else {
-              await this.progresQuizRepository.save({
-                quiz: { id: quiz.id },
-                user: { id: logbooks.user.id },
-                process: true,
-              });
-            }
-          }
-        } else {
-          const nextSession = await this.sessionRepository.findOne({
-            where: {
-              sessionOrder: session.sessionOrder + 1,
-              weeks: { id: session.weeks.id },
-            },
-          });
-
-          if (nextSession) {
-            const existingSessionProgress =
-              await this.sessionProgressRepository.findOne({
-                where: {
-                  user: { id: logbooks.user.id },
-                  session: { id: nextSession.id },
-                },
-              });
-            if (existingSessionProgress) {
-              await this.sessionProgressRepository.save({
-                id: existingSessionProgress.id,
-                session: { id: nextSession.id },
-                user: { id: logbooks.user.id },
-                isAttended: true,
-                logbook: false,
-              });
-            } else {
-              await this.sessionProgressRepository.save({
-                session: { id: nextSession.id },
-                user: { id: logbooks.user.id },
-                isAttended: true,
-                logbook: false,
-              });
-            }
-          }
-        }
-      }
+      await this.applyLogbookApproved(logbooks.user.id, logbooks.session.id);
     } else if (updateLogbookDto.process === 'rejected') {
       const existingProgress = await this.sessionProgressRepository.findOne({
         where: {

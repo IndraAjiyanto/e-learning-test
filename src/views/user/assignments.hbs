@@ -27,14 +27,14 @@
       {{#if assignment.file}}
         <iframe
           src="{{assignment.file}}"
-          class="w-full border-0"
-          style="min-height:369px;height:100%;flex:1;"
+          class="w-full border-0 h-[650px] sm:h-[750px] lg:h-[850px]"
+          style="min-height:650px;height:850px;flex:1;"
           allowfullscreen
           loading="lazy"
         ></iframe>
       {{else}}
         {{!-- Fallback: no file uploaded --}}
-        <div class="w-full flex flex-col items-center justify-center gap-4 p-10" style="min-height:369px;">
+        <div class="w-full flex flex-col items-center justify-center gap-4 p-10 min-h-[400px]">
           <svg class="w-12 h-12 text-[#CBD5E1]" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M28 4H12C9.79 4 8.02 5.79 8.02 8L8 40C8 42.21 9.77 44 11.98 44H36C38.21 44 40 42.21 40 40V16L28 4ZM36 40H12V8H26V18H36V40Z" fill="#CBD5E1"/>
           </svg>

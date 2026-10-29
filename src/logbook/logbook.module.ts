@@ -11,6 +11,7 @@ import { SessionProgress } from 'src/entities/session_progress.entity';
 import { CommonModule } from 'src/common/common.module';
 import { Quiz } from 'src/entities/quiz.entity';
 import { QuizProgress } from 'src/entities/quiz_progress.entity';
+import { Attendance } from 'src/entities/attendance.entity';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { QuizProgress } from 'src/entities/quiz_progress.entity';
       MentorLogbook,
       Quiz,
       QuizProgress,
+      Attendance,
     ]),
     CommonModule,
   ],

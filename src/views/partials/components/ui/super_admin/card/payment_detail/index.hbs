@@ -18,7 +18,7 @@
     <div class="flex items-center gap-2">
       <span class="font-inter font-semibold text-[13px] leading-5 text-black tracking-[-0.325px]" x-text="item.invoice?.xendit_invoice_id || item.no || ('INV/' + (item.id ? item.id.substring(0,8).toUpperCase() : '—'))"></span>
       <template x-if="tab === 'installment' || item.installment">
-        <span class="px-2 py-0.5 rounded bg-[#003060]/10 text-[#003060] font-inter text-xs font-semibold" x-text="(item.installment?.month || 3) + ' Bulan Cicilan'"></span>
+        <span class="px-2 py-0.5 rounded bg-[#003060]/10 text-[#003060] font-inter text-xs font-semibold" x-text="(item.installment?.month || 3) + ' Months Installment'"></span>
       </template>
     </div>
     <div>
@@ -101,8 +101,8 @@
           <span class="font-inter font-medium text-sm leading-5 text-[#404040] truncate" x-text="item.referalSource || item.referal_source || item.keyword || '—'"></span>
         </div>
         <div class="flex flex-col gap-0.5">
-          <span class="font-inter font-normal text-xs leading-4 text-[#737373]" x-text="(tab === 'installment' || item.installment) ? 'Skema Cicilan' : 'Payment Type'"></span>
-          <span class="font-inter font-medium text-sm leading-5 text-[#404040] truncate" x-text="(tab === 'installment' || item.installment) ? ((item.installment?.month || 3) + 'x Termin') : (item.paymentMethod || 'Full Payment')"></span>
+          <span class="font-inter font-normal text-xs leading-4 text-[#737373]" x-text="(tab === 'installment' || item.installment) ? 'Installment Scheme' : 'Payment Type'"></span>
+          <span class="font-inter font-medium text-sm leading-5 text-[#404040] truncate" x-text="(tab === 'installment' || item.installment) ? ((item.installment?.month || 3) + 'x Terms') : (item.paymentMethod || 'Full Payment')"></span>
         </div>
       </div>
 
@@ -125,7 +125,7 @@
 
       <!-- Row 5: Bukti Transfer (pembayaran manual) -->
       <div class="flex flex-col gap-0.5">
-        <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Bukti Transfer</span>
+        <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Transfer Proof</span>
         <template x-if="item.file">
           <a
             :href="item.file"
@@ -133,7 +133,7 @@
             rel="noopener noreferrer"
             class="font-inter font-normal text-sm leading-5 text-[#2563EB] hover:underline truncate"
           >
-            Lihat bukti pembayaran &rarr;
+            View payment proof &rarr;
           </a>
         </template>
         <template x-if="!item.file">
@@ -167,8 +167,8 @@
     <template x-if="tab === 'installment' || item.installment">
       <div class="flex flex-col gap-2 pt-2.5 border-t border-[#E5E5E5]">
         <div class="flex items-center justify-between">
-          <span class="font-inter font-semibold text-xs leading-4 text-[#003060]">Data Angsuran / Cicilan</span>
-          <span class="font-inter text-xs font-medium text-[#737373]" x-text="(item.installment?.month || 3) + ' Bulan'"></span>
+          <span class="font-inter font-semibold text-xs leading-4 text-[#003060]">Installment Data</span>
+          <span class="font-inter text-xs font-medium text-[#737373]" x-text="(item.installment?.month || 3) + ' Months'"></span>
         </div>
 
         <!-- DP Item -->
@@ -183,12 +183,12 @@
               <template x-if="getPricing(item).downPayment.discountAmount > 0">
                 <span class="text-[11px] text-emerald-600" x-text="'Voucher: - ' + formatCurrency(getPricing(item).downPayment.discountAmount)"></span>
               </template>
-              <span class="font-semibold text-[#003060]" x-text="'Bayar: ' + formatCurrency(getPricing(item).downPayment.amount)"></span>
+              <span class="font-semibold text-[#003060]" x-text="'Pay: ' + formatCurrency(getPricing(item).downPayment.amount)"></span>
             </div>
             <span
               class="px-2 py-0.5 rounded text-[11px] font-semibold"
               :class="item.dpPaidAt || item.process === 'acc' || item.process === 'approved' ? 'bg-[#F0FDF4] text-[#15803D]' : 'bg-[#FEFCE8] text-[#A16207]'"
-              x-text="item.dpPaidAt || item.process === 'acc' || item.process === 'approved' ? 'Lunas' : 'Menunggu'"
+              x-text="item.dpPaidAt || item.process === 'acc' || item.process === 'approved' ? 'Paid' : 'Pending'"
             ></span>
           </div>
         </div>
@@ -202,7 +202,7 @@
                   class="block w-1.5 h-1.5 shrink-0 rounded-full"
                   :class="getTermStatus(item, idx + 1) === 'approved' ? 'bg-[#22C55E]' : (getTermStatus(item, idx + 1) === 'process' ? 'bg-[#EAB308]' : 'bg-slate-300')"
                 ></span>
-                <span class="font-medium text-[#404040]" x-text="'Termin ' + (idx + 1)"></span>
+                <span class="font-medium text-[#404040]" x-text="'Term ' + (idx + 1)"></span>
                 <template x-if="item.installment?.dueDates && item.installment.dueDates[idx]">
                   <span class="text-[11px] text-[#737373]" x-text="'(' + formatDate(item.installment.dueDates[idx]) + ')'"></span>
                 </template>
@@ -211,9 +211,9 @@
                 <div class="flex flex-col items-end">
                   <span class="text-[#404040] font-medium" x-text="formatCurrency(getPricing(item).monthly[idx].originalAmount)"></span>
                   <template x-if="getPricing(item).monthly[idx].discountAmount > 0">
-                    <span class="text-[11px] text-emerald-600" x-text="'Diskon bulanan: - ' + formatCurrency(getPricing(item).monthly[idx].discountAmount)"></span>
+                    <span class="text-[11px] text-emerald-600" x-text="'Monthly discount: - ' + formatCurrency(getPricing(item).monthly[idx].discountAmount)"></span>
                   </template>
-                  <span class="font-semibold text-[#003060]" x-text="'Bayar: ' + formatCurrency(getPricing(item).monthly[idx].amount)"></span>
+                  <span class="font-semibold text-[#003060]" x-text="'Pay: ' + formatCurrency(getPricing(item).monthly[idx].amount)"></span>
                 </div>
                 <span
                   class="px-2 py-0.5 rounded text-[11px] font-semibold"
@@ -229,7 +229,7 @@
                     rel="noopener noreferrer"
                     class="text-[#2563EB] hover:underline text-[11px] font-medium shrink-0"
                   >
-                    Bukti
+                    Proof
                   </a>
                 </template>
 
@@ -267,13 +267,13 @@
         <div class="flex flex-col gap-2">
           <!-- Subtotal / Harga -->
           <div class="flex items-center justify-between">
-            <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Harga program</span>
+            <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Program price</span>
             <span class="font-inter font-normal text-sm leading-5 text-[#404040]" x-text="formatCurrency(item.invoice?.price || item.course?.price || 0)"></span>
           </div>
 
           <template x-if="Number(item.invoice?.discount_amount) > 0">
             <div class="flex items-center justify-between">
-              <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Promo program</span>
+              <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Program promo</span>
               <span class="font-inter font-normal text-sm leading-5 text-emerald-600" x-text="'- ' + formatCurrency(item.invoice.discount_amount)"></span>
             </div>
           </template>
@@ -287,7 +287,7 @@
 
           <!-- Voucher discount -->
           <div class="flex items-center justify-between">
-            <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Diskon voucher</span>
+            <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Voucher discount</span>
             <span
               class="font-inter font-normal text-sm leading-5"
               :class="Number(item.invoice?.promo_code) > 0 ? 'text-[#16A34A]' : 'text-[#737373]'"
@@ -313,11 +313,11 @@
           </div>
         </template>
         <div class="flex items-center justify-between">
-          <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Total sebelum voucher</span>
+          <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Total before voucher</span>
           <span class="font-inter font-normal text-sm leading-5 text-[#404040]" x-text="formatCurrency(getPricing(item).totalOriginal)"></span>
         </div>
         <div class="flex items-center justify-between">
-          <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Diskon voucher</span>
+          <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Voucher discount</span>
           <span class="font-inter font-normal text-sm leading-5 text-emerald-600" x-text="'- ' + formatCurrency(getPricing(item).totalDiscount)"></span>
         </div>
         <!-- Down Payment -->
@@ -328,7 +328,7 @@
 
           <!-- Total Cicilan Bulanan -->
           <div class="flex items-center justify-between">
-            <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Total Angsuran</span>
+            <span class="font-inter font-normal text-xs leading-4 text-[#737373]">Total Installments</span>
             <span class="font-inter font-normal text-sm leading-5 text-[#404040]" x-text="formatCurrency(getPricing(item).monthly.reduce((sum, row) => sum + row.amount, 0))"></span>
           </div>
 

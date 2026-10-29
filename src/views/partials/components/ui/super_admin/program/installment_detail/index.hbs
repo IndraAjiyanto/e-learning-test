@@ -22,10 +22,10 @@
   <!-- Title Section -->
   <div class="flex flex-col items-start gap-1 w-full">
     <h1 class="font-montserrat font-bold text-[34px] leading-9 tracking-[-1px] text-[#003060]">
-      Detail Cicilan Peserta
+      Participant Installment Details
     </h1>
     <p class="font-montserrat font-medium text-base leading-5 text-[#718096]">
-      <span x-text="selectedInstallment?.user_fullname || selectedInstallment?.user?.username || 'Peserta'"></span>
+      <span x-text="selectedInstallment?.user_fullname || selectedInstallment?.user?.username || 'Participant'"></span>
       —
       <span x-text="selectedInstallment?.course?.title || selectedInstallment?.course?.name || 'Program'"></span>
       (<span x-text="selectedInstallment?.invoice?.xendit_invoice_id || selectedInstallment?.no || ('INV/' + (selectedInstallment?.id ? selectedInstallment.id.substring(0,8).toUpperCase() : '—'))"></span>)
@@ -73,7 +73,7 @@
 
               <!-- Badge Skema Cicilan / Dropdown -->
               <span class="inline-flex items-center justify-center px-3 py-1 gap-1 rounded-2xl bg-[#E4F1F7] text-[#003060] font-inter font-medium text-sm leading-5">
-                <span x-text="(selectedInstallment?.installment?.month || 3) + ' Bulan Cicilan'"></span>
+                <span x-text="(selectedInstallment?.installment?.month || 3) + ' Months Installment'"></span>
                 <!-- CaretDown Icon -->
                 <svg class="w-4 h-4 text-[#003060]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -106,7 +106,7 @@
                       class="font-montserrat font-medium text-sm leading-5 text-[#718096]"
                       x-text="selectedInstallment?.installment?.dueDates && selectedInstallment.installment.dueDates[idx]
                         ? ('Due ' + formatDate(selectedInstallment.installment.dueDates[idx]))
-                        : ('Termin Bulan ke-' + (idx + 1))"
+                        : ('Term Month ' + (idx + 1))"
                     ></span>
                   </div>
 
@@ -158,7 +158,7 @@
       <div class="flex items-center gap-3">
         <!-- Optional back info / breadcrumb -->
         <span class="font-inter text-xs text-[#737373] hidden sm:inline">
-          Menampilkan rincian skema termin cicilan peserta
+          Displaying participant installment term schedule details
         </span>
       </div>
 
@@ -170,7 +170,7 @@
           class="box-border flex flex-row justify-center items-center px-[18px] py-2.5 gap-2 w-[177px] h-11 bg-[#003060] hover:bg-[#002244] border border-[#003060] rounded-lg shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-all cursor-pointer"
         >
           <span class="font-inter font-semibold text-base leading-6 text-white text-center">
-            Kembali
+            Back
           </span>
         </button>
       </div>
