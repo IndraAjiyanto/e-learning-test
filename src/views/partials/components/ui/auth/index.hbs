@@ -101,11 +101,11 @@
 
       {{!-- 3. FRAME 2147229431 (Countdown Container: top 437px, width 560px, height 90px) --}}
       <div class="w-full max-w-[560px] h-[90px] mx-auto mt-5 lg:mt-[38px] mb-6 lg:mb-[42px] px-2 lg:px-0">
-        <div class="my-countdown simply-countdown"></div>
+        <div class="my-countdown simply-countdown notranslate" translate="no"></div>
       </div>
 
       <script>
-        const remainingMs = {{remainingMs}};
+        const remainingMs = {{default remainingMs 0}};
         const target = new Date(Date.now() + remainingMs);
         simplyCountdown('.my-countdown', {
           year: target.getFullYear(),
@@ -114,6 +114,7 @@
           hours: target.getHours(),
           minutes: target.getMinutes(),
           seconds: target.getSeconds(),
+          zeroPad: true,
           words: {
             days: { root: '{{default countdownDayText "DAY"}}', lambda: (root, n) => root },
             hours: { root: '{{default countdownHourText "HOUR"}}', lambda: (root, n) => root },
