@@ -9,7 +9,7 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from 'src/entities/payment.entity';
-import { IsNull, Not, Repository } from 'typeorm';
+import { In, IsNull, Not, Repository } from 'typeorm';
 import { Course } from 'src/entities/course.entity';
 import { User } from 'src/entities/user.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
@@ -465,6 +465,21 @@ export class PaymentsService {
     } else {
       return true;
     }
+  }
+
+  async findUserActivePayment(
+    userId: string,
+    courseId: string,
+  ): Promise<Payment | null> {
+    return this.paymentRepository.findOne({
+      where: {
+        user: { id: userId },
+        course: { id: courseId },
+        process: In(['process', 'approved']),
+      },
+      order: { createdAt: 'DESC' },
+      relations: ['installment', 'invoice'],
+    });
   }
 
   async findCourse(courseId: string) {

@@ -45,7 +45,7 @@
     numeric=true
     label=(t 'test.payment.form.whatsapp')
     required=true
-    value=user.no_telp
+    value=(coalesce user.biodata.no user.no_telp)
     placeholder=(t 'test.payment.form.whatsappPlaceholder')
     icon="fa-regular fa-comment-dots"
     variant="accent"
@@ -186,6 +186,11 @@
     // Hanya izinkan angka untuk nomor WhatsApp
     const whatsappInput = form.querySelector('input[name="whatsappNumber"]');
     if (whatsappInput) {
+      whatsappInput.addEventListener('keydown', (e) => {
+        if (e.key.length === 1 && !/^[0-9]$/.test(e.key) && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+        }
+      });
       whatsappInput.addEventListener('input', (e) => {
         const cleaned = e.target.value.replace(/\D/g, '');
         if (e.target.value !== cleaned) {

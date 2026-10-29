@@ -2,7 +2,7 @@
 <div class="max-w-3xl mx-auto px-6 py-10">
   <div class="card bg-white shadow-xl rounded-xl">
     <div class="card-body">
-      <h2 class="card-title text-2xl font-bold mb-6">Detail Absen</h2>
+      <h2 class="card-title text-2xl font-bold mb-6">Attendance Detail</h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
@@ -11,22 +11,22 @@
         </div>
 
         <div>
-          <p class="text-sm text-gray-500">Kelas</p>
+          <p class="text-sm text-gray-500">Course</p>
           <a href="/program/detail/program/admin/{{attendance.session.weeks.course.id}}" class="text-lg font-semibold text-gray-900">{{attendance.session.weeks.course.name}}</a>
         </div>
 
         <div>
-          <p class="text-sm text-gray-500">Pertemuan Ke</p>
+          <p class="text-sm text-gray-500">Session</p>
           <a href="/session/{{attendance.session.id}}" class="text-lg font-semibold text-gray-900">{{attendance.session.sessionOrder}}</a>
         </div>
 
         <div>
-          <p class="text-sm text-gray-500">Tanggal</p>
+          <p class="text-sm text-gray-500">Date</p>
           <p class="text-lg font-semibold text-gray-900">{{formatDate attendance.session.date}}</p>
         </div>
 
         <div>
-          <p class="text-sm text-gray-500">Waktu :</p>
+          <p class="text-sm text-gray-500">Time :</p>
           <p class="text-lg font-semibold text-gray-900">{{formatTime attendance.session.startTime}} - {{formatTime attendance.session.endTime}}</p>
         </div>
 
@@ -41,13 +41,13 @@
         </div>
 
         <div>
-          <p class="text-sm text-gray-500">Keterangan</p>
+          <p class="text-sm text-gray-500">Notes</p>
           <p class="text-lg text-gray-800">{{attendance.notes}}</p>
         </div>
       </div>
 
       <div class="mt-8 flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-4">
-        <a href="/attendance" class="btn btn-outline">Kembali</a>
+        <a href="/attendance" class="btn btn-outline">Back</a>
         <a href="/attendance/{{attendance.id}}/edit" class="btn btn-primary">Edit Attendance</a>
       </div>
     </div>

@@ -308,10 +308,10 @@ export class LogbookController {
   ) {
     try {
       const logbooks = await this.logbookService.findOne(logbookId);
+      await this.logbookService.remove(logbookId);
       if (logbooks && logbooks.documentation) {
         await this.logbookService.deleteFile(logbooks.documentation);
       }
-      await this.logbookService.remove(logbookId);
       flashToast(
         req,
         'Logbook Deleted',
@@ -319,10 +319,11 @@ export class LogbookController {
       );
       res.redirect(`/session/${sessionId}`);
     } catch (error: unknown) {
-      req.flash(
-        'error',
+      flashToastError(
+        req,
+        'Cannot Delete Logbook',
         (error instanceof Error ? error.message : null) ||
-          'logbooks failed to delete',
+          'Failed to delete logbook',
       );
       res.redirect(`/session/${sessionId}`);
     }

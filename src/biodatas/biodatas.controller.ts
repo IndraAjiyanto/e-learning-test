@@ -10,7 +10,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { BiodatasService } from './biodatas.service';
-import { flashToastError } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 import { CreateBiodataDto } from './dto/create-biodata.dto';
 import { UpdateBiodataDto } from './dto/update-biodata.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
@@ -34,8 +34,12 @@ export class BiodatasController {
         createBiodataDto.userId = req.user.id;
       }
       await this.biodatasService.create(createBiodataDto);
-      req.flash('success', 'biodata successfully create');
-      res.redirect('/users/profile');
+      flashToast(
+        req,
+        'Biodata Created',
+        'Your biodata has been saved successfully.',
+      );
+      res.redirect('/users/profile?tab=profile');
     } catch (error: unknown) {
       const err = error as Error;
       flashToastError(
@@ -43,7 +47,7 @@ export class BiodatasController {
         'Biodata not saved',
         err.message || 'Please try again in a moment.',
       );
-      res.redirect('/users/profile');
+      res.redirect('/users/profile?tab=profile');
     }
   }
 
@@ -74,8 +78,12 @@ export class BiodatasController {
   ) {
     try {
       await this.biodatasService.update(biodataId, updateBiodataDto);
-      req.flash('success', 'biodata successfully update');
-      res.redirect('/users/profile');
+      flashToast(
+        req,
+        'Biodata Updated',
+        'Your biodata has been updated successfully.',
+      );
+      res.redirect('/users/profile?tab=profile');
     } catch (error: unknown) {
       const err = error as Error;
       flashToastError(
@@ -83,7 +91,7 @@ export class BiodatasController {
         'Biodata not saved',
         err.message || 'Please try again in a moment.',
       );
-      res.redirect('/users/profile');
+      res.redirect('/users/profile?tab=profile');
     }
   }
 }

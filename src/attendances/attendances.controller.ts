@@ -204,7 +204,11 @@ export class AttendanceController {
       res.redirect(`/session/${sessionId}`);
     } catch (error: unknown) {
       const err = error as Error;
-      req.flash('error', err.message || 'Failed to delete attendance');
+      flashToastError(
+        req,
+        'Cannot Delete Attendance',
+        err.message || 'Failed to delete attendance',
+      );
       res.redirect(`/session/${sessionId}`);
     }
   }

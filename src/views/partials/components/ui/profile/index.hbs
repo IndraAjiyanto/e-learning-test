@@ -28,17 +28,17 @@
 <div
   class='px-4 py-4 sm:px-8 sm:py-6'
   x-data='profileScope({
-    id: "{{user.id}}",
-    role: "{{user.role}}",
-    username: "{{user.username}}",
-    email: "{{user.email}}",
-    biodataId: {{#if user.biodata}}"{{user.biodata.id}}"{{else}}null{{/if}},
-    fullName: "{{user.biodata.fullName}}",
-    city: "{{user.biodata.city}}",
-    education: "{{user.biodata.education}}",
-    studyProgram: "{{user.biodata.studyProgram}}",
-    gender: "{{user.biodata.gender}}",
-    no: "{{user.biodata.no}}",
+    id: {{json user.id}},
+    role: {{json user.role}},
+    username: {{json user.username}},
+    email: {{json user.email}},
+    biodataId: {{#if user.biodata}}{{json user.biodata.id}}{{else}}null{{/if}},
+    fullName: {{json (default user.biodata.fullName '')}},
+    city: {{json (default user.biodata.city '')}},
+    education: {{json (default user.biodata.education '')}},
+    studyProgram: {{json (default user.biodata.studyProgram '')}},
+    gender: {{json (default user.biodata.gender '')}},
+    no: {{json (default user.biodata.no '')}},
     hasPhoto: {{#if user.profile}}true{{else}}false{{/if}}
   })'
   x-init='flagStoredErrors()'
@@ -82,7 +82,11 @@
           <span class='grid size-12 shrink-0 place-items-center rounded-full bg-[#e4f1f7] text-[#003060]'>
             <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'><rect x='3' y='3' width='18' height='18' rx='2'/><circle cx='9' cy='9' r='2'/><path d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/></svg>
           </span>
-          <h3 class='font-inter text-xl font-bold leading-tight text-[#003060]'>{{t 'test.profile.profilePhoto'}}</h3>
+          <div class='flex flex-col gap-1'>
+            <div class='flex items-center gap-2'>
+              <h3 class='font-inter text-xl font-bold leading-tight text-[#003060]'>{{t 'test.profile.profilePhoto'}}</h3>
+            </div>
+          </div>
         </div>
 
         <div class='flex flex-col items-center gap-5'>
@@ -397,14 +401,14 @@
 <script>
   // Spread objek menyalin NILAI getter, bukan getter-nya, jadi `initials` akan
   // membeku pada hasil pertama. Descriptor kedua factory disalin apa adanya.
-  function profileScope(seed) {
+  window.profileScope = function profileScope(seed) {
     return Object.defineProperties(
       profilePictureCrop(),
       Object.getOwnPropertyDescriptors(profileFormState(seed)),
     );
-  }
+  };
 
-  function profileFormState(seed) {
+  window.profileFormState = function profileFormState(seed) {
     const trim = (v) => String(v ?? '').trim();
     const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -515,13 +519,13 @@
       //
       // Username dan email sengaja TIDAK dihitung: keduanya selalu terisi untuk
       // user yang bisa login, jadi memasukkannya hanya menaikkan persentase
-      // tanpa menyatakan apa pun. Yang dihitung hanya yang memang boleh kosong.
+      // tanpa menyatakan apa pun. Foto profil bersifat opsional.
+      // Yang dihitung adalah field isian biodata.
       hasPhoto: !!seed.hasPhoto,
 
       get completionItems() {
         const f = this.formData;
         return [
-          { label: "{{t 'test.profile.profilePhoto'}}", done: this.hasPhoto },
           { label: "{{t 'test.profile.fullName'}}", done: !!trim(f.fullName) },
           { label: "{{t 'test.profile.address'}}", done: !!trim(f.city) },
           { label: "{{t 'test.profile.education'}}", done: !!trim(f.education) },
@@ -615,7 +619,7 @@
             email: trim(this.formData.email),
           });
           if (error) throw new Error(error);
-          window.location.href = '/users/profile';
+          window.location.href = '/users/profile?tab=profile';
         } catch (err) {
           showErrorToast("{{t 'test.profile.validation.accountNotSaved'}}", err.message || "{{t 'test.profile.validation.tryAgainLater'}}");
         } finally {
@@ -641,7 +645,7 @@
             },
           );
           if (error) throw new Error(error);
-          window.location.href = '/users/profile';
+          window.location.href = '/users/profile?tab=profile';
         } catch (err) {
           showErrorToast("{{t 'test.profile.validation.biodataNotSaved'}}", err.message || "{{t 'test.profile.validation.tryAgainLater'}}");
         } finally {
@@ -649,9 +653,9 @@
         }
       },
     };
-  }
+  };
 
-  function profilePictureCrop() {
+  window.profilePictureCrop = function profilePictureCrop() {
     return {
       previewUrl: '',
       open: false,
@@ -764,7 +768,7 @@
         if (this.$refs.fileInput) this.$refs.fileInput.value = null;
       },
     };
-  }
+  };
 </script>
 
 <style>

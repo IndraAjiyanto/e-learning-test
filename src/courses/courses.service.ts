@@ -525,6 +525,21 @@ export class CoursesService {
     }
   }
 
+  async findUserActivePayment(
+    userId: string,
+    courseId: string,
+  ): Promise<Payment | null> {
+    return this.paymentRepository.findOne({
+      where: {
+        user: { id: userId },
+        course: { id: courseId },
+        process: In(['process', 'approved']),
+      },
+      order: { createdAt: 'DESC' },
+      relations: ['installment', 'invoice'],
+    });
+  }
+
   async findMyCourse(userId: string) {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
@@ -671,12 +686,39 @@ export class CoursesService {
     // `attendance`. Panel Start Learning memakai arti yang sama, jadi aturan di
     // sini sengaja disamakan dengannya - kalau tidak, panel menampilkan sesi
     // sebagai terbuka sementara halamannya menolak membukanya.
-    const unlocked = current.sessionProgress?.[0]?.isAttended === true;
+    let previous: (typeof siblings)[0] | null = null;
+    previous = index > 0 ? siblings[index - 1] : null;
+    const prevLogbookDone = previous
+      ? previous.sessionProgress?.[0]?.logbook === true ||
+        previous.logbooks?.[0]?.process === 'approved'
+      : false;
+    let unlocked =
+      index === 0 ||
+      current.sessionProgress?.[0]?.isAttended === true ||
+      prevLogbookDone;
+
+    if (unlocked && current.sessionProgress?.[0]?.isAttended !== true) {
+      const existing = await this.sessionProgressRepository.findOne({
+        where: { user: { id: userId }, session: { id: current.id } },
+      });
+      if (existing) {
+        await this.sessionProgressRepository.update(existing.id, {
+          isAttended: true,
+        });
+      } else {
+        await this.sessionProgressRepository.save({
+          user: { id: userId },
+          session: { id: current.id },
+          isAttended: true,
+          logbook: false,
+        });
+      }
+    }
     const attended = (current.attendances?.length ?? 0) > 0;
     const logbookDone =
       current.sessionProgress?.[0]?.logbook === true ||
       current.logbooks?.[0]?.process === 'approved';
-    const previous = index > 0 ? siblings[index - 1] : null;
+    previous = index > 0 ? siblings[index - 1] : null;
 
     return {
       session: current,

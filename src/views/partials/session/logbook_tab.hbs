@@ -17,24 +17,23 @@
       showModal: false,
       selectedLogbook: null,
 
-            async fetchLogBook() {
-      const res = await fetch('/session/logbooks/{{session.id}}');
-      this.data = await res.json();
-    },
+      async fetchLogBook() {
+        const res = await fetch('/session/logbooks/{{session.id}}');
+        this.data = await res.json();
+      },
 
-   
       get filteredData() {
         let filtered = this.data.filter(l =>
           (
-            `${l.activity} ${l.activityDetails} ${l.obstacles} ${l.otherDocumentation} ${l.user?.username} ${l.user?.email} ${l.user?.linkedin || ''} ${l.user?.biodata?.linkedin || ''}`
+            `${l.activity} ${l.activityDetails} ${l.obstacles} ${l.otherDocumentation} ${l.user?.username} ${l.user?.email}`
           ).toLowerCase()
           .includes(this.search.toLowerCase())
         );
 
         this.amount = filtered.length;
 
-   const start = this.pageNumber * this.size;
-      return filtered.slice(start, start + this.size);
+        const start = this.pageNumber * this.size;
+        return filtered.slice(start, start + this.size);
       },
 
       // ============================
@@ -44,7 +43,7 @@
         try {
           const filtered = this.data.filter(l =>
             (
-              `${l.activity} ${l.activityDetails} ${l.obstacles} ${l.otherDocumentation} ${l.user?.username} ${l.user?.email} ${l.user?.linkedin || ''} ${l.user?.biodata?.linkedin || ''}`
+              `${l.activity} ${l.activityDetails} ${l.obstacles} ${l.otherDocumentation} ${l.user?.username} ${l.user?.email}`
             )
               .toLowerCase()
               .includes(this.search.toLowerCase())
@@ -60,7 +59,6 @@
             Program: log.session?.weeks?.course?.name || "-",
             User: log.user?.username || "-",
             Email: log.user?.email || "-",
-            LinkedIn: log.user?.linkedin || log.user?.biodata?.linkedin || "-",
             Status:
               log.process === "approved"
                 ? "Approved"
@@ -83,7 +81,6 @@
             { wch: 25 },
             { wch: 20 },
             { wch: 25 },
-            { wch: 30 },
             { wch: 14 },
             { wch: 20 }
           ];

@@ -116,7 +116,9 @@
             name="user_no"
             inputmode="numeric"
             pattern="[0-9]*"
-            value="{{user.no_telp}}"
+            value="{{#if user.biodata.no}}{{user.biodata.no}}{{else}}{{user.no_telp}}{{/if}}"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+            onkeydown="if (event.key.length === 1 && !/^[0-9]$/.test(event.key) && !event.ctrlKey && !event.metaKey) event.preventDefault();"
             required
             placeholder="{{default (t 'test.freeProgram.registrationModal.whatsappPlaceholder') 'Input Your WhatsApp Number'}}"
             class="w-full h-[48px] px-4 py-3.5 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors"
@@ -652,6 +654,11 @@
     // Hanya izinkan angka untuk nomor WhatsApp
     const userNoInput = document.getElementById('user_no');
     if (userNoInput) {
+      userNoInput.addEventListener('keydown', function (e) {
+        if (e.key.length === 1 && !/^[0-9]$/.test(e.key) && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+        }
+      });
       userNoInput.addEventListener('input', function (e) {
         const cleaned = e.target.value.replace(/\D/g, '');
         if (e.target.value !== cleaned) {

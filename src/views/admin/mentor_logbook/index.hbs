@@ -223,13 +223,13 @@
 
           const dataToExport = filtered.map((log, index) => ({
             No: index + 1,
-            Kegiatan: log.activity || "-",
-            Rincian: log.activityDetail || "-",
-            Kendala: log.obstacle || "-",
-            Dokumentasi: log.documentation || "-",
-            Kelas: log.session?.weeks?.course?.name || "-",
+            Activity: log.activity || "-",
+            Details: log.activityDetail || "-",
+            Obstacles: log.obstacle || "-",
+            Documentation: log.documentation || "-",
+            Course: log.session?.weeks?.course?.name || "-",
             User: log.user?.username || "-",
-            Tanggal: this.formatDate(log.createdAt),
+            Date: this.formatDate(log.createdAt),
           }));
 
           const wb = XLSX.utils.book_new();
