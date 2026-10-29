@@ -16,7 +16,7 @@ import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('attendance')
@@ -196,7 +196,11 @@ export class AttendanceController {
       res.redirect(`/session/${sessionId}`);
     } catch (error: unknown) {
       const err = error as Error;
-      req.flash('error', err.message || 'Failed to delete attendance');
+      flashToastError(
+        req,
+        'Cannot Delete Attendance',
+        err.message || 'Failed to delete attendance',
+      );
       res.redirect(`/session/${sessionId}`);
     }
   }

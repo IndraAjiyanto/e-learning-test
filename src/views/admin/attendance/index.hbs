@@ -50,6 +50,7 @@
                   <path d="m15 5 4 4"/>
                 </svg>
               </a>
+              {{#if (ne canDelete false)}}
               <form action="/attendance/{{id}}/{{session.id}}?_method=DELETE" method="post" class="inline">
                 <button type="button" onclick="openDeleteModal(this, 'Delete Attendance?', 'Are you sure you want to delete this attendance record?')" title="Delete"
                   class="p-2 rounded-lg bg-white text-[#C80606] hover:bg-[#FEF2F2] transition">
@@ -58,6 +59,7 @@
                   </svg>
                 </button>
               </form>
+              {{/if}}
             </div>
           </td>
         </tr>

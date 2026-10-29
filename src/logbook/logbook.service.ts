@@ -19,6 +19,8 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { QuizProgress } from 'src/entities/quiz_progress.entity';
 import { Attendance } from 'src/entities/attendance.entity';
+import { AnswerTask } from 'src/entities/answer_task.entity';
+import { Score } from 'src/entities/score.entity';
 
 @Injectable()
 export class LogbookService {
@@ -40,6 +42,10 @@ export class LogbookService {
   private readonly progresQuizRepository: Repository<QuizProgress>;
   @InjectRepository(Attendance)
   private readonly attendanceRepository: Repository<Attendance>;
+  @InjectRepository(AnswerTask)
+  private readonly answerTaskRepository: Repository<AnswerTask>;
+  @InjectRepository(Score)
+  private readonly scoreRepository: Repository<Score>;
 
   async create(createLogbookDto: CreateLogbookDto) {
     const user = await this.userRepository.findOne({
@@ -186,6 +192,62 @@ export class LogbookService {
               isAttended: true,
               logbook: false,
             });
+          }
+        }
+      }
+    }
+  }
+
+  private async revertLogbookApproved(userId: string, sessionId: string) {
+    const currentProgress = await this.sessionProgressRepository.findOne({
+      where: {
+        user: { id: userId },
+        session: { id: sessionId },
+      },
+    });
+
+    if (currentProgress) {
+      await this.sessionProgressRepository.update(currentProgress.id, {
+        logbook: false,
+      });
+    }
+
+    const session = await this.sessionRepository.findOne({
+      where: { id: sessionId },
+      relations: ['weeks', 'weeks.course'],
+    });
+
+    if (session) {
+      if (session.isFinal) {
+        const quiz = await this.quizRepository.findOne({
+          where: {
+            weeks: { id: session.weeks.id },
+          },
+        });
+        if (quiz) {
+          await this.progresQuizRepository.delete({
+            quiz: { id: quiz.id },
+            user: { id: userId },
+          });
+        }
+      } else {
+        const nextSession = await this.sessionRepository.findOne({
+          where: {
+            sessionOrder: session.sessionOrder + 1,
+            weeks: { id: session.weeks.id },
+          },
+        });
+
+        if (nextSession) {
+          const nextSessionProgress =
+            await this.sessionProgressRepository.findOne({
+              where: {
+                user: { id: userId },
+                session: { id: nextSession.id },
+              },
+            });
+          if (nextSessionProgress) {
+            await this.sessionProgressRepository.remove(nextSessionProgress);
           }
         }
       }
@@ -364,10 +426,17 @@ export class LogbookService {
     if (!logbooks) {
       throw new NotFoundException('logbooks not found');
     }
+    const previousProcess = logbooks.process;
     Object.assign(logbooks, updateLogbookDto);
 
     if (updateLogbookDto.process === 'approved') {
       await this.applyLogbookApproved(logbooks.user.id, logbooks.session.id);
+    } else if (
+      previousProcess === 'approved' &&
+      (updateLogbookDto.process === 'rejected' ||
+        updateLogbookDto.process === 'process')
+    ) {
+      await this.revertLogbookApproved(logbooks.user.id, logbooks.session.id);
     } else if (updateLogbookDto.process === 'rejected') {
       const existingProgress = await this.sessionProgressRepository.findOne({
         where: {
@@ -392,11 +461,113 @@ export class LogbookService {
     return await this.logBookRepository.save(logbooks);
   }
 
+  async canDeleteLogbook(logbook: Logbook): Promise<boolean> {
+    let session = logbook?.session;
+    const user = logbook?.user;
+
+    if (!session?.weeks?.course) {
+      if (session?.id) {
+        session =
+          (await this.sessionRepository.findOne({
+            where: { id: session.id },
+            relations: ['weeks', 'weeks.course'],
+          })) ?? session;
+      }
+    }
+
+    if (!session?.weeks?.course || !user?.id) {
+      return true;
+    }
+
+    const courseId = session.weeks.course.id;
+    const currentWeekNumber = session.weeks.weekNumber;
+    const currentOrder = session.sessionOrder;
+    const userId = user.id;
+
+    // If current session is final, check if user has attempted/completed quiz in this week
+    if (session.isFinal && session.weeks?.id) {
+      const hasScore = await this.scoreRepository
+        .createQueryBuilder('sc')
+        .innerJoin('sc.quiz', 'q')
+        .innerJoin('q.weeks', 'w')
+        .innerJoin('sc.user', 'u')
+        .where('w.id = :weekId', { weekId: session.weeks.id })
+        .andWhere('u.id = :userId', { userId })
+        .getCount();
+
+      if (hasScore > 0) return false;
+    }
+
+    const subsequentSessions = await this.sessionRepository
+      .createQueryBuilder('s')
+      .innerJoin('s.weeks', 'w')
+      .innerJoin('w.course', 'c')
+      .where('c.id = :courseId', { courseId })
+      .andWhere(
+        '((w.weekNumber = :currentWeekNumber AND s.sessionOrder > :currentOrder) OR (w.weekNumber > :currentWeekNumber))',
+        { currentWeekNumber, currentOrder },
+      )
+      .select(['s.id'])
+      .getMany();
+
+    if (subsequentSessions.length === 0) {
+      return true;
+    }
+
+    const subsequentSessionIds = subsequentSessions.map((s) => s.id);
+
+    const hasAttendance = await this.attendanceRepository
+      .createQueryBuilder('a')
+      .innerJoin('a.session', 's')
+      .innerJoin('a.user', 'u')
+      .where('s.id IN (:...subsequentSessionIds)', { subsequentSessionIds })
+      .andWhere('u.id = :userId', { userId })
+      .getCount();
+
+    if (hasAttendance > 0) return false;
+
+    const hasLogbook = await this.logBookRepository
+      .createQueryBuilder('lb')
+      .innerJoin('lb.session', 's')
+      .innerJoin('lb.user', 'u')
+      .where('s.id IN (:...subsequentSessionIds)', { subsequentSessionIds })
+      .andWhere('u.id = :userId', { userId })
+      .getCount();
+
+    if (hasLogbook > 0) return false;
+
+    const hasAnswerTask = await this.answerTaskRepository
+      .createQueryBuilder('at')
+      .innerJoin('at.task', 'asg')
+      .innerJoin('asg.session', 's')
+      .innerJoin('at.user', 'u')
+      .where('s.id IN (:...subsequentSessionIds)', {
+        subsequentSessionIds,
+      })
+      .andWhere('u.id = :userId', { userId })
+      .getCount();
+
+    if (hasAnswerTask > 0) return false;
+
+    return true;
+  }
+
   async remove(logbookId: string) {
     const logbooks = await this.findOne(logbookId);
     if (!logbooks) {
       throw new NotFoundException('logbooks not found');
     }
+    const canDelete = await this.canDeleteLogbook(logbooks);
+    if (!canDelete) {
+      throw new BadRequestException(
+        'Cannot delete logbook because the user has already entered or attended a subsequent session or completed the quiz.',
+      );
+    }
+
+    if (logbooks.process === 'approved') {
+      await this.revertLogbookApproved(logbooks.user.id, logbooks.session.id);
+    }
+
     await this.logBookRepository.remove(logbooks);
   }
 }

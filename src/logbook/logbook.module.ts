@@ -12,6 +12,8 @@ import { CommonModule } from 'src/common/common.module';
 import { Quiz } from 'src/entities/quiz.entity';
 import { QuizProgress } from 'src/entities/quiz_progress.entity';
 import { Attendance } from 'src/entities/attendance.entity';
+import { AnswerTask } from 'src/entities/answer_task.entity';
+import { Score } from 'src/entities/score.entity';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { Attendance } from 'src/entities/attendance.entity';
       Quiz,
       QuizProgress,
       Attendance,
+      AnswerTask,
+      Score,
     ]),
     CommonModule,
   ],
