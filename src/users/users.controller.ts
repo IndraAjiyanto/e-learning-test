@@ -1,4 +1,4 @@
-﻿import {
+import {
   HttpException,
   Controller,
   Get,
@@ -789,7 +789,11 @@ export class UsersController {
           'Account Updated',
           'The changes to your account have been saved.',
         );
-        res.redirect('/users/profile');
+        res.redirect(
+          req.user?.role === 'user'
+            ? '/users/profile?tab=profile'
+            : '/users/profile',
+        );
       } else {
         req.flash('error', 'Failed to update user');
       }
@@ -799,7 +803,11 @@ export class UsersController {
         (error instanceof Error ? error.message : null) ||
           'Failed to update user',
       );
-      res.redirect('/users/profile');
+      res.redirect(
+        req.user?.role === 'user'
+          ? '/users/profile?tab=profile'
+          : '/users/profile',
+      );
     }
   }
 
@@ -878,14 +886,22 @@ export class UsersController {
           'Password Updated',
           'Your password has been changed successfully.',
         );
-        res.redirect('/users/profile');
+        res.redirect(
+          req.user?.role === 'user'
+            ? '/users/profile?tab=password'
+            : '/users/profile',
+        );
       } else {
         flashToastError(
           req,
           'Password not changed',
           'You can only change the password of your own account.',
         );
-        res.redirect('/users/profile');
+        res.redirect(
+          req.user?.role === 'user'
+            ? '/users/profile?tab=password'
+            : '/users/profile',
+        );
       }
     } catch (error: unknown) {
       // Pesan dari assertStrongPassword dan dari pemeriksaan password lama
@@ -896,7 +912,11 @@ export class UsersController {
         (error instanceof Error ? error.message : null) ||
           'Please try again in a moment.',
       );
-      res.redirect('/users/profile');
+      res.redirect(
+        req.user?.role === 'user'
+          ? '/users/profile?tab=password'
+          : '/users/profile',
+      );
     }
   }
 
@@ -941,10 +961,18 @@ export class UsersController {
           'Profile Updated',
           'The changes to your profile have been saved.',
         );
-        res.redirect('/users/profile');
+        res.redirect(
+          req.user?.role === 'user'
+            ? '/users/profile?tab=profile'
+            : '/users/profile',
+        );
       } else {
         req.flash('error', 'update profile failed');
-        res.redirect('/users/profile');
+        res.redirect(
+          req.user?.role === 'user'
+            ? '/users/profile?tab=profile'
+            : '/users/profile',
+        );
       }
     } catch (error: unknown) {
       req.flash(
@@ -952,7 +980,11 @@ export class UsersController {
         (error instanceof Error ? error.message : null) ||
           'update profile failed',
       );
-      res.redirect('/users/profile');
+      res.redirect(
+        req.user?.role === 'user'
+          ? '/users/profile?tab=profile'
+          : '/users/profile',
+      );
     }
   }
 
