@@ -13,7 +13,117 @@
 {{/if}}
 
 {{!-- Learning workspace --}}
-<div class="w-full max-w-[1268px] mx-auto flex flex-col items-start mt-8 rounded-2xl gap-[18px] py-5 bg-white font-inter">
+<div
+  class="w-full max-w-[1268px] mx-auto flex flex-col items-start mt-8 rounded-2xl gap-[18px] py-5 bg-white font-inter relative"
+  x-data="{
+    courseId: '{{#if course.id}}{{course.id}}{{else if activeCourse.id}}{{activeCourse.id}}{{/if}}',
+    currentUserId: '{{user.id}}',
+    showEditModal: false,
+    statusDropdownOpen: false,
+    editAttendanceId: null,
+    editSessionId: null,
+    attendanceWeekId: null,
+    editStatus: 'present',
+    editNotes: '',
+    statusLabels: {
+      'present': '{{default (t 'test.attendance.present') 'Present'}}',
+      'sick': '{{default (t 'test.attendance.sick') 'Sick'}}',
+      'permission': '{{default (t 'test.attendance.permission') 'Permission'}}',
+      'absent': '{{default (t 'test.attendance.absent') 'Absent'}}',
+      'no_information': '{{default (t 'test.attendance.noInformation') 'No Information'}}'
+    },
+    openEditModal(attendanceId, sessionId, currentStatus, currentNotes, weekId) {
+      this.editAttendanceId = attendanceId || null;
+      this.editSessionId = sessionId;
+      this.attendanceWeekId = weekId || null;
+      this.editStatus = currentStatus || 'present';
+      this.editNotes = currentNotes || '';
+      this.statusDropdownOpen = false;
+      this.showEditModal = true;
+    },
+    async saveAttendance() {
+      if (!this.editStatus || !this.editSessionId) return;
+
+      if (this.editAttendanceId) {
+        if (typeof showErrorToast === 'function') {
+          showErrorToast('Attendance not updated', '{{t 'test.startLearning.editAttendanceUnavailable'}}');
+        } else {
+          window.dispatchEvent(new CustomEvent('toast:error', {
+            detail: {
+              title: 'Attendance not updated',
+              description: '{{t 'test.startLearning.editAttendanceUnavailable'}}'
+            }
+          }));
+        }
+        return;
+      }
+
+      if (String(this.editSessionId).startsWith('mock-')) {
+        this.showEditModal = false;
+        window.dispatchEvent(new CustomEvent('toast:success', {
+          detail: {
+            title: '{{default (t 'test.attendance.saveAttendance') 'Attendance Recorded'}}',
+            description: 'Successfully submitted attendance'
+          }
+        }));
+        window.dispatchEvent(new CustomEvent('attendance-recorded', {
+          detail: { sessionId: this.editSessionId, weekId: this.attendanceWeekId, status: this.editStatus }
+        }));
+        return;
+      }
+
+      try {
+        const response = await fetch(`/attendance/${this.editSessionId}/${this.currentUserId}/${this.courseId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            status: this.editStatus,
+            notes: this.editNotes || '-'
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          this.showEditModal = false;
+
+          window.dispatchEvent(new CustomEvent('toast:success', {
+            detail: {
+              title: '{{default (t 'test.attendance.saveAttendance') 'Attendance Recorded'}}',
+              description: data.message || 'Successfully submitted attendance'
+            }
+          }));
+
+          window.dispatchEvent(new CustomEvent('attendance-recorded', {
+            detail: { sessionId: this.editSessionId, weekId: this.attendanceWeekId, status: this.editStatus }
+          }));
+        } else {
+          if (typeof showErrorToast === 'function') {
+            showErrorToast('Attendance not updated', data.message || 'Please try again in a moment.');
+          } else {
+            window.dispatchEvent(new CustomEvent('toast:error', {
+              detail: {
+                title: 'Attendance not updated',
+                description: data.message || 'Please try again in a moment.'
+              }
+            }));
+          }
+        }
+      } catch (error) {
+        if (typeof showErrorToast === 'function') {
+          showErrorToast('Attendance not updated', 'The request did not go through. Check your connection and try again.');
+        } else {
+          window.dispatchEvent(new CustomEvent('toast:error', {
+            detail: {
+              title: 'Attendance not updated',
+              description: 'The request did not go through. Check your connection and try again.'
+            }
+          }));
+        }
+      }
+    }
+  }"
+  @open-attendance-modal.window="openEditModal($event.detail.attendanceId, $event.detail.session?.id || $event.detail.sessionId, $event.detail.currentStatus, $event.detail.currentNotes, $event.detail.weekId)"
+>
 
 {{!-- Learning schedule --}}
     <div
@@ -117,9 +227,25 @@
               hasQuestions(quiz) {
                 const qs = quiz.questions || quiz.pertanyaan;
                 return Array.isArray(qs) && qs.length > 0;
+              },
+
+              handleAttendanceRecorded(detail) {
+                if (this.sessions && this.sessions.length > 0) {
+                  const targetSession = this.sessions.find(s => String(s.id) === String(detail.sessionId));
+                  if (targetSession) {
+                    if (!targetSession.attendances) targetSession.attendances = [];
+                    targetSession.attendances.push({
+                      id: 'new-' + Date.now(),
+                      status: detail.status,
+                      attendanceTime: new Date()
+                    });
+                    localStorage.setItem(`sessions-data-{{this.id}}`, JSON.stringify(this.sessions));
+                  }
+                }
               }
             }"
             id="week-{{this.id}}"
+            @attendance-recorded.window="handleAttendanceRecorded($event.detail)"
             class="w-full bg-white border border-[#E6ECF7] rounded-[14px] shadow-[0px_8px_28px_rgba(43,74,122,0.07)] overflow-hidden transition-all"
           >
             {{!-- Week header --}}
@@ -287,16 +413,17 @@
                         {{!-- Attendance Action (Only when attendance is required) --}}
                         <template x-if="!hasAttended(session)">
                           <div class="w-full flex flex-col gap-3">
-                            <a
-                              :href="'/attendance/form/' + session.id"
-                              class="w-full h-12 flex flex-row justify-center items-center py-3 px-6 gap-2.5 bg-[#1C2D4A] hover:bg-[#15233a] rounded-[10px] text-white font-inter font-bold text-sm leading-[18px] transition-colors no-underline cursor-pointer shadow-sm hover:shadow"
+                            <button
+                              type="button"
+                              @click="$dispatch('open-attendance-modal', { session: session, weekId: '{{this.id}}' })"
+                              class="w-full h-12 flex flex-row justify-center items-center py-3 px-6 gap-2.5 bg-[#1C2D4A] hover:bg-[#15233a] rounded-[10px] text-white font-inter font-bold text-sm leading-[18px] transition-colors cursor-pointer shadow-sm hover:shadow"
                             >
                               <svg class="w-4 h-4 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
                               </svg>
                               <span>{{t 'test.startLearning.markAttendance'}}</span>
-                            </a>
+                            </button>
                           </div>
                         </template>
 
@@ -708,4 +835,7 @@
       {{> program_detail/right_content/portfolio}}
     </div>
   {{/if}}
+
+  <!-- Attendance Modal & Success Popup (using existing shared partial) -->
+  {{> user/sidebar_user_profile/my_learning/start_learning/attendance/edit_modal }}
 </div>

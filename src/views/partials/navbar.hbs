@@ -251,7 +251,7 @@
           :class="isUserActive() ? 'bg-gray-100/80' : 'hover:bg-gray-100/60'"
           class="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold text-[#1F2937] transition-colors"
         >
-          <span class="block w-24 truncate">{{user.username}}</span>
+          <span>{{substring user.username 0 1}}</span>
           <span class="grid size-7 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-gray-300 bg-gray-600 text-white">
             {{#if user.profile}}
               <img src="{{user.profile}}" alt="{{user.username}}" class="size-full object-cover" />
