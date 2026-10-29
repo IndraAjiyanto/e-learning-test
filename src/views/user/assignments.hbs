@@ -4,12 +4,17 @@
      Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
 {{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.assignment') back=false
  trail=(array
-      (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
-      (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning')
+      (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard' 'icon' 'ph ph-house')
+      (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning' 'icon' 'ph ph-book-open')
       (obj
         'label' (t 'test.startLearning.startLearning')
-        'href' (concat '/program/myProgram/' user.id '?courseId=' assignment.session.weeks.course.id))
-      (obj 'label' (t 'test.startLearning.assignment')))
+        'href' (concat '/program/myProgram/' user.id '?courseId=' assignment.session.weeks.course.id)
+        'icon' 'ph ph-play-circle')
+      (obj
+        'label' (concat (t 'test.startLearning.week') ' ' assignment.session.weeks.weekNumber)
+        'href' (concat '/program/myProgram/' user.id '?courseId=' assignment.session.weeks.course.id)
+        'icon' 'ph ph-calendar')
+      (obj 'label' (t 'test.startLearning.assignment') 'icon' 'ph ph-clipboard-text'))
       }}
 
 {{#> components/ui/learning/assignment_page/index
