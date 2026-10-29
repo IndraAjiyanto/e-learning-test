@@ -16,7 +16,7 @@ import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { AuthenticatedGuard } from 'src/common/guards/authentication.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Request, Response } from 'express';
-import { flashToast } from 'src/common/utils/toast.util';
+import { flashToast, flashToastError } from 'src/common/utils/toast.util';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('attendance')
@@ -59,8 +59,14 @@ export class AttendanceController {
           message: 'Successfully submitted attendance',
         });
       }
-      req.flash('success', 'Successfully submitted attendance');
-      res.redirect(`/program/${courseId}`);
+      flashToast(
+        req,
+        'Attendance Recorded',
+        'Successfully submitted attendance',
+      );
+      res.redirect(
+        `/program/myProgram/${userId}?courseId=${courseId}&tab=uiux`,
+      );
     } catch (error: unknown) {
       const err = error as Error;
       const message =
@@ -68,8 +74,10 @@ export class AttendanceController {
       if (wantsJson) {
         return res.status(400).json({ success: false, message });
       }
-      req.flash('error', message);
-      res.redirect(`/program/${courseId}`);
+      flashToastError(req, 'Attendance Failed', message);
+      res.redirect(
+        `/program/myProgram/${userId}?courseId=${courseId}&tab=uiux`,
+      );
     }
   }
 

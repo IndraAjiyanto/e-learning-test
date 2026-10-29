@@ -121,11 +121,11 @@ function previewEmbedUrl(url) {
 function answerTabData() {
   return {
     activeTab: localStorage.getItem('answerTab') || 'all',
-    selectedUserId: '{{#with (lookup assignment_answer 0)}}{{this.user.id}}{{/with}}',
-    selectedUsername: '{{#with (lookup assignment_answer 0)}}{{this.user.username}}{{/with}}',
-    selectedFile: '{{#with (lookup assignment_answer 0)}}{{this.file}}{{/with}}',
+    selectedUserId: {{#with (lookup assignment_answer 0)}}{{{json this.user.id}}}{{else}}''{{/with}},
+    selectedUsername: {{#with (lookup assignment_answer 0)}}{{{json this.user.username}}}{{else}}''{{/with}},
+    selectedFile: {{#with (lookup assignment_answer 0)}}{{{json this.file}}}{{else}}''{{/with}},
     activePreviewMode: 'assignment',
-    masterFile: '{{assignment.file}}',
+    masterFile: {{{json (default assignment.file '')}}},
 
     init() {
       this.filterCards();
@@ -135,7 +135,7 @@ function answerTabData() {
       if (this.activePreviewMode === 'student' && this.selectedFile) {
         return this.selectedFile;
       }
-      return this.masterFile;
+      return this.masterFile || '';
     },
 
     currentPreviewEmbedUrl() {
@@ -169,23 +169,29 @@ function cardData() {
 
 function submitReviewAnswer(button, status) {
   var isApprove = status === 'approved';
-  openConfirmModal({
-    title: isApprove ? 'Approve Answer?' : 'Reject Answer?',
-    description: isApprove
-      ? 'Are you sure you want to approve this student answer?'
-      : 'Are you sure you want to reject this student answer?',
-    confirmLabel: isApprove ? 'Approve' : 'Reject',
-    cancelLabel: 'Cancel',
-    onConfirm: function() {
-      var form = button.closest('form');
-      if (!form) return;
-      var processInput = form.querySelector('.process-value');
-      if (processInput) {
-        processInput.value = status;
-      }
-      form.submit();
+  var doSubmit = function() {
+    var form = button.closest('form');
+    if (!form) return;
+    var processInput = form.querySelector('.process-value');
+    if (processInput) {
+      processInput.value = status;
     }
-  });
+    form.submit();
+  };
+
+  if (typeof openConfirmModal === 'function') {
+    openConfirmModal({
+      title: isApprove ? 'Approve Answer?' : 'Reject Answer?',
+      description: isApprove
+        ? 'Are you sure you want to approve this student answer?'
+        : 'Are you sure you want to reject this student answer?',
+      confirmLabel: isApprove ? 'Approve' : 'Reject',
+      cancelLabel: 'Cancel',
+      onConfirm: doSubmit
+    });
+  } else if (confirm(isApprove ? 'Are you sure you want to approve this student answer?' : 'Are you sure you want to reject this student answer?')) {
+    doSubmit();
+  }
 }
 </script>
 
