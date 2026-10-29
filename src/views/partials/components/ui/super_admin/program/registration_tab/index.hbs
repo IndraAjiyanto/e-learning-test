@@ -162,6 +162,9 @@
       <div>
         <span class="font-inter text-xs text-[#737373]">Registration Date</span>
         <p class="font-inter text-sm font-medium text-[#171717]" x-text="formatDate(row.createdAt)"></p>
+        <template x-if="row.no || row.payment?.invoice?.invoice_number">
+          <p class="font-inter text-xs font-semibold text-[#003060] mt-0.5" x-text="'Invoice: ' + (row.no || row.payment?.invoice?.invoice_number)"></p>
+        </template>
       </div>
       <div>
         {{> components/ui/super_admin/badge/index

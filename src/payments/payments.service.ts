@@ -518,11 +518,19 @@ export class PaymentsService {
           'course.category',
           'installment',
           'invoice',
+          'registration',
         ],
       }),
       this.registrationRepository.find({
         where: { user: { id: userId } },
-        relations: ['user', 'user.biodata', 'course', 'course.category'],
+        relations: [
+          'user',
+          'user.biodata',
+          'course',
+          'course.category',
+          'payment',
+          'payment.invoice',
+        ],
       }),
     ]);
 
@@ -542,148 +550,152 @@ export class PaymentsService {
     );
 
     const rows = [
-      ...payments.map((payment) => {
-        const isInstallment = !!payment.installment;
-        const installmentDetail = isInstallment
-          ? (installmentDetailMap.get(payment.id) ?? null)
-          : null;
+      ...payments
+        .filter((payment) => !payment.registration)
+        .map((payment) => {
+          const isInstallment = !!payment.installment;
+          const installmentDetail = isInstallment
+            ? (installmentDetailMap.get(payment.id) ?? null)
+            : null;
 
-        const hasPromo =
-          payment.course?.promo !== null &&
-          payment.course?.promo !== undefined &&
-          Number(payment.course.promo) > 0;
-        const promoPrice = hasPromo ? Number(payment.course.promo) : null;
-        const normalPrice = payment.course?.price
-          ? Number(payment.course.price)
-          : null;
-        const fallbackPrice = promoPrice ?? normalPrice;
+          const hasPromo =
+            payment.course?.promo !== null &&
+            payment.course?.promo !== undefined &&
+            Number(payment.course.promo) > 0;
+          const promoPrice = hasPromo ? Number(payment.course.promo) : null;
+          const normalPrice = payment.course?.price
+            ? Number(payment.course.price)
+            : null;
+          const fallbackPrice = promoPrice ?? normalPrice;
 
-        const price =
-          payment.invoice?.price !== null &&
-          payment.invoice?.price !== undefined
-            ? Number(payment.invoice.price)
-            : normalPrice;
-        const promo =
-          payment.invoice?.promo !== null &&
-          payment.invoice?.promo !== undefined
-            ? Number(payment.invoice.promo)
-            : promoPrice;
-        // Sesuai aturan task: Data "total" di ambil dari table invoice column "subtotal"
-        const total =
-          payment.invoice?.subtotal !== null &&
-          payment.invoice?.subtotal !== undefined
-            ? Number(payment.invoice.subtotal)
-            : payment.invoice?.final_total !== null &&
-                payment.invoice?.final_total !== undefined
-              ? Number(payment.invoice.final_total)
-              : (fallbackPrice ?? 0);
+          const price =
+            payment.invoice?.price !== null &&
+            payment.invoice?.price !== undefined
+              ? Number(payment.invoice.price)
+              : normalPrice;
+          const promo =
+            payment.invoice?.promo !== null &&
+            payment.invoice?.promo !== undefined
+              ? Number(payment.invoice.promo)
+              : promoPrice;
+          // Sesuai aturan task: Data "total" di ambil dari table invoice column "subtotal"
+          const total =
+            payment.invoice?.subtotal !== null &&
+            payment.invoice?.subtotal !== undefined
+              ? Number(payment.invoice.subtotal)
+              : payment.invoice?.final_total !== null &&
+                  payment.invoice?.final_total !== undefined
+                ? Number(payment.invoice.final_total)
+                : (fallbackPrice ?? 0);
 
-        // Potongan voucher promo code: prioritas kolom promo_code, fallback ke selisih (promo - total) jika promo_code kosong
-        const promoCode =
-          payment.invoice?.promo_code !== null &&
-          payment.invoice?.promo_code !== undefined &&
-          Number(payment.invoice.promo_code) > 0
-            ? Number(payment.invoice.promo_code)
-            : promo && total && promo > total
-              ? promo - total
-              : 0;
-
-        // Diskon kursus: potongan dari harga normal ke promo kursus (misal normal 5jt, promo 4.5jt -> diskon 500rb)
-        // Fallback berurutan: selisih (price - promo) -> discount_amount DB -> selisih (price - total - promoCode)
-        const discountAmount =
-          price && promo && price > promo
-            ? price - promo
-            : payment.invoice?.discount_amount !== null &&
-                payment.invoice?.discount_amount !== undefined &&
-                Number(payment.invoice.discount_amount) > 0 &&
-                Number(payment.invoice.discount_amount) !== promoCode
-              ? Number(payment.invoice.discount_amount)
-              : price && total && price > total
-                ? Math.max(0, price - total - promoCode)
+          // Potongan voucher promo code: prioritas kolom promo_code, fallback ke selisih (promo - total) jika promo_code kosong
+          const promoCode =
+            payment.invoice?.promo_code !== null &&
+            payment.invoice?.promo_code !== undefined &&
+            Number(payment.invoice.promo_code) > 0
+              ? Number(payment.invoice.promo_code)
+              : promo && total && promo > total
+                ? promo - total
                 : 0;
 
-        const invoice = payment.invoice;
-        const hasXendit = !!(
-          invoice?.xendit_invoice_url ||
-          invoice?.xendit_invoice_id ||
-          invoice?.xendit_payment_channel
-        );
-        const paymentChannel = hasXendit ? 'xendit' : 'manual';
-        const transactionType = isInstallment ? 'installment' : 'full payment';
+          // Diskon kursus: potongan dari harga normal ke promo kursus (misal normal 5jt, promo 4.5jt -> diskon 500rb)
+          // Fallback berurutan: selisih (price - promo) -> discount_amount DB -> selisih (price - total - promoCode)
+          const discountAmount =
+            price && promo && price > promo
+              ? price - promo
+              : payment.invoice?.discount_amount !== null &&
+                  payment.invoice?.discount_amount !== undefined &&
+                  Number(payment.invoice.discount_amount) > 0 &&
+                  Number(payment.invoice.discount_amount) !== promoCode
+                ? Number(payment.invoice.discount_amount)
+                : price && total && price > total
+                  ? Math.max(0, price - total - promoCode)
+                  : 0;
 
-        return {
-          id: payment.id,
-          kind: isInstallment ? 'installment' : 'full',
-          transactionType,
-          transactionKind: transactionType,
-          type: transactionType,
-          courseId: payment.course?.id ?? null,
-          courseName: payment.course?.name ?? 'Program',
-          categoryName: payment.course?.category?.name ?? null,
-          date: invoice?.paid_at ?? payment.createdAt,
-          invoiceDate: invoice?.createdAt ?? payment.createdAt,
-          paidAt:
-            invoice?.paid_at ??
-            (payment.process === 'approved'
-              ? (invoice?.updatedAt ?? payment.updatedAt ?? payment.createdAt)
-              : null),
-          method:
-            invoice?.payment_method ||
-            (isInstallment
-              ? 'Installment'
-              : paymentChannel === 'manual'
-                ? 'Manual Transfer'
-                : 'Xendit'),
-          paymentMethod:
-            invoice?.payment_method ||
-            (isInstallment
-              ? 'Installment'
-              : paymentChannel === 'manual'
-                ? 'Manual Transfer'
-                : 'Xendit'),
-          paymentChannel,
-          channel: paymentChannel,
-          amount: total,
-          subtotal: total,
-          total: total,
-          finalTotal: total,
-          discount: discountAmount,
-          originalPrice: price,
-          price,
-          promo,
-          promoPrice: promo,
-          promoCode,
-          voucherCode: payment.voucher_code || invoice?.voucher_code || null,
-          proof: payment.file ?? null,
-          no: payment.invoice?.invoice_number || payment.no || null,
-          paymentLink: payment.invoice?.xendit_invoice_url ?? null,
-          referalSource: payment.referalSource || null,
-          referal_source: payment.referalSource || null,
-          current_status: payment.current_status || null,
-          currentStatus: payment.current_status || null,
-          keyword:
-            payment.referalSource ||
-            (isInstallment ? 'Installment Plan' : 'Online Course'),
-          userName:
-            payment.invoice?.user_fullname ||
-            payment.user_fullname ||
-            payment.user?.biodata?.fullName ||
-            payment.user?.username ||
-            null,
-          userEmail:
-            payment.invoice?.user_email ||
-            payment.user_email ||
-            payment.user?.email ||
-            null,
-          userPhone:
-            payment.invoice?.user_phone ||
-            payment.user_no ||
-            payment.user?.biodata?.no ||
-            null,
-          installmentDetail,
-          ...statusOf(payment.process),
-        };
-      }),
+          const invoice = payment.invoice;
+          const hasXendit = !!(
+            invoice?.xendit_invoice_url ||
+            invoice?.xendit_invoice_id ||
+            invoice?.xendit_payment_channel
+          );
+          const paymentChannel = hasXendit ? 'xendit' : 'manual';
+          const transactionType = isInstallment
+            ? 'installment'
+            : 'full payment';
+
+          return {
+            id: payment.id,
+            kind: isInstallment ? 'installment' : 'full',
+            transactionType,
+            transactionKind: transactionType,
+            type: transactionType,
+            courseId: payment.course?.id ?? null,
+            courseName: payment.course?.name ?? 'Program',
+            categoryName: payment.course?.category?.name ?? null,
+            date: invoice?.paid_at ?? payment.createdAt,
+            invoiceDate: invoice?.createdAt ?? payment.createdAt,
+            paidAt:
+              invoice?.paid_at ??
+              (payment.process === 'approved'
+                ? (invoice?.updatedAt ?? payment.updatedAt ?? payment.createdAt)
+                : null),
+            method:
+              invoice?.payment_method ||
+              (isInstallment
+                ? 'Installment'
+                : paymentChannel === 'manual'
+                  ? 'Manual Transfer'
+                  : 'Xendit'),
+            paymentMethod:
+              invoice?.payment_method ||
+              (isInstallment
+                ? 'Installment'
+                : paymentChannel === 'manual'
+                  ? 'Manual Transfer'
+                  : 'Xendit'),
+            paymentChannel,
+            channel: paymentChannel,
+            amount: total,
+            subtotal: total,
+            total: total,
+            finalTotal: total,
+            discount: discountAmount,
+            originalPrice: price,
+            price,
+            promo,
+            promoPrice: promo,
+            promoCode,
+            voucherCode: payment.voucher_code || invoice?.voucher_code || null,
+            proof: payment.file ?? null,
+            no: payment.invoice?.invoice_number || payment.no || null,
+            paymentLink: payment.invoice?.xendit_invoice_url ?? null,
+            referalSource: payment.referalSource || null,
+            referal_source: payment.referalSource || null,
+            current_status: payment.current_status || null,
+            currentStatus: payment.current_status || null,
+            keyword:
+              payment.referalSource ||
+              (isInstallment ? 'Installment Plan' : 'Online Course'),
+            userName:
+              payment.invoice?.user_fullname ||
+              payment.user_fullname ||
+              payment.user?.biodata?.fullName ||
+              payment.user?.username ||
+              null,
+            userEmail:
+              payment.invoice?.user_email ||
+              payment.user_email ||
+              payment.user?.email ||
+              null,
+            userPhone:
+              payment.invoice?.user_phone ||
+              payment.user_no ||
+              payment.user?.biodata?.no ||
+              null,
+            installmentDetail,
+            ...statusOf(payment.process),
+          };
+        }),
       ...registrations.map((registration) => {
         const hasPromo =
           registration.course?.promo !== null &&
@@ -698,6 +710,15 @@ export class PaymentsService {
           normalPrice && promoPrice && normalPrice > promoPrice
             ? normalPrice - promoPrice
             : 0;
+        const invoiceNumber =
+          registration.no ||
+          registration.payment?.invoice?.invoice_number ||
+          registration.payment?.no ||
+          null;
+        const invoiceDate =
+          registration.payment?.invoice?.paid_at ||
+          registration.payment?.invoice?.createdAt ||
+          registration.createdAt;
         return {
           id: registration.id,
           kind: 'registration',
@@ -707,9 +728,9 @@ export class PaymentsService {
           courseId: registration.course?.id ?? null,
           courseName: registration.course?.name ?? 'Program',
           categoryName: registration.course?.category?.name ?? null,
-          date: registration.createdAt,
-          invoiceDate: registration.createdAt,
-          paidAt: registration.createdAt,
+          date: invoiceDate,
+          invoiceDate: invoiceDate,
+          paidAt: registration.process === 'approved' ? invoiceDate : null,
           method: 'Registration',
           paymentMethod: 'Registration',
           referalSource: registration.referal_source || null,
@@ -726,9 +747,10 @@ export class PaymentsService {
           promo: promoPrice,
           promoCode: 0,
           finalTotal: subtotal,
-          proof: registration.file ?? null,
-          no: null,
-          paymentLink: null,
+          proof: registration.file ?? registration.payment?.file ?? null,
+          no: invoiceNumber,
+          paymentLink:
+            registration.payment?.invoice?.xendit_invoice_url ?? null,
           keyword: registration.referal_source || 'Registration',
           userName:
             registration.user_fullname ||
@@ -992,7 +1014,7 @@ export class PaymentsService {
     console.log('🔵 [PaymentsService] findRegistration for userId:', userId);
     const result = await this.registrationRepository.find({
       where: { user: { id: userId } },
-      relations: ['course', 'course.category'],
+      relations: ['course', 'course.category', 'payment', 'payment.invoice'],
     });
     console.log('🔵 [PaymentsService] findRegistration result:', result);
     return result;
@@ -1020,7 +1042,13 @@ export class PaymentsService {
 
   async findAllRegistrations() {
     return await this.registrationRepository.find({
-      relations: ['user', 'course', 'course.category'],
+      relations: [
+        'user',
+        'course',
+        'course.category',
+        'payment',
+        'payment.invoice',
+      ],
     });
   }
 

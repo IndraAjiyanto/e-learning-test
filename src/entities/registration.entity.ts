@@ -3,12 +3,14 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Course } from './course.entity';
+import { Payment } from './payment.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
 import { REFERAL_SOURCES } from './types/referal-source';
@@ -17,6 +19,9 @@ import { REFERAL_SOURCES } from './types/referal-source';
 export class Registration {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({ nullable: true })
+  no: string;
 
   @Column({ nullable: true })
   file: string;
@@ -81,4 +86,11 @@ export class Registration {
   @Exclude()
   @JoinColumn({ name: 'courseId' })
   course: Course;
+
+  @OneToOne(() => Payment, (payment) => payment.registration, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'paymentId' })
+  payment: Payment;
 }

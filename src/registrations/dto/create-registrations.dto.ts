@@ -38,5 +38,9 @@ export class CreateRegistrationsDto {
   attend_program: boolean;
 
   @IsString()
+  @IsOptional()
+  no?: string;
+
+  @IsString()
   referal_source: string;
 }

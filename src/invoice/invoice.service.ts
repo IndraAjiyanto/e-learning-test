@@ -47,7 +47,7 @@ export class InvoiceService {
     }
   }
 
-  private async generateInvoiceNumber(date = new Date()): Promise<string> {
+  public async generateInvoiceNumber(date = new Date()): Promise<string> {
     const months = [
       'I',
       'II',
@@ -64,14 +64,41 @@ export class InvoiceService {
     ];
     const month = months[date.getMonth()];
     const year = date.getFullYear();
-    const count = await this.invoiceRepository
+    const prefix = 'WSA-KA.';
+    const suffix = `/KW/${month}/${year}`;
+    const pattern = `${prefix}%${suffix}`;
+
+    const existingInvoices = await this.invoiceRepository
       .createQueryBuilder('invoice')
-      .where('invoice.invoice_number LIKE :pattern', {
-        pattern: `WSA-KA.%/KW/${month}/${year}`,
-      })
-      .getCount();
-    const seq = String(count + 1).padStart(3, '0');
-    return `WSA-KA.${seq}/KW/${month}/${year}`;
+      .select('invoice.invoice_number', 'invoice_number')
+      .where('invoice.invoice_number LIKE :pattern', { pattern })
+      .getRawMany<{ invoice_number: string }>();
+
+    let maxSeq = 0;
+    const existingSet = new Set<string>();
+
+    for (const row of existingInvoices) {
+      if (row.invoice_number) {
+        existingSet.add(row.invoice_number);
+        const match = row.invoice_number.match(/^WSA-KA\.(\d+)\/KW\//);
+        if (match && match[1]) {
+          const num = parseInt(match[1], 10);
+          if (!isNaN(num) && num > maxSeq) {
+            maxSeq = num;
+          }
+        }
+      }
+    }
+
+    let nextSeq = maxSeq + 1;
+    let candidate = `${prefix}${String(nextSeq).padStart(3, '0')}${suffix}`;
+
+    while (existingSet.has(candidate)) {
+      nextSeq++;
+      candidate = `${prefix}${String(nextSeq).padStart(3, '0')}${suffix}`;
+    }
+
+    return candidate;
   }
 
   async createInvoiceForPayment(
@@ -220,6 +247,72 @@ export class InvoiceService {
     const saved = await this.invoiceRepository.save(invoice);
     payment.invoice = saved;
     return saved;
+  }
+
+  async createInvoiceForRegistration(
+    payment: Payment,
+    course: Course,
+    user: User,
+    formData?: {
+      user_fullname?: string;
+      user_email?: string;
+      user_no?: string;
+      file?: string;
+    },
+  ) {
+    let attempts = 0;
+    while (attempts < 5) {
+      attempts++;
+      const invoiceNumber = await this.generateInvoiceNumber();
+      try {
+        const invoice = this.invoiceRepository.create({
+          payment: payment,
+          price: 0,
+          promo: 0,
+          promo_code: 0,
+          voucher_code: null,
+          subtotal: 0,
+          discount_amount: 0,
+          final_total: 0,
+          payment_method: 'Registration',
+          invoice_number: invoiceNumber,
+          status: 'paid',
+          paid_at: new Date(),
+          user_fullname:
+            formData?.user_fullname ||
+            payment.user_fullname ||
+            (user?.biodata as { fullName?: string })?.fullName ||
+            user?.username ||
+            null,
+          user_email:
+            formData?.user_email || payment.user_email || user?.email || null,
+          user_phone:
+            formData?.user_no ||
+            payment.user_no ||
+            (user?.biodata as { no?: string })?.no ||
+            null,
+          course_name: course.name,
+          category_name: course.category?.name || null,
+          proof_url: formData?.file || payment.file || null,
+          user: user,
+          course: course,
+        });
+
+        const saved = await this.invoiceRepository.save(invoice);
+        payment.invoice = saved;
+        return saved;
+      } catch (err: any) {
+        if (err?.code === '23505' && attempts < 5) {
+          continue;
+        }
+        throw err;
+      }
+    }
+    throw new Error('Gagal menghasilkan invoice unik untuk registrasi');
+  }
+
+  async saveInvoice(invoice: Invoice) {
+    return await this.invoiceRepository.save(invoice);
   }
 
   async createInvoiceForInstallment(
