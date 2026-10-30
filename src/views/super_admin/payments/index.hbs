@@ -24,7 +24,7 @@
         Payments
       </h1>
       <p class="font-montserrat font-medium text-base leading-5 text-[#718096]">
-        Daftar seluruh pembayaran dari semua program.
+        List of all payments from all programs.
       </p>
     </div>
 
@@ -197,7 +197,7 @@
       formatDate(value) {
         if (!value) return '—';
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        return new Date(value).toLocaleDateString('id-ID', options);
+        return new Date(value).toLocaleDateString('en-US', options);
       },
 
       getTerm(item, month) {
@@ -216,10 +216,10 @@
 
       getTermStatusLabel(item, month) {
         const status = this.getTermStatus(item, month);
-        if (status === 'approved') return 'Lunas';
-        if (status === 'process') return 'Diproses';
-        if (status === 'rejected') return 'Ditolak';
-        return 'Belum Bayar';
+        if (status === 'approved') return 'Paid';
+        if (status === 'process') return 'In Process';
+        if (status === 'rejected') return 'Rejected';
+        return 'Unpaid';
       },
 
       // Approve / reject cicilan bulanan manual → PATCH /payment/installment/:proses/:id

@@ -734,6 +734,31 @@ export class PaymentsController {
       throw new NotFoundException('Program tidak ditemukan');
     }
 
+    if (req.user) {
+      const activePayment = await this.paymentsService.findUserActivePayment(
+        req.user.id,
+        courseId,
+      );
+
+      if (activePayment) {
+        if (activePayment.process === 'approved') {
+          flashToast(
+            req,
+            'Pembayaran Sudah Diterima',
+            'Anda sudah terdaftar di program ini.',
+          );
+          return res.redirect(`/program/myProgram/${req.user.id}?courseId=${courseId}`);
+        } else if (activePayment.process === 'process') {
+          flashToast(
+            req,
+            'Pembayaran Sedang Diproses',
+            'Anda sudah memiliki transaksi yang sedang menunggu konfirmasi untuk program ini.',
+          );
+          return res.redirect('/users/profile?tab=history-payment');
+        }
+      }
+    }
+
     const firstInstallment = course.installments?.[0];
     const hasInstallmentPlan =
       !!firstInstallment && Number(firstInstallment.downPayment) > 0;

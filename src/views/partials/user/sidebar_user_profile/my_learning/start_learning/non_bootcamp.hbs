@@ -55,8 +55,34 @@
         {{/if}}
       {{/each}}
     {{else}}
-      <div class="p-8 text-center text-[#718096] text-sm">
-        {{default (t 'test.nonBootcamp.empty') 'Belum ada silabus yang tersedia untuk program ini.'}}
+      {{!-- Empty State: Belum Ada Silabus (Non-Bootcamp) --}}
+      <div class="w-full flex flex-col items-center justify-center p-8 sm:p-12 md:p-14 rounded-[16px] border border-dashed border-[#CBD5E1] bg-[#F8FAFC] text-center my-2">
+        <div class="relative mb-5 flex size-20 sm:size-22 items-center justify-center rounded-2xl bg-white shadow-[0px_8px_24px_rgba(0,48,96,0.08)] border border-[#E2E8F0]">
+          <span class="flex size-14 items-center justify-center rounded-xl bg-[#FEF3C7] text-[#D97706]">
+            <i class="fa-solid fa-book-open text-2xl sm:text-3xl"></i>
+          </span>
+          <span class="absolute -top-1.5 -right-1.5 flex size-6 items-center justify-center rounded-full bg-[#003060] text-white text-[10px] shadow-sm">
+            <i class="fa-solid fa-clock"></i>
+          </span>
+        </div>
+
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] text-xs font-semibold uppercase tracking-wider mb-3">
+          <span class="size-1.5 rounded-full bg-[#F59E0B] animate-pulse"></span>
+          {{default (t 'test.nonBootcamp.emptyBadge') 'Sedang Disiapkan'}}
+        </span>
+
+        <h3 class="font-inter font-bold text-lg sm:text-xl text-[#0B1F3B] mb-2 max-w-md">
+          {{default (t 'test.nonBootcamp.emptyTitle') 'Silabus Belum Tersedia'}}
+        </h3>
+
+        <p class="font-inter font-normal text-sm sm:text-base leading-relaxed text-[#64748B] max-w-lg mb-4">
+          {{default (t 'test.nonBootcamp.emptyDesc') 'Daftar silabus pembelajaran untuk program ini sedang dalam tahap penyusunan oleh instruktur. Silakan periksa kembali dalam waktu dekat.'}}
+        </p>
+
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-[#E2E8F0] shadow-2xs text-xs sm:text-sm text-[#475569]">
+          <i class="fa-solid fa-circle-info text-[#003060]"></i>
+          <span>Hubungi admin atau instruktur jika memerlukan informasi lebih lanjut mengenai kurikulum</span>
+        </div>
       </div>
     {{/if}}
   </div>

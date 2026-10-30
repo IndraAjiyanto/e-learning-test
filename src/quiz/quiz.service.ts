@@ -212,6 +212,17 @@ export class QuizService {
     return count > 0;
   }
 
+  async isQuizUnlocked(userId: string, quizId: string): Promise<boolean> {
+    const quizProgress = await this.progresQuizRepository.findOne({
+      where: {
+        quiz: { id: quizId },
+        user: { id: userId },
+        process: true,
+      },
+    });
+    return !!quizProgress;
+  }
+
   async remove(quizId: string) {
     const quiz = await this.findOne(quizId);
     if (!quiz) {

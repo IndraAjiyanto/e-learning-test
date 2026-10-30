@@ -28,21 +28,18 @@
         Create Logbook
       </a>
 
-      <!-- DIPERBAIKI: Panggil method dari Alpine component -->
-<button 
-  @click="exportExcel()" 
-  class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
->
-  <!-- Logo Excel dengan shadow lebih tebal -->
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="h-5 w-5 rounded shadow">
-    <path fill="#185C37" d="M42 6H14a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h28a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"/>
-    <path fill="#21A366" d="M14 6H8a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h6V6z"/>
-    <path fill="#107C41" d="M22 14H8v20h14V14z"/>
-    <path fill="#fff" d="M19 31h-2.1l-2.9-5-2.9 5H9l4.2-7-4.1-7h2.1l2.9 5 2.9-5H19l-4.2 7 4.2 7z"/>
-  </svg>
-  Export Excel
-</button>
-
+      <button 
+        @click="exportExcel()" 
+        class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="h-5 w-5 rounded shadow">
+          <path fill="#185C37" d="M42 6H14a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h28a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"/>
+          <path fill="#21A366" d="M14 6H8a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h6V6z"/>
+          <path fill="#107C41" d="M22 14H8v20h14V14z"/>
+          <path fill="#fff" d="M19 31h-2.1l-2.9-5-2.9 5H9l4.2-7-4.1-7h2.1l2.9 5 2.9-5H19l-4.2 7 4.2 7z"/>
+        </svg>
+        Export Excel
+      </button>
 
     </div>
   </div>
@@ -52,13 +49,13 @@
       <thead class="bg-gray-100">
         <tr>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">No</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kegiatan</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Rincian</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kendala</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Dokumentasi</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kelas</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Activity</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Details</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Obstacle</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Documentation</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Course</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">User</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">status</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
         </tr>
       </thead>
@@ -71,7 +68,7 @@
           <td class="px-6 py-4 text-sm text-gray-800">{{activityDetails}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{obstacles}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">
-            <img src="{{documentation}}" alt="Dokumentasi" class="w-16 h-16 object-cover rounded border" />
+            <img src="{{documentation}}" alt="Documentation" class="w-16 h-16 object-cover rounded border" />
           </td>
           <td class="px-6 py-4 text-sm text-gray-800">{{session.weeks.course.name}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{user.username}}</td>
@@ -82,7 +79,7 @@
     <!-- ACC Button -->
     <form action="/logbooks/{{id}}/approved?_method=PATCH" method="post" class="inline">
       <button type="submit" 
-              class="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition">
+              class="p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition" title="Approve">
         <!-- Check Icon -->
         <svg xmlns="http://www.w3.org/2000/svg" 
              class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -94,7 +91,7 @@
     <!-- Reject Button -->
     <form action="/logbooks/{{id}}/rejected?_method=PATCH" method="post" class="inline">
       <button type="submit" 
-              class="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition">
+              class="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition" title="Reject">
         <!-- X Icon -->
         <svg xmlns="http://www.w3.org/2000/svg" 
              class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -134,7 +131,6 @@
 </div>
 
 <script>
-// DIPERBAIKI: Pindahkan exportExcel ke dalam Alpine component
 function logbookTable({ logbooks }) {
   return {
     searchInput: "",
@@ -157,26 +153,23 @@ function logbookTable({ logbooks }) {
       return filtered.slice(start, end).map(l => l.id.toString());
     },
     
-    // DIPERBAIKI: Export Excel sesuai data yang tampil di table
     exportExcel() {
-      // Ambil data yang sudah difilter
       const filtered = this.logbooks.filter(l =>
         (`${l.activity} ${l.activityDetails} ${l.obstacles}`).toLowerCase()
           .includes(this.search.toLowerCase())
       );
 
-      // Ambil data sesuai halaman yang sedang aktif
       const start = this.pageNumber * this.size;
       const end = start + this.size;
       const currentPageData = filtered.slice(start, end);
 
       const rows = [
-        ["No", "Kegiatan", "Rincian", "Kendala", "documentation", "User", "Kelas", "Created At"]
+        ["No", "Activity", "Details", "Obstacle", "Documentation", "User", "Course", "Created At"]
       ];
 
       currentPageData.forEach((l, index) => {
         rows.push([
-          start + index + 1, // Nomor urut sesuai halaman
+          start + index + 1,
           l.activity,
           l.activityDetails,
           l.obstacles,
@@ -201,7 +194,4 @@ function logbookTable({ logbooks }) {
     viewPage(index) { this.pageNumber = index; }
   }
 }
-
-// HAPUS: Fungsi exportExcel yang lama sudah tidak diperlukan
-// function exportExcel() { ... }
 </script>

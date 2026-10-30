@@ -18,6 +18,8 @@ import { SessionProgress } from 'src/entities/session_progress.entity';
 import { WeekProgress } from 'src/entities/week_progress.entity';
 import { Assignment } from 'src/entities/assignment.entity';
 import { AnswerTask } from 'src/entities/answer_task.entity';
+import { Attendance } from 'src/entities/attendance.entity';
+import { Score } from 'src/entities/score.entity';
 
 @Injectable()
 export class SessionService {
@@ -54,6 +56,12 @@ export class SessionService {
 
     @InjectRepository(AnswerTask)
     private readonly answerTaskRepository: Repository<AnswerTask>,
+
+    @InjectRepository(Attendance)
+    private readonly attendanceRepository: Repository<Attendance>,
+
+    @InjectRepository(Score)
+    private readonly scoreRepository: Repository<Score>,
   ) {}
 
   async create(createSessionDto: CreateSessionDto) {
@@ -69,84 +77,21 @@ export class SessionService {
     if (!weeks) {
       throw new NotFoundException('weeks ini tidak ada');
     }
-    if (createSessionDto.sessionOrder === 1) {
-      const data = this.sessionRepository.create({
-        ...createSessionDto,
-        weeks: weeks,
-      });
-      const newSession = await this.sessionRepository.save(data);
-      const weekProgress = await this.weekProgressRepository.find({
-        where: { week: { id: weeks.id }, process: true },
-        relations: ['user'],
-      });
-      if (weekProgress.length > 0) {
-        for (const progress of weekProgress) {
-          const existingSessionProgress =
-            await this.sessionProgressRepository.findOne({
-              where: {
-                session: { id: newSession.id },
-                user: { id: progress.user.id },
-              },
-            });
-          if (existingSessionProgress) {
-            await this.sessionProgressRepository.save({
-              id: existingSessionProgress.id,
-              logbook: false,
-              isAttended: true,
-              session: newSession,
-              user: progress.user,
-            });
-          } else {
-            await this.sessionProgressRepository.save({
-              logbook: false,
-              isAttended: true,
-              session: newSession,
-              user: progress.user,
-            });
-          }
-        }
-      }
-    } else {
-      const session = await this.sessionRepository.findOne({
-        where: {
-          sessionOrder: createSessionDto.sessionOrder - 1,
-          weeks: { id: weeks.id },
-        },
-      });
 
-      if (!session) {
-        throw new NotFoundException(
-          'session sebelumnya harus dibuat terlebih dahulu',
-        );
-      } else if (!session.isFinal) {
-        if (createSessionDto.isFinalCheck === 'true') {
-          createSessionDto.isFinal = true;
-        }
-        const user = this.sessionRepository.create({
-          ...createSessionDto,
-          weeks: weeks,
-        });
-        const newSession = await this.sessionRepository.save(user);
-        const sessionProgressList = await this.sessionProgressRepository.find({
-          where: {
-            session: { id: session.id },
-            isAttended: true,
-            logbook: true,
-          },
-          relations: ['user'],
-        });
-        if (sessionProgressList.length > 0) {
-          for (const progress of sessionProgressList) {
-            await this.sessionProgressRepository.save({
-              isAttended: true,
-              logbook: false,
-              session: newSession,
-              user: progress.user,
-            });
-          }
-        }
-      }
-    }
+    const session = this.sessionRepository.create({
+      ...createSessionDto,
+      weeks: weeks,
+    });
+    return await this.sessionRepository.save(session);
+  }
+
+  async findCourse(courseId: string) {
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+      relations: ['weeks'],
+    });
+
+    return course;
   }
 
   async findAllCourses() {
@@ -154,14 +99,92 @@ export class SessionService {
   }
 
   async findWeekSessions(weeksId: string) {
-    const session = await this.sessionRepository.findOne({
-      where: { weeks: { id: weeksId } },
-      order: { createdAt: 'DESC' },
+    const weeks = await this.weeksRepository.findOne({
+      where: { id: weeksId },
+      relations: ['session'],
     });
-    if (!session) {
-      return 0;
+    if (!weeks) {
+      throw new NotFoundException('weeks ini tidak ada');
     }
-    return session.sessionOrder;
+    const lastSession =
+      weeks.session.length > 0 ? weeks.session[weeks.session.length - 1] : null;
+
+    return lastSession ? lastSession.sessionOrder : 0;
+  }
+
+  async findSessionByUser(sessionId: string, userId: string) {
+    return await this.sessionRepository.findOne({
+      where: {
+        id: sessionId,
+        logbooks: { user: { id: userId } },
+        attendances: { user: { id: userId } },
+        assignments: { taskAnswers: { user: { id: userId } } },
+      },
+      relations: [
+        'weeks',
+        'materials',
+        'assignments',
+        'assignments.taskAnswers',
+        'assignments.taskAnswers.user',
+        'logbooks',
+        'logbooks.user',
+        'attendances',
+        'attendances.user',
+      ],
+    });
+  }
+
+  async findSession(weeksId: string) {
+    const weeks = await this.weeksRepository.findOne({
+      where: { id: weeksId },
+      relations: ['session'],
+    });
+    if (!weeks) {
+      throw new NotFoundException('weeks ini tidak ada');
+    }
+    return weeks.session;
+  }
+
+  async findFinalSessions(courseId: string) {
+    const finalSessions = await this.sessionRepository
+      .createQueryBuilder('session')
+      .innerJoinAndSelect('session.weeks', 'weeks')
+      .innerJoinAndSelect('weeks.course', 'course')
+      .where('course.id = :courseId', { courseId })
+      .andWhere('session.isFinal = :isFinal', { isFinal: true })
+      .getMany();
+
+    return finalSessions;
+  }
+
+  async findSyllabus(courseId: string) {
+    const syllabus = await this.weeksRepository.find({
+      where: { course: { id: courseId } },
+      relations: ['session'],
+    });
+
+    return syllabus;
+  }
+
+  async findLastSession(weeksId: string) {
+    const lastSession = await this.sessionRepository.findOne({
+      where: {
+        weeks: { id: weeksId },
+        isFinal: true,
+      },
+    });
+
+    return lastSession;
+  }
+
+  async findTotalSession(courseId: string) {
+    const totalSession = await this.sessionRepository.count({
+      where: {
+        weeks: { course: { id: courseId } },
+      },
+    });
+
+    return totalSession;
   }
 
   async getNextOrder(weeksId: string) {
@@ -171,12 +194,45 @@ export class SessionService {
   }
 
   async findStudentsInCourse(courseId: string, sessionId: string) {
-    return await this.userRepository.find({
+    const users = await this.userRepository.find({
       where: {
         userCourses: { course: { id: courseId } },
         absent: { session: { id: sessionId } },
       },
       relations: ['absent', 'biodata'],
+    });
+
+    if (users.length === 0) {
+      return [];
+    }
+
+    const approvedLogbooks = await this.logBookRepository.find({
+      where: {
+        session: { id: sessionId },
+        process: 'approved',
+      },
+      relations: ['user'],
+    });
+
+    const approvedUserIds = new Set(
+      approvedLogbooks.map((lb) => lb.user?.id).filter(Boolean),
+    );
+
+    return users.map((user) => {
+      const hasApprovedLogbook = approvedUserIds.has(user.id);
+      const canDelete = !hasApprovedLogbook;
+      return {
+        ...user,
+        canDelete,
+        absent: (user.absent || []).map((att) => ({
+          ...att,
+          canDelete,
+        })),
+        attendance: (user.absent || []).map((att) => ({
+          ...att,
+          canDelete,
+        })),
+      };
     });
   }
 
@@ -188,7 +244,12 @@ export class SessionService {
   }
 
   async findLogBook(sessionId: string) {
-    return await this.logBookRepository.find({
+    const currentSession = await this.sessionRepository.findOne({
+      where: { id: sessionId },
+      relations: ['weeks', 'weeks.course'],
+    });
+
+    const logbooks = await this.logBookRepository.find({
       where: { session: { id: sessionId } },
       relations: [
         'user',
@@ -198,6 +259,122 @@ export class SessionService {
         'session.weeks.course',
       ],
     });
+
+    if (logbooks.length === 0) {
+      return [];
+    }
+
+    if (!currentSession?.weeks?.course) {
+      return logbooks.map((lb) => ({ ...lb, canDelete: true }));
+    }
+
+    const courseId = currentSession.weeks.course.id;
+    const currentWeekNumber = currentSession.weeks.weekNumber;
+    const currentOrder = currentSession.sessionOrder;
+
+    const subsequentSessions = await this.sessionRepository
+      .createQueryBuilder('s')
+      .innerJoin('s.weeks', 'w')
+      .innerJoin('w.course', 'c')
+      .where('c.id = :courseId', { courseId })
+      .andWhere(
+        '((w.weekNumber = :currentWeekNumber AND s.sessionOrder > :currentOrder) OR (w.weekNumber > :currentWeekNumber))',
+        { currentWeekNumber, currentOrder },
+      )
+      .select(['s.id', 'w.id', 'w.weekNumber'])
+      .getMany();
+
+    const userIds = Array.from(
+      new Set(
+        logbooks
+          .map((lb) => lb.user?.id)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    );
+
+    if (userIds.length === 0) {
+      return logbooks.map((lb) => ({ ...lb, canDelete: true }));
+    }
+
+    const activeUserIds = new Set<string>();
+
+    if (subsequentSessions.length > 0) {
+      const subsequentSessionIds = subsequentSessions.map((s) => s.id);
+      const [attendedRows, logbookRows, taskAnswerRows, subsequentWeekProgressRows] =
+        await Promise.all([
+          this.attendanceRepository
+            .createQueryBuilder('a')
+            .innerJoin('a.session', 's')
+            .innerJoin('a.user', 'u')
+            .where('s.id IN (:...subsequentSessionIds)', { subsequentSessionIds })
+            .andWhere('u.id IN (:...userIds)', { userIds })
+            .select('u.id', 'userId')
+            .distinct(true)
+            .getRawMany<{ userId: string }>(),
+
+          this.logBookRepository
+            .createQueryBuilder('lb')
+            .innerJoin('lb.session', 's')
+            .innerJoin('lb.user', 'u')
+            .where('s.id IN (:...subsequentSessionIds)', { subsequentSessionIds })
+            .andWhere('u.id IN (:...userIds)', { userIds })
+            .select('u.id', 'userId')
+            .distinct(true)
+            .getRawMany<{ userId: string }>(),
+
+          this.answerTaskRepository
+            .createQueryBuilder('at')
+            .innerJoin('at.task', 'asg')
+            .innerJoin('asg.session', 's')
+            .innerJoin('at.user', 'u')
+            .where('s.id IN (:...subsequentSessionIds)', {
+              subsequentSessionIds,
+            })
+            .andWhere('u.id IN (:...userIds)', { userIds })
+            .select('u.id', 'userId')
+            .distinct(true)
+            .getRawMany<{ userId: string }>(),
+
+          this.weekProgressRepository
+            .createQueryBuilder('wp')
+            .innerJoin('wp.week', 'w')
+            .innerJoin('w.course', 'c')
+            .innerJoin('wp.user', 'u')
+            .where('c.id = :courseId', { courseId })
+            .andWhere('w.weekNumber > :currentWeekNumber', { currentWeekNumber })
+            .andWhere('u.id IN (:...userIds)', { userIds })
+            .andWhere('wp.quiz = true')
+            .select('u.id', 'userId')
+            .distinct(true)
+            .getRawMany<{ userId: string }>(),
+        ]);
+
+      attendedRows.forEach((r) => activeUserIds.add(r.userId));
+      logbookRows.forEach((r) => activeUserIds.add(r.userId));
+      taskAnswerRows.forEach((r) => activeUserIds.add(r.userId));
+      subsequentWeekProgressRows.forEach((r) => activeUserIds.add(r.userId));
+    }
+
+    // If current session is final, also check if user has attempted/completed quiz in this week
+    if (currentSession.isFinal && currentSession.weeks?.id) {
+      const quizScores = await this.scoreRepository
+        .createQueryBuilder('sc')
+        .innerJoin('sc.quiz', 'q')
+        .innerJoin('q.weeks', 'w')
+        .innerJoin('sc.user', 'u')
+        .where('w.id = :weekId', { weekId: currentSession.weeks.id })
+        .andWhere('u.id IN (:...userIds)', { userIds })
+        .select('u.id', 'userId')
+        .distinct(true)
+        .getRawMany<{ userId: string }>();
+
+      quizScores.forEach((r) => activeUserIds.add(r.userId));
+    }
+
+    return logbooks.map((lb) => ({
+      ...lb,
+      canDelete: !activeUserIds.has(lb.user?.id),
+    }));
   }
 
   async findLogBookMentor(sessionId: string) {

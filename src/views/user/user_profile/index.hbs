@@ -1,4 +1,4 @@
-﻿{{!-- Toast sukses (flash `toast`) untuk aksi yang redirect ke /users/profile:
+{{!-- Toast sukses (flash `toast`) untuk aksi yang redirect ke /users/profile:
      change password, update profile, dan update akun. Ditaruh di luar
      percabangan role supaya kedua varian halaman profil (admin & user)
      memakainya, dan di luar x-data lain sesuai kontrak komponen. --}}
@@ -69,6 +69,7 @@
       },
       loadedSidebarSections: {
         {{#if (eq initialSection 'dashboard')}}dashboard: true,{{/if}}
+        {{#if (eq initialSection 'profile')}}profile: true,{{/if}}
       },
       async loadSidebarFragment(section) {
         if (this.loadedSidebarSections[section]) return;
@@ -87,13 +88,17 @@
           if (!res.ok) throw new Error('Request failed');
           const html = await res.text();
           container.style.minHeight = container.offsetHeight + 'px';
-          container.innerHTML = html;
-          container.querySelectorAll('script').forEach((oldScript) => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const scripts = doc.querySelectorAll('script');
+          scripts.forEach((s) => {
             const newScript = document.createElement('script');
-            Array.from(oldScript.attributes).forEach((attr) => newScript.setAttribute(attr.name, attr.value));
-            newScript.textContent = oldScript.textContent;
-            oldScript.parentNode.replaceChild(newScript, oldScript);
+            Array.from(s.attributes).forEach((attr) => newScript.setAttribute(attr.name, attr.value));
+            newScript.textContent = s.textContent;
+            document.head.appendChild(newScript);
+            s.remove();
           });
+          container.innerHTML = doc.body.innerHTML;
           this.loadedSidebarSections[section] = true;
           Alpine.initTree(container);
           requestAnimationFrame(() => { container.style.minHeight = ''; });
@@ -648,9 +653,13 @@
           {{/if}}
         </div>
 
-        <!-- Profile Tab Content (loaded via loadSidebarFragment) -->
+        <!-- Profile Tab Content -->
         <div x-show="activeSection === 'profile'" id="profile-container" class="w-full"{{#unless (eq initialSection 'profile')}} style="display:none"{{/unless}}>
-          {{> components/ui/learning/skeleton/index }}
+          {{#if (eq initialSection 'profile')}}
+            {{> user/sidebar_user_profile/profile/index }}
+          {{else}}
+            {{> components/ui/learning/skeleton/index }}
+          {{/if}}
         </div>
 
         <!-- Change Password Tab Content (loaded via loadSidebarFragment) -->

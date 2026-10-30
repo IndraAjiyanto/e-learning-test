@@ -21,10 +21,12 @@
       - Tombol "Registration Now" & link "Free Consultation"
 
   Props:
-  - course          : object (price, promo, startDate, startEnd, date_registration, id, installments)
-  - installments    : array (opsional list cicilan)
-  - contactWhatsapp : string
-  - lang            : string
+  - course            : object (price, promo, startDate, startEnd, date_registration, id, installments)
+  - installments      : array (opsional list cicilan)
+  - contactWhatsapp   : string
+  - userActivePayment : object (status transaksi aktif: approved | process)
+  - user              : object
+  - lang              : string
 --}}
 
 <div 
@@ -256,15 +258,33 @@
 
   {{!-- CTA Section (Shared across both tabs) --}}
   <div class="flex w-full flex-col items-center gap-3">
-    <a
-      {{#if (or (and installments installments.length) (and course.installments course.installments.length))}}
-        :href="tab === 'installment' ? '{{#if course.id}}/payment/registration/{{course.id}}?method=installment{{else}}#hero{{/if}}' : '{{#if course.id}}/payment/registration/{{course.id}}?method=full{{else}}#hero{{/if}}'"
-      {{/if}}
-      href="{{#if course.id}}/payment/registration/{{course.id}}?method=full{{else}}#hero{{/if}}"
-      class="flex w-full h-[45px] items-center justify-center rounded-[10px] bg-[#1E3A5F] font-inter text-sm font-bold text-white shadow-xs transition-all hover:bg-[#152841] hover:-translate-y-0.5 active:scale-95 text-center cursor-pointer select-none"
-    >
-      {{default (t 'test.paidProgram.pricing.btnRegister') 'Registration Now'}}
-    </a>
+    {{#if (eq userActivePayment.process 'approved')}}
+      <a
+        href="{{#if user.id}}/program/myProgram/{{user.id}}?courseId={{course.id}}{{else}}/users/profile?tab=history-payment{{/if}}"
+        class="flex w-full h-[45px] items-center justify-center rounded-[10px] bg-[#16A34A] font-inter text-sm font-bold text-white shadow-xs transition-all hover:bg-[#15803D] hover:-translate-y-0.5 active:scale-95 text-center cursor-pointer select-none"
+      >
+        <i class="fa-solid fa-graduation-cap mr-2"></i>
+        {{default (t 'test.paidProgram.pricing.btnGoToClass') 'Mulai Belajar'}}
+      </a>
+    {{else if (eq userActivePayment.process 'process')}}
+      <a
+        href="/users/profile?tab=history-payment"
+        class="flex w-full h-[45px] items-center justify-center rounded-[10px] bg-[#D97706] font-inter text-sm font-bold text-white shadow-xs transition-all hover:bg-[#B45309] hover:-translate-y-0.5 active:scale-95 text-center cursor-pointer select-none"
+      >
+        <i class="fa-solid fa-clock mr-2"></i>
+        {{default (t 'test.paidProgram.pricing.btnPending') 'Cek Status Pembayaran'}}
+      </a>
+    {{else}}
+      <a
+        {{#if (or (and installments installments.length) (and course.installments course.installments.length))}}
+          :href="tab === 'installment' ? '{{#if course.id}}/payment/registration/{{course.id}}?method=installment{{else}}#hero{{/if}}' : '{{#if course.id}}/payment/registration/{{course.id}}?method=full{{else}}#hero{{/if}}'"
+        {{/if}}
+        href="{{#if course.id}}/payment/registration/{{course.id}}?method=full{{else}}#hero{{/if}}"
+        class="flex w-full h-[45px] items-center justify-center rounded-[10px] bg-[#1E3A5F] font-inter text-sm font-bold text-white shadow-xs transition-all hover:bg-[#152841] hover:-translate-y-0.5 active:scale-95 text-center cursor-pointer select-none"
+      >
+        {{default (t 'test.paidProgram.pricing.btnRegister') 'Registration Now'}}
+      </a>
+    {{/if}}
 
     <a
       href="{{waLink contactWhatsapp}}"

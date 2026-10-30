@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +12,7 @@ import { Session } from 'src/entities/session.entity';
 import { User } from 'src/entities/user.entity';
 import { Course } from 'src/entities/course.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
+import { Logbook } from 'src/entities/logbook.entity';
 
 @Injectable()
 export class AttendanceService {
@@ -26,6 +31,9 @@ export class AttendanceService {
 
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
+
+    @InjectRepository(Logbook)
+    private readonly logBookRepository: Repository<Logbook>,
   ) {}
 
   async create(CreateAttendanceDto: CreateAttendanceDto) {
@@ -89,9 +97,31 @@ export class AttendanceService {
   }
 
   async findAll() {
-    return await this.attendanceRepository.find({
+    const attendances = await this.attendanceRepository.find({
       relations: ['session', 'session.weeks', 'session.weeks.course', 'user'],
     });
+
+    if (attendances.length === 0) {
+      return [];
+    }
+
+    const approvedLogbooks = await this.logBookRepository.find({
+      where: { process: 'approved' },
+      relations: ['user', 'session'],
+    });
+
+    const approvedUserSessionSet = new Set(
+      approvedLogbooks
+        .map((lb) => `${lb.user?.id}:${lb.session?.id}`)
+        .filter(Boolean),
+    );
+
+    return attendances.map((att) => ({
+      ...att,
+      canDelete: !approvedUserSessionSet.has(
+        `${att.user?.id}:${att.session?.id}`,
+      ),
+    }));
   }
 
   async findSession(sessionId: string) {
@@ -163,6 +193,21 @@ export class AttendanceService {
     if (!attendance) {
       throw new NotFoundException('Attendance not found');
     }
+
+    const approvedLogbook = await this.logBookRepository.findOne({
+      where: {
+        user: { id: attendance.user.id },
+        session: { id: sessionId },
+        process: 'approved',
+      },
+    });
+
+    if (approvedLogbook) {
+      throw new BadRequestException(
+        'Cannot delete attendance because the user has an approved logbook in this session.',
+      );
+    }
+
     const sessionProgress = await this.sessionProgressRepository.findOne({
       where: { user: { id: attendance.user.id }, session: { id: sessionId } },
     });

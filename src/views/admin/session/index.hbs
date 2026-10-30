@@ -2,19 +2,18 @@
      x-data="{ search: '' }">
   
   <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-    <h2 class="text-3xl font-bold text-centertext-gray-800">Daftar Pertemuan</h2>
+    <h2 class="text-3xl font-bold text-center text-gray-800">Session List</h2>
 
-    
     <div class="flex items-center gap-3">
       <input 
         type="text" 
-        placeholder="Cari session" 
+        placeholder="Search session..." 
         x-model="search"
         class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900"
       />
       <a href="/session/formCreate" 
          class="bg-gray-900 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
-        Tambah Pertemuan
+        Add Session
       </a>
     </div>
   </div>
@@ -23,13 +22,13 @@
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-100">
         <tr>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Pertemuan ke</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Topik</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Tanggal</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Jam</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Kelas</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Jumlah Materi</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Aksi</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Session</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Topic</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Time</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Course</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Total Materials</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
@@ -43,8 +42,8 @@
           <td class="px-6 py-4 text-sm text-gray-800">{{name}}</td>
           <td class="px-6 py-4 text-sm text-gray-800">{{jumlah_pdf}} pdf, {{jumlah_video}} video, {{jumlah_ppt}} ppt</td>
           <td class="px-6 py-4 text-sm text-gray-800 space-x-2">
-            <a href="/session/{{id}}" class="text-gray-600 font-medium hover:underline">Lihat</a>
-            <a href="/learning-material/formCreate/{{id}}" class="text-gray-600 font-medium hover:underline">Lihat Materi</a>
+            <a href="/session/{{id}}" class="text-gray-600 font-medium hover:underline">View</a>
+            <a href="/learning-material/formCreate/{{id}}" class="text-gray-600 font-medium hover:underline">View Materials</a>
           </td>
         </tr>
         {{/each}}

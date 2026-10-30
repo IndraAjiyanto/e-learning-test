@@ -172,10 +172,10 @@
 
       getTermStatusLabel(item, month) {
         const status = this.getTermStatus(item, month);
-        if (status === 'approved') return 'Lunas';
-        if (status === 'process') return 'Diproses';
-        if (status === 'rejected') return 'Ditolak';
-        return 'Belum Bayar';
+        if (status === 'approved') return 'Paid';
+        if (status === 'process') return 'In Process';
+        if (status === 'rejected') return 'Rejected';
+        return 'Unpaid';
       },
     };
   }

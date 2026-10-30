@@ -134,7 +134,13 @@
                   'portfolio' 'ph ph-briefcase'
                   'history-payment' 'ph ph-receipt'
                 ) (default active 'dashboard')))
-              (obj 'label' pageTitle)
+              (obj 'label' pageTitle 'icon' (default pageIcon (lookup (obj
+                  'learning' 'ph ph-book-open'
+                  'portfolio' 'ph ph-briefcase'
+                  'dashboard' 'ph ph-squares-four'
+                  'profile' 'ph ph-user'
+                  'history-payment' 'ph ph-receipt'
+                ) (default active 'dashboard'))))
             )) }}
       </div>
       {{> @partial-block}}

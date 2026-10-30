@@ -84,7 +84,7 @@
               <div class='box-border w-full h-[22px] flex items-center'>
                 <div class='h-[22px] bg-[#F5F5F5] rounded-[16px] px-[8px] py-[2px] flex items-center justify-center shrink-0'>
                   <span class='font-inter font-medium text-[12px] leading-[18px] text-[#404040] text-center whitespace-nowrap'>
-                    {{#if syllabus.isFinal}}Pertemuan Terakhir · {{course.name}}{{else if course.name}}{{course.name}}{{else}}Program{{/if}}
+                    {{#if syllabus.isFinal}}Final Session · {{course.name}}{{else if course.name}}{{course.name}}{{else}}Program{{/if}}
                   </span>
                 </div>
               </div>
@@ -115,7 +115,7 @@
               </div>
               <div class='box-border w-full h-[23px] flex items-center'>
                 <span class='font-inter font-medium text-[14px] leading-[23px] text-[#737373] truncate'>
-                  {{#if syllabus.title}}{{syllabus.title}}{{else if syllabus.syllabusNumber}}Pertemuan {{syllabus.syllabusNumber}}{{else}}-{{/if}}
+                  {{#if syllabus.title}}{{syllabus.title}}{{else if syllabus.syllabusNumber}}Session {{syllabus.syllabusNumber}}{{else}}-{{/if}}
                 </span>
               </div>
             </div>
@@ -269,13 +269,13 @@
               </svg>
             </div>
             <p class='font-inter font-medium text-[16px] text-[#737373]'>
-              Belum ada pertanyaan pada quiz ini.
+              No questions in this quiz yet.
             </p>
             {{#unless isAttempted}}
             <a
               href='/question/formCreate/{{quiz.id}}'
               class='inline-flex items-center gap-[6px] px-4 py-2 bg-[#003060] text-white rounded-[8px] font-inter font-semibold text-[14px] hover:bg-[#002244] transition-colors'>
-              Tambah Pertanyaan Pertama
+              Add First Question
             </a>
             {{/unless}}
           </div>

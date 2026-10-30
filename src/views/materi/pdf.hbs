@@ -4,10 +4,11 @@
      Lihat docs/user-area-learning-consolidation-plan.md tahap 2. --}}
 {{#> user/shell_frame/index user=user active='learning' pageTitle=(t 'test.startLearning.pdfMaterial') back=false
     trail=(array
-      (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
-      (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning')
-      (obj 'label' (t 'test.startLearning.startLearning') 'href' (concat '/program/' session.weeks.course.id))
-      (obj 'label' (t 'test.startLearning.pdfMaterial')))
+      (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard' 'icon' 'ph ph-house')
+      (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning' 'icon' 'ph ph-book-open')
+      (obj 'label' (t 'test.startLearning.startLearning') 'href' (concat '/program/myProgram/' user.id '?courseId=' session.weeks.course.id) 'icon' 'ph ph-play-circle')
+      (obj 'label' (concat (t 'test.startLearning.week') ' ' session.weeks.weekNumber) 'href' (concat '/program/myProgram/' user.id '?courseId=' session.weeks.course.id) 'icon' 'ph ph-calendar')
+      (obj 'label' (t 'test.startLearning.pdfMaterial') 'icon' 'ph ph-file-pdf'))
 }}
 <div
   class="w-full max-w-[1540px] mx-auto flex flex-col items-start px-4 sm:px-8 lg:px-[50px] pt-6 sm:pt-8 lg:pt-[50px] pb-12 lg:pb-[80px] gap-6 lg:gap-[38px] font-inter"
