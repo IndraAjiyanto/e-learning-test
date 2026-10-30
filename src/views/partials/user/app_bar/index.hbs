@@ -81,12 +81,12 @@
     {{!-- {{> components/ui/notification/index }} --}}
     {{> components/ui/nav/lang_switcher/index }}
     <div class="hidden items-center gap-2 sm:flex">
-      <span class="font-inter text-xs font-semibold text-[#003060]">{{substring user.username 0 1}}</span>
-      <span class="grid size-9 shrink-0 place-items-center rounded-full bg-[#F4F7FC] text-[#003060] overflow-hidden">
+      <span class="font-inter text-xs font-semibold text-[#003060]">{{user.username}}</span>
+      <span class="grid size-7 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-gray-300 bg-gray-600 text-white">
         {{#if user.profile}}
           <img src="{{user.profile}}" alt="{{user.username}}" class="size-full object-cover" />
         {{else}}
-          <i class="fas fa-user text-sm"></i>
+          <span class="text-xs font-bold">{{substring user.username 0 1}}</span>
         {{/if}}
       </span>
     </div>
