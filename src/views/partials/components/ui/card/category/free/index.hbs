@@ -7,7 +7,7 @@
   - Title Row: Icon circle navy (#003060) + Title Montserrat Bold 22px (#0B1F3B)
   - Chips: Pill rounded-full border #E5E7EB bg-[#F9FAFB]
   - Description: Inter Regular 14px-15px #6B7280
-  - Footer CTA: "Explore program" di kiri + Tombol lingkaran panah navy di kanan
+  - Footer CTA: Full-width button "Jelajahi Selengkapnya" (#003060)
 --}}
 
 <div class="group flex flex-col justify-between w-full max-w-[504px] bg-white rounded-[24px] p-5 sm:p-6 shadow-[0px_6px_24px_-6px_rgba(0,0,0,0.06)] border border-[#F1F3F5] hover:shadow-[0px_14px_32px_-8px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300">
@@ -92,20 +92,16 @@
 
   </div>
 
-  {{!-- Footer CTA Row --}}
-  <div class="pt-4 border-t border-gray-100 flex items-center justify-between mt-auto">
+  {{!-- Footer CTA Row: Full-width button --}}
+  <div class="pt-4 border-t border-gray-100 w-full mt-auto">
     <a 
       href="{{#if isFallback}}#programs{{else}}/program/{{id}}{{/if}}" 
-      class="font-inter font-bold text-sm sm:text-[15px] text-[#0B1F3B] group-hover:text-[#003060] transition-colors"
+      class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#003060] py-3 px-4 font-inter text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-[#00244a] hover:shadow-md active:scale-[0.99]"
     >
-      {{default (t 'test.categoryPaidProgram.hero.explore') 'Explore program'}}
-    </a>
-    <a 
-      href="{{#if isFallback}}#programs{{else}}/program/{{id}}{{/if}}" 
-      class="grid size-11 shrink-0 place-items-center rounded-full bg-[#003060] text-white shadow-sm group-hover:bg-[#07172d] group-hover:scale-105 transition-all duration-300"
-      aria-label="{{name}}"
-    >
-      <i class="fa-solid fa-arrow-right text-sm"></i>
+      <span>{{default (t 'test.categoryPaidProgram.program.exploreProgram') (default (t 'test.categoryFreeProgram.program.exploreProgram') 'Jelajahi Selengkapnya')}}</span>
+      <svg class="size-4 shrink-0" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </a>
   </div>
 

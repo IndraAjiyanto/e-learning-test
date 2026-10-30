@@ -167,8 +167,10 @@
         {{/unless}}
         {{> components/ui/super_admin/tabs/panel/index name='FAQs' label='FAQs' }}
         {{> components/ui/super_admin/tabs/panel/index name='user' label='User' }}
-        {{> components/ui/super_admin/tabs/panel/index name='log_book_user' label='Log Book User' }}
-        {{> components/ui/super_admin/tabs/panel/index name='log_book_mentor' label='Log Book Mentor' }}
+        {{#unless (or (eq caps.structure 'syllabus') (eq course.programType 'non_bootcamp'))}}
+          {{> components/ui/super_admin/tabs/panel/index name='log_book_user' label='Log Book User' }}
+          {{> components/ui/super_admin/tabs/panel/index name='log_book_mentor' label='Log Book Mentor' }}
+        {{/unless}}
         {{> components/ui/super_admin/tabs/panel/index name='mentor' label='Mentor' }}
         {{> components/ui/super_admin/tabs/panel/index name='portfolio' label='Portfolio' }}
       </nav>
@@ -244,16 +246,18 @@
           <div>{{> components/ui/super_admin/program/user_tab/index courseId=course.id }}</div>
         </template>
       </div>
-      <div x-show="tab === 'log_book_user'">
-        <template x-if="loaded['log_book_user']">
-          <div>{{> components/ui/super_admin/program/log_book_user_tab/index courseId=course.id }}</div>
-        </template>
-      </div>
-      <div x-show="tab === 'log_book_mentor'">
-        <template x-if="loaded['log_book_mentor']">
-          <div>{{> components/ui/super_admin/program/log_book_mentor_tab/index courseId=course.id }}</div>
-        </template>
-      </div>
+      {{#unless (or (eq caps.structure 'syllabus') (eq course.programType 'non_bootcamp'))}}
+        <div x-show="tab === 'log_book_user'">
+          <template x-if="loaded['log_book_user']">
+            <div>{{> components/ui/super_admin/program/log_book_user_tab/index courseId=course.id }}</div>
+          </template>
+        </div>
+        <div x-show="tab === 'log_book_mentor'">
+          <template x-if="loaded['log_book_mentor']">
+            <div>{{> components/ui/super_admin/program/log_book_mentor_tab/index courseId=course.id }}</div>
+          </template>
+        </div>
+      {{/unless}}
       <div x-show="tab === 'mentor'">
         <template x-if="loaded['mentor']">
           <div>{{> components/ui/super_admin/program/mentor_tab/index courseId=course.id }}</div>
@@ -323,6 +327,8 @@
         } else if (this.tab === 'final_assignment' && !hasFinal) {
           this.tab = fallbackTab;
         } else if (this.tab === 'alumni' && !hasAlumni) {
+          this.tab = fallbackTab;
+        } else if ((this.tab === 'log_book_user' || this.tab === 'log_book_mentor') && (structure === 'syllabus' || '{{course.programType}}' === 'non_bootcamp')) {
           this.tab = fallbackTab;
         }
 

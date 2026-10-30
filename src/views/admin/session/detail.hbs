@@ -78,9 +78,7 @@
      redirect balik ke sini. Dipicu via flashToast() di attendances.controller. --}}
 {{> components/ui/admin/toast/success/index toast=toast }}
 
-<script
-  src='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
-></script>
+{{> components/ui/super_admin/table/export_excel }}
 
 <script>
 function tabData() {

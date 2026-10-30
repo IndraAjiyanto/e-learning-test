@@ -8,8 +8,8 @@
   card white, outline 1px #E5E5E5 offset -0.5px, radius 12, overflow hidden, shadow.
   Header h44 bg #FAFAFA + border-bottom, text Inter 12/500 #525252, p12 (sama program/table).
   Row h72 + border-bottom, text Inter 14/normal #525252, p16 12 (sama program/table).
-  Kolom: User(268) DateCreated(190) NoMeeting(128) NoWeek(128) ProgramName(280)
-         Category(180) ProgramType(180) Mentor(180) Activity(180) ActivityDetails(180)
+  Kolom: User(268) DateCreated(190) NoMeeting(128) NoWeek(128) ProgramName(180)
+         Category(180) ProgramType(180) Activity(180) ActivityDetails(180)
          Documentation(138) Status(140) Issues(180) AddDocumentation(180) Action(107)
   Catatan: desain menggandakan label "Category" untuk kolom 6-7; kolom 7 diberi label
   "Program Type" agar menampung courseType (data lama tetap tersaji semua).
@@ -33,7 +33,7 @@
   <div x-show='!loading && filteredData.length > 0' class='logbook-scroll w-full overflow-x-auto overflow-y-hidden [scrollbar-width:thin] [scrollbar-color:#D4D4D4_transparent]'>
 
     {{!-- Header Row --}}
-    <div class='w-full min-w-[2539px] h-[44px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px]'>
+    <div class='w-full min-w-[2359px] h-[44px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FAFAFA] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px]'>
       <div class='box-border w-[268px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>User</div></div>
       <div class='box-border w-[190px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Date Created</div></div>
       <div class='box-border w-[128px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>No Meeting</div></div>
@@ -41,7 +41,6 @@
       <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Program Name</div></div>
       <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Category</div></div>
       <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Program Type</div></div>
-      <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Mentor</div></div>
       <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Activity</div></div>
       <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Activity Details</div></div>
       <div class='box-border w-[138px] shrink-0 h-full flex flex-row gap-0 p-[12px] justify-start items-center'><div class='text-[12px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-medium text-left'>Documentation</div></div>
@@ -53,7 +52,7 @@
 
     {{!-- Body Rows --}}
     <template x-for='(logbookUser, index) in filteredData' :key='logbookUser.id'>
-      <div class='w-full min-w-[2539px] h-[72px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px] hover:bg-[#fafafa] transition-colors'>
+      <div class='w-full min-w-[2359px] h-[72px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#FFFFFF] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E5E5E5] [margin:0px_0px_-0.5px_0px] hover:bg-[#fafafa] transition-colors'>
 
         {{!-- User: avatar + nama/email --}}
         <div class='box-border w-[268px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
@@ -79,7 +78,7 @@
           {{> components/ui/admin/program/logbook-pill text='padOrder(logbookUser.session?.weeks?.weekNumber)'}}
         </div>
 
-        {{!-- Program Name / Category / Program Type / Mentor --}}
+        {{!-- Program Name / Category / Program Type --}}
         <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
           <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbookUser.session?.weeks?.course?.name ?? '-'" :title="logbookUser.session?.weeks?.course?.name ?? ''"></div>
         </div>
@@ -88,9 +87,6 @@
         </div>
         <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
           <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbookUser.session?.weeks?.course?.courseType?.nameClassesType ?? '-'" :title="logbookUser.session?.weeks?.course?.courseType?.nameClassesType ?? ''"></div>
-        </div>
-        <div class='box-border w-[180px] shrink-0 h-full flex flex-row gap-0 p-[16px_12px] justify-start items-center'>
-          <div class='text-[14px]/[normal] flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-[#525252] font-inter font-normal text-left' x-text="logbookUser.session?.weeks?.course?.mentors?.[0]?.name ?? '-'" :title="logbookUser.session?.weeks?.course?.mentors?.[0]?.name ?? ''"></div>
         </div>
 
         {{!-- Activity / Activity Details --}}
