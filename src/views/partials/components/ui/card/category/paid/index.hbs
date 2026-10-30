@@ -7,8 +7,6 @@
 
   Komponen yang digunakan:
   - components/ui/text/badge/index  -> untuk tag pills
-  - components/ui/text/link/index   -> untuk link "Explore program"
-  - components/ui/button/btn_action/index -> untuk tombol CTA bulat
 
   Props:
     id          (string)  — ID program untuk link
@@ -141,24 +139,17 @@
       {{description}}
     </p>
 
-    {{!-- bottom-row --}}
-    <div class="mt-auto flex w-full items-center justify-between pt-6">
-      {{> components/ui/text/link/index
-          text=(default (t 'test.categoryPaidProgram.program.explore') 'Explore program')
-          href=(ternary (and id (ne id "#")) (concat "/program/" id) "#programs")
-          color="text-[#003060]"
-          weight="semibold"
-          size="text-sm"
-          font="font-inter"
-          class="hover:underline"
-      }}
-      {{> components/ui/button/btn_action/index
-          href=(ternary (and id (ne id "#")) (concat "/program/" id) "#programs")
-          icon="fa-solid fa-arrow-right text-sm"
-          text=""
-          variant="primary"
-          class="!rounded-full !w-10 !h-10 sm:!w-11 sm:!h-11 !p-0 !shadow-[0px_4px_14px_rgba(0,48,96,0.25)] hover:scale-105 active:scale-95 transition-transform"
-      }}
+    {{!-- bottom-row: Full-width button --}}
+    <div class="mt-auto w-full pt-6">
+      <a
+        href="{{ternary (and id (ne id "#")) (concat "/program/" id) "#programs"}}"
+        class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#003060] py-3 px-4 font-inter text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-[#00244a] hover:shadow-md active:scale-[0.99]"
+      >
+        <span>{{default (t 'test.categoryPaidProgram.program.exploreProgram') (default (t 'test.categoryPaidProgram.program.explore') 'Jelajahi Selengkapnya')}}</span>
+        <svg class="size-4 shrink-0" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
     </div>
 
   </div>
