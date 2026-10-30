@@ -183,6 +183,7 @@ async function bootstrap() {
         ]);
         res.locals.footerData = footerData;
         res.locals.footerCategories = footerCategories;
+        res.locals.social = footerData ? [footerData] : [];
       }
     } catch (error) {
       console.error('Footer middleware error:', error);

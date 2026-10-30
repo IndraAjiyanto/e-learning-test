@@ -16,6 +16,7 @@ export class FooterMiddleware implements NestMiddleware {
       ]);
       res.locals.footerData = footerData;
       res.locals.footerCategories = footerCategories;
+      res.locals.social = footerData ? [footerData] : [];
     }
     next();
   }
