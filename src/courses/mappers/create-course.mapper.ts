@@ -97,7 +97,8 @@ const toBool = (value: unknown): boolean | undefined => {
 const toMethod = (value: unknown): Method =>
   asText(value).toLowerCase() === 'offline'
     ? 'offline'
-    : asText(value).toLowerCase() === 'hybrid' || asText(value).toLowerCase() === 'hybird'
+    : asText(value).toLowerCase() === 'hybrid' ||
+        asText(value).toLowerCase() === 'hybird'
       ? 'hybrid'
       : 'online';
 
@@ -257,8 +258,7 @@ export function mapUpdateProgram(
     body.method === 'hybrid' ||
     body.method === 'hybird'
   ) {
-    dto.method =
-      body.method === 'hybird' ? 'hybrid' : (body.method as Method);
+    dto.method = body.method === 'hybird' ? 'hybrid' : body.method;
   }
 
   const categoryId = asText(body.categoryId);

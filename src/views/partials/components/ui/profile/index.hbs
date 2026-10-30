@@ -95,7 +95,7 @@
                  gagal dimuat (URL /asset/* sering tidak ikut terbawa ke lokal),
                  elemennya dibuang dan inisialnya muncul kembali. --}}
             <span class='relative grid size-36 place-items-center overflow-hidden rounded-full bg-[#003060] font-inter text-4xl font-semibold uppercase text-white'>
-              <span x-text='initials'></span>
+              <span x-text='initials'>{{substring (default user.biodata.fullName user.username) 0 1}}</span>
               {{#if user.profile}}
                 <img src='{{user.profile}}' alt='' class='absolute inset-0 size-full object-cover' onerror='this.remove()' />
               {{/if}}
@@ -512,7 +512,8 @@
       ],
 
       get initials() {
-        return trim(this.formData.username).slice(0, 2) || '?';
+        const name = trim(this.formData.fullName) || trim(this.formData.username);
+        return name.slice(0, 1).toUpperCase() || '?';
       },
 
       // Kelengkapan profil.
