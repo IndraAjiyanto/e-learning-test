@@ -1,49 +1,314 @@
 {{!--
-  Komponen: Excel Export (Super Admin)
+  Komponen: Excel Export (Super Admin & Global)
   Lokasi: src/views/partials/components/ui/super_admin/table/export_excel.hbs
-  Level: L0 Skrip pendamping (scoped super_admin)
+  Level: L0 Skrip pendamping (scoped super_admin, admin, student)
 
-  Memuat SheetJS dari CDN dan menyediakan `exportRowsToExcel({ rows, columns,
-  sheetName, filePrefix })`. Dipakai tab log book yang tabelnya read-only tapi
-  perlu diunduh sebagai .xlsx.
+  Menyediakan `exportRowsToExcel({ rows, columns, sheetName, filePrefix })`.
+  Mendukung embedding gambar secara langsung ke dalam sel Excel menggunakan ExcelJS.
+  Jika ExcelJS tidak tersedia, otomatis fallback ke SheetJS (XLSX).
 
-  `columns` adalah daftar { header, width, value } — `value` sebuah fungsi yang
-  menerima satu baris dan mengembalikan isi selnya. Bentuk ini menjaga urutan
-  kolom file Excel tetap sama dengan urutan kolom di tabel, dan lebar kolomnya
-  ikut didefinisikan di tempat yang sama.
-
-  Tidak merender markup apa pun — panggil sekali di halaman yang memakainya.
+  `columns` adalah daftar { header, width, value, isImage }
+  - `header` : Judul kolom
+  - `width`  : Lebar kolom (karakter)
+  - `value`  : Fungsi (row, index) => string/any
+  - `isImage`: (Opsional) boolean menandai kolom berisi URL/path gambar dokumentasi
 --}}
+<script src='/public/js/exceljs.min.js'></script>
+<script>
+  if (typeof ExcelJS === 'undefined' && !document.getElementById('exceljs-cdn-script')) {
+    var s = document.createElement('script');
+    s.id = 'exceljs-cdn-script';
+    s.src = 'https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js';
+    document.head.appendChild(s);
+  }
+</script>
 <script src='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'></script>
 
 <script>
-  function exportRowsToExcel({ rows, columns, sheetName, filePrefix }) {
-    // Dimuat dari CDN, jadi bisa saja belum siap (atau gagal) saat tombol ditekan.
-    if (typeof XLSX === 'undefined') {
-      console.error('Excel export: SheetJS belum termuat.');
-      return false;
+  if (typeof window.exportRowsToExcel !== 'function') {
+    /**
+     * Memuat gambar via Image + Canvas untuk mendapatkan data URL PNG dan dimensi aslinya.
+     * Otomatis mengonversi format apa pun (webp, svg, jpeg, png) ke PNG standar untuk Excel.
+     */
+    async function loadExcelImageData(url) {
+      if (!url || typeof url !== 'string') return null;
+      var clean = url.trim();
+      if (!clean || clean === '-' || clean === 'null' || clean === 'undefined') return null;
+
+      var fullUrl = clean;
+      if (!/^https?:\/\//i.test(clean) && !clean.startsWith('data:')) {
+        if (!clean.startsWith('/')) {
+          fullUrl = '/' + clean;
+        }
+        fullUrl = window.location.origin + fullUrl;
+      }
+
+      var fallbackFetch = function(targetUrl) {
+        return fetch(targetUrl)
+          .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            var ct = (res.headers.get('content-type') || '').toLowerCase();
+            return res.arrayBuffer().then(function(buf) {
+              return { buf: buf, ct: ct };
+            });
+          })
+          .then(function(resObj) {
+            var ext = 'png';
+            if (resObj.ct.includes('jpeg') || resObj.ct.includes('jpg') || /\.jpe?g($|\?)/i.test(targetUrl)) {
+              ext = 'jpeg';
+            } else if (resObj.ct.includes('gif') || /\.gif($|\?)/i.test(targetUrl)) {
+              ext = 'gif';
+            }
+            return {
+              buffer: resObj.buf,
+              extension: ext,
+              width: 140,
+              height: 85,
+            };
+          })
+          .catch(function(err) {
+            console.warn('Fallback fetch failed for image:', targetUrl, err);
+            return null;
+          });
+      };
+
+      return new Promise(function(resolve) {
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function() {
+          try {
+            var canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth || 100;
+            canvas.height = img.naturalHeight || 100;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            var dataUrl = canvas.toDataURL('image/png');
+            resolve({
+              base64: dataUrl,
+              extension: 'png',
+              width: canvas.width,
+              height: canvas.height,
+            });
+          } catch (e) {
+            fallbackFetch(fullUrl).then(resolve);
+          }
+        };
+        img.onerror = function() {
+          fallbackFetch(fullUrl).then(resolve);
+        };
+        img.src = fullUrl;
+      });
     }
 
-    try {
-      const data = (rows || []).map((row, index) =>
-        columns.reduce((acc, column) => {
-          const value = column.value(row, index);
-          acc[column.header] = value == null ? '' : value;
-          return acc;
-        }, {}),
-      );
+    window.exportRowsToExcel = async function exportRowsToExcel({ rows, columns, sheetName, filePrefix }) {
+      // Tunggu hingga ExcelJS siap jika sedang dimuat
+      if (typeof ExcelJS === 'undefined') {
+        await new Promise(function(resolve) {
+          var waited = 0;
+          var interval = setInterval(function() {
+            waited += 100;
+            if (typeof ExcelJS !== 'undefined' || waited >= 3000) {
+              clearInterval(interval);
+              resolve();
+            }
+          }, 100);
+        });
+      }
 
-      const sheet = XLSX.utils.json_to_sheet(data);
-      sheet['!cols'] = columns.map((column) => ({ wch: column.width || 20 }));
+      // Jika ExcelJS berhasil termuat, ekspor dengan gambar menggunakan ExcelJS
+      if (typeof ExcelJS !== 'undefined') {
+        try {
+          var wb = new ExcelJS.Workbook();
+          wb.creator = 'Kesatria Academy';
+          wb.created = new Date();
+          var ws = wb.addWorksheet(sheetName || 'Sheet 1');
 
-      const book = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(book, sheet, sheetName);
-      XLSX.writeFile(book, `${filePrefix}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+          // Konfigurasi kolom
+          ws.columns = columns.map(function(col) {
+            var isImg = col.isImage === true || (typeof col.header === 'string' && /documentation|gambar|foto|photo|image/i.test(col.header));
+            return {
+              header: col.header,
+              key: col.header,
+              width: col.width || (isImg ? 28 : 20),
+            };
+          });
 
-      return true;
-    } catch (error) {
-      console.error('Excel export gagal:', error);
-      return false;
-    }
+          // Style header baris 1
+          var headerRow = ws.getRow(1);
+          headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11, name: 'Calibri' };
+          headerRow.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FF1D2D5B' },
+          };
+          headerRow.height = 28;
+          headerRow.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+
+          var rowsData = rows || [];
+          var imageTasks = [];
+
+          // Kumpulkan pekerjaan memuat gambar
+          for (var rIdx = 0; rIdx < rowsData.length; rIdx++) {
+            var rowItem = rowsData[rIdx];
+            for (var cIdx = 0; cIdx < columns.length; cIdx++) {
+              var col = columns[cIdx];
+              var isImg = col.isImage === true || (typeof col.header === 'string' && /documentation|gambar|foto|photo|image/i.test(col.header));
+              if (isImg) {
+                var val = col.value ? col.value(rowItem, rIdx) : rowItem[col.header];
+                if (val && typeof val === 'string' && val !== '-' && val !== 'null') {
+                  imageTasks.push({ rIdx: rIdx, cIdx: cIdx, url: val });
+                }
+              }
+            }
+          }
+
+          // Unduh gambar secara paralel dalam batch kecil agar ramah memori/koneksi
+          var imageResults = new Map();
+          var batchSize = 6;
+          for (var i = 0; i < imageTasks.length; i += batchSize) {
+            var batch = imageTasks.slice(i, i + batchSize);
+            await Promise.all(
+              batch.map(async function(task) {
+                var loaded = await loadExcelImageData(task.url);
+                if (loaded) {
+                  imageResults.set(task.rIdx + '_' + task.cIdx, loaded);
+                }
+              })
+            );
+          }
+
+          // Bangun baris dan sematkan gambar
+          var rowsWithImages = new Set();
+          for (var rIdx = 0; rIdx < rowsData.length; rIdx++) {
+            var rowItem = rowsData[rIdx];
+            var rowValues = {};
+
+            for (var cIdx = 0; cIdx < columns.length; cIdx++) {
+              var col = columns[cIdx];
+              var isImg = col.isImage === true || (typeof col.header === 'string' && /documentation|gambar|foto|photo|image/i.test(col.header));
+              var rawVal = col.value ? col.value(rowItem, rIdx) : rowItem[col.header];
+
+              if (isImg) {
+                var loadedImg = imageResults.get(rIdx + '_' + cIdx);
+                if (loadedImg) {
+                  rowValues[col.header] = '';
+                  rowsWithImages.add(rIdx);
+                } else {
+                  rowValues[col.header] = rawVal || '-';
+                }
+              } else {
+                rowValues[col.header] = rawVal == null ? '' : rawVal;
+              }
+            }
+
+            var addedRow = ws.addRow(rowValues);
+            if (rowsWithImages.has(rIdx)) {
+              addedRow.height = 75;
+            } else {
+              addedRow.height = 24;
+            }
+
+            addedRow.alignment = { vertical: 'middle', wrapText: true };
+            addedRow.eachCell(function(cell, colNumber) {
+              cell.border = {
+                top: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+                left: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+                bottom: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+                right: { style: 'thin', color: { argb: 'FFE5E7EB' } },
+              };
+              var colDef = columns[colNumber - 1];
+              if (colDef && ['No', 'Status', 'Meeting No', 'Week No', 'Date', 'Created At', 'Date Created'].includes(colDef.header)) {
+                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+              }
+            });
+
+            // Sematkan gambar ke sel
+            for (var cIdx = 0; cIdx < columns.length; cIdx++) {
+              var loadedImg = imageResults.get(rIdx + '_' + cIdx);
+              if (loadedImg) {
+                var imageId;
+                if (loadedImg.base64) {
+                  imageId = wb.addImage({
+                    base64: loadedImg.base64,
+                    extension: loadedImg.extension || 'png',
+                  });
+                } else if (loadedImg.buffer) {
+                  imageId = wb.addImage({
+                    buffer: loadedImg.buffer,
+                    extension: loadedImg.extension || 'png',
+                  });
+                }
+
+                if (imageId !== undefined) {
+                  var maxW = 160;
+                  var maxH = 90;
+                  var w = loadedImg.width || maxW;
+                  var h = loadedImg.height || maxH;
+                  var scale = Math.min(maxW / w, maxH / h, 1);
+                  var finalW = Math.round(w * scale);
+                  var finalH = Math.round(h * scale);
+
+                  ws.addImage(imageId, {
+                    tl: { col: cIdx + 0.05, row: rIdx + 1 + 0.05 },
+                    ext: { width: finalW, height: finalH },
+                    editAs: 'oneCell',
+                  });
+                }
+              }
+            }
+          }
+
+          var buffer = await wb.xlsx.writeBuffer();
+          var blob = new Blob([buffer], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          });
+          var fileName = (filePrefix || 'Export') + '_' + new Date().toISOString().slice(0, 10) + '.xlsx';
+          var downloadUrl = window.URL.createObjectURL(blob);
+          var link = document.createElement('a');
+          link.href = downloadUrl;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(function() {
+            window.URL.revokeObjectURL(downloadUrl);
+          }, 1000);
+
+          return true;
+        } catch (excelError) {
+          console.error('ExcelJS export error, falling back to SheetJS:', excelError);
+        }
+      }
+
+      // Fallback ke SheetJS (XLSX) jika ExcelJS tidak tersedia atau gagal
+      if (typeof XLSX === 'undefined') {
+        console.error('Excel export: SheetJS maupun ExcelJS belum termuat.');
+        return false;
+      }
+
+      try {
+        var data = (rows || []).map(function(row, index) {
+          return columns.reduce(function(acc, column) {
+            var value = column.value(row, index);
+            acc[column.header] = value == null ? '' : value;
+            return acc;
+          }, {});
+        });
+
+        var sheet = XLSX.utils.json_to_sheet(data);
+        sheet['!cols'] = columns.map(function(column) {
+          return { wch: column.width || 20 };
+        });
+
+        var book = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(book, sheet, sheetName);
+        XLSX.writeFile(book, (filePrefix || 'Export') + '_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+
+        return true;
+      } catch (error) {
+        console.error('Excel export gagal:', error);
+        return false;
+      }
+    };
   }
 </script>
