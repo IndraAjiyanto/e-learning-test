@@ -22,13 +22,12 @@
         <!-- Right: Export Button -->
         <div class='flex items-end justify-end'>
           <button
+            type='button'
             @click='exportToExcel()'
-            class='bg-[#003060] hover:bg-[#00254a] text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-all shadow-md .5'
+            class='box-border w-[122px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#16A34A] border border-[#86EFAC] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#15803D] transition-colors cursor-pointer'
           >
-            <i class='fas fa-file-excel text-lg'></i>
-            <span class='font-semibold'>{{t
-                'test.logbook.logbookList.exportExcel'
-              }}</span>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'><path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/><polyline points='7 10 12 15 17 10'/><line x1='12' x2='12' y1='15' y2='3'/></svg>
+            <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Export</span>
           </button>
         </div>
       </div>

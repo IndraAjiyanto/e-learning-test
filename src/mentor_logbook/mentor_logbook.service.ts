@@ -42,6 +42,34 @@ export class MentorLogbookService {
     return await this.mentorLogbookRepository.save(logbooks);
   }
 
+  async findSessionWithCourseAndMentors(sessionId: string) {
+    const session = await this.sessionRepository.findOne({
+      where: { id: sessionId },
+      relations: [
+        'weeks',
+        'weeks.course',
+        'weeks.course.mentorings',
+        'weeks.course.mentorings.user',
+      ],
+    });
+
+    if (
+      session?.weeks?.course?.id &&
+      (!session.weeks.course.mentorings ||
+        session.weeks.course.mentorings.length === 0)
+    ) {
+      const course = await this.courseRepository.findOne({
+        where: { id: session.weeks.course.id },
+        relations: ['mentorings', 'mentorings.user'],
+      });
+      if (course) {
+        session.weeks.course = course;
+      }
+    }
+
+    return session;
+  }
+
   async getCourseList(userId: string) {
     return await this.courseRepository.find({
       where: { mentorings: { user: { id: userId } } },
@@ -85,6 +113,15 @@ export class MentorLogbookService {
     const logbooks = await this.findOne(mentor_logbookId);
     if (!logbooks) {
       throw new NotFoundException('logbooks not found');
+    }
+    if (updateMentorLogbookDto.userId) {
+      const user = await this.userRepository.findOne({
+        where: { id: updateMentorLogbookDto.userId },
+      });
+      if (user) {
+        logbooks.user = user;
+      }
+      delete updateMentorLogbookDto.userId;
     }
     Object.assign(logbooks, updateMentorLogbookDto);
     return await this.mentorLogbookRepository.save(logbooks);
