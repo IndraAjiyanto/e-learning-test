@@ -381,4 +381,3 @@ export class BulkDeleteService {
     };
   }
 }
-

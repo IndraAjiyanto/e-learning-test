@@ -88,10 +88,9 @@ export class LogbookController {
           'Logbook Created',
           'Your logbook has been submitted and is under review.',
         );
-        // res.redirect(
-        //   `/program/myProgram/${req.user.id}?courseId=${session.weeks.course.id}`,
-        // );
-        res.redirect(`/program/${session.weeks.course.id}`);
+        res.redirect(
+          `/program/myProgram/${req.user.id}?courseId=${session.weeks.course.id}`,
+        );
       }
     } catch (error: unknown) {
       const session = await this.logbookService.findSession(sessionId);
@@ -146,7 +145,9 @@ export class LogbookController {
         'Logbook is off for this program',
         'This program does not use logbooks.',
       );
-      return res.redirect(`/program/${courseId}`);
+      return res.redirect(
+        `/program/myProgram/${req.user!.id}?courseId=${courseId}`,
+      );
     }
     res.render('user/logbooks/createLog', {
       user: req.user,
@@ -329,3 +330,4 @@ export class LogbookController {
     }
   }
 }
+
