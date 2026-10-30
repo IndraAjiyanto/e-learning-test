@@ -10,7 +10,7 @@
   - Title: Montserrat 600, 22px, leading 26px, text-[#0B1F3B]
   - Tags: pill rounded-full (999px) border #E5E7EB bg-white px-2.5 py-1.5, Inter 600 12px text-[#0B1F3B] + dot · (#9CA3AF)
   - Description: Inter 400 14px leading 170% text-[#6B7280]
-  - Bottom row: Explore program (Inter 600 13px #003060) + cta-button (40x40 rounded-full bg-[#003060] with arrow-right)
+  - Bottom row: Full-width button with label from i18n ("Jelajahi Selengkapnya") + arrow icon
 
   Props:
   - id          : string (ID program)
@@ -116,21 +116,14 @@
       </p>
     </div>
 
-    {{!-- bottom-row: Explore program + cta-button (40x40 rounded-full #003060 with arrow-right) --}}
-    <div class="mt-5 flex items-center justify-between border-t border-[#F3F4F6] pt-3">
+    {{!-- bottom-row: Full-width button --}}
+    <div class="mt-5 border-t border-[#F3F4F6] pt-3 w-full">
       <a
         href="{{default href (ternary id (concat '/program/' id) '#programs')}}"
-        class="font-inter text-[13px] font-semibold leading-[16px] text-[#003060] hover:text-[#6EB6E5] transition-colors"
+        class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#003060] py-3 px-4 font-inter text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-[#00244a] hover:shadow-md active:scale-[0.99]"
       >
-        {{default (t 'test.categoryPaidProgram.program.exploreProgram') 'Explore program'}}
-      </a>
-
-      <a
-        href="{{default href (ternary id (concat '/program/' id) '#programs')}}"
-        class="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#003060] text-white shadow-sm transition-transform hover:scale-105 active:scale-95"
-        aria-label="{{default (t 'test.categoryPaidProgram.program.exploreProgram') 'Explore program'}}"
-      >
-        <svg class="size-3.5" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <span>{{default (t 'test.categoryPaidProgram.program.exploreProgram') (default (t 'test.categoryFreeProgram.program.exploreProgram') 'Jelajahi Selengkapnya')}}</span>
+        <svg class="size-4 shrink-0" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M3 8h10M9 4l4 4-4 4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </a>
