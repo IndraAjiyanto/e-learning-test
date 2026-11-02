@@ -281,7 +281,7 @@
             </div>
 
             <div class='flex flex-col gap-2'>
-              <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Location</span>
+              <span class='font-inter text-sm font-medium leading-5 text-[#404040]'>Location (opsional)</span>
               <div class='flex flex-col gap-4'>
                 {{> langTabs ariaLabel='Location language' state='locLang' short=true }}
 
@@ -291,7 +291,7 @@
                       id=(concat 'locations-' this)
                       name=(concat 'locations[' this ']')
                       field=(concat 'locations.' this)
-                      label='Location'
+                      label='Location (opsional)'
                       hideLabel=true
                       placeholder='Enter location'
                     }}
@@ -306,7 +306,7 @@
               field='locationLink'
               type='url'
               icon='link'
-              label='Link Location'
+              label='Link Location (opsional)'
               placeholder='https://maps.app.goo.gl/...'
             }}
           </div>

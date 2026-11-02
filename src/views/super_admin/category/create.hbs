@@ -64,6 +64,7 @@
       label='Caption'
       multiline=true
       placeholder='Enter a caption...'
+      required=true
     }}
 
     {{> components/ui/super_admin/form/text_field
@@ -152,6 +153,7 @@
               field='contact'
               label='Contact'
               placeholder='Enter a number'
+              required=true
             }}
 
             {{> components/ui/super_admin/form/select_field
@@ -185,12 +187,14 @@
             </div>
 
             {{> components/ui/super_admin/form/multi_select_field
-              id='courseTypeSearch'
+              id='courseType'
               name='courseType[]'
+              field='courseType'
               label='Program Types'
               options='courseTypeOptions'
               placeholder='Search program types...'
               emptyText='No program types found.'
+              required=true
             }}
           </div>
 
@@ -244,6 +248,7 @@
       'contact',
       'type',
       'no',
+      'courseType',
       ...LANGS.map((l) => `text.${l}`),
       ...LANGS.map((l) => `description.${l}`),
     ];
@@ -286,8 +291,15 @@
           return val ? '' : 'Please select a category type.';
         case 'no':
           return val ? '' : 'Please select a number.';
+        case 'courseType':
+          return Array.isArray(value) && value.length > 0
+            ? ''
+            : (value && !Array.isArray(value) ? '' : 'Please select at least one program type.');
+        case 'text':
+          return val ? '' : `Caption (${LANG_LABEL[lang]}) is required.`;
         case 'contact':
-          return val && !/^[0-9+\-\s]+$/.test(val) ? 'Contact must be a valid phone number.' : '';
+          if (!val) return 'Contact is required.';
+          return !/^[0-9+\-\s]+$/.test(val) ? 'Contact must be a valid phone number.' : '';
         case 'description':
           return val ? '' : `Description (${LANG_LABEL[lang]}) is required.`;
         default:
@@ -322,6 +334,7 @@
           type: '',
           no: '',
           contact: '',
+          courseType: [],
           description: byLang(() => ''),
           text: byLang(() => ''),
         },
@@ -332,6 +345,7 @@
           type: '',
           no: '',
           contact: '',
+          courseType: '',
           description: byLang(() => ''),
           text: byLang(() => ''),
         },
@@ -343,6 +357,7 @@
           type: false,
           no: false,
           contact: false,
+          courseType: false,
           description: byLang(() => false),
           text: byLang(() => false),
         },
@@ -472,7 +487,12 @@
             const [field, lang] = path.split('.');
             if (lang) this.lang = lang;
             else if (TAB_OF_FIELD[field]) this.lang = TAB_OF_FIELD[field];
-            const id = field === 'type' || field === 'no' ? `${field}-trigger` : path.replace('.', '-');
+            const id =
+              field === 'type' || field === 'no'
+                ? `${field}-trigger`
+                : field === 'courseType'
+                  ? 'courseType'
+                  : path.replace('.', '-');
             this.$nextTick(() => document.getElementById(id)?.focus());
             return;
           }

@@ -205,4 +205,18 @@ export const stringHelpers = {
     if (typeof str !== 'string' || !str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
   },
+  formatFormLabel: (text: unknown, required?: unknown) => {
+    if (typeof text !== 'string') return '';
+    const trimmed = text.trim();
+    const hasAsterisk = trimmed.endsWith('*');
+    const isRequired = hasAsterisk || Boolean(required);
+    const cleanText = hasAsterisk ? trimmed.slice(0, -1).trimEnd() : trimmed;
+    const escaped = Handlebars.escapeExpression(cleanText);
+    if (isRequired) {
+      return new Handlebars.SafeString(
+        `${escaped}<span class="text-[#dc2626]">*</span>`,
+      );
+    }
+    return new Handlebars.SafeString(escaped);
+  },
 };

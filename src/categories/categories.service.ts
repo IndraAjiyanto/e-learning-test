@@ -40,6 +40,53 @@ export class CategoriesService {
     private readonly portfolioRepository: Repository<Portofolios>,
   ) {}
 
+  private parseCourseType(val: unknown, required: boolean): string[] {
+    let ids: string[] = [];
+    if (Array.isArray(val)) {
+      ids = val.map(String).map((s) => s.trim()).filter(Boolean);
+    } else if (typeof val === 'string' && val.trim().length > 0) {
+      ids = [val.trim()];
+    }
+    if (required && ids.length === 0) {
+      throw new BadRequestException('Please select at least one program type.');
+    }
+    return ids;
+  }
+
+  private validateCaption(text: unknown, required: boolean) {
+    if (!required) return;
+    if (!text) {
+      throw new BadRequestException('Caption is required.');
+    }
+    if (typeof text === 'object' && text !== null) {
+      const textObj = text as Record<string, unknown>;
+      for (const lang of ['id', 'en', 'ja']) {
+        const val =
+          typeof textObj[lang] === 'string' ? textObj[lang].trim() : '';
+        if (!val) {
+          const langLabel =
+            lang === 'id'
+              ? 'Indonesian'
+              : lang === 'en'
+                ? 'English'
+                : 'Japanese';
+          throw new BadRequestException(`Caption (${langLabel}) is required.`);
+        }
+      }
+    }
+  }
+
+  private validateContact(contact: unknown, required: boolean) {
+    if (!required) return;
+    const val = typeof contact === 'string' ? contact.trim() : '';
+    if (!val) {
+      throw new BadRequestException('Contact is required.');
+    }
+    if (!/^[0-9+\-\s]+$/.test(val)) {
+      throw new BadRequestException('Contact must be a valid phone number.');
+    }
+  }
+
   // Nomor urut (1..N) untuk mengurutkan kategori di navbar user. Nilainya
   // dikirim form sebagai string (multipart, tanpa global ValidationPipe), jadi
   // di-coerce di sini. `required` = wajib saat create.
@@ -98,8 +145,15 @@ export class CategoriesService {
   }
 
   async create(createCategoriesDto: CreateCategoriesDto) {
+    const rawCourseTypes =
+      createCategoriesDto.courseType ??
+      (createCategoriesDto as unknown as Record<string, unknown>)['courseType[]'];
+    const courseTypeIds = this.parseCourseType(rawCourseTypes, true);
+    this.validateCaption(createCategoriesDto.text, true);
+    this.validateContact(createCategoriesDto.contact, true);
+
     const {
-      courseType: courseTypeIds,
+      courseType: _ignoredCourseType,
       no,
       ...categoryData
     } = createCategoriesDto;
@@ -287,8 +341,28 @@ export class CategoriesService {
       throw new NotFoundException('Category not found');
     }
 
+    const hasCourseTypeInPayload =
+      updateCategoriesDto.courseType !== undefined ||
+      (updateCategoriesDto as unknown as Record<string, unknown>)['courseType[]'] !==
+        undefined;
+
+    const courseTypeIds = hasCourseTypeInPayload
+      ? this.parseCourseType(
+          updateCategoriesDto.courseType ??
+            (updateCategoriesDto as unknown as Record<string, unknown>)['courseType[]'],
+          true,
+        )
+      : undefined;
+
+    if (updateCategoriesDto.text !== undefined) {
+      this.validateCaption(updateCategoriesDto.text, true);
+    }
+    if (updateCategoriesDto.contact !== undefined) {
+      this.validateContact(updateCategoriesDto.contact, true);
+    }
+
     const {
-      courseType: courseTypeIds,
+      courseType: _ignoredCourseType,
       no,
       ...updateData
     } = updateCategoriesDto;
