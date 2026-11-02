@@ -81,12 +81,50 @@ export class CategoriesService {
       .sort((a, b) => a - b);
   }
 
+  async getTakenCategoryNames(excludeId?: string): Promise<string[]> {
+    const qb = this.categoryRepository
+      .createQueryBuilder('c')
+      .select('c.name', 'name')
+      .where('c.name IS NOT NULL');
+    if (excludeId) {
+      qb.andWhere('c.id != :excludeId', { excludeId });
+    }
+    const rows: { name: string | null }[] = await qb.getRawMany<{
+      name: string | null;
+    }>();
+    return rows
+      .map((r) => r.name?.trim())
+      .filter((name): name is string => Boolean(name));
+  }
+
   async create(createCategoriesDto: CreateCategoriesDto) {
     const {
       courseType: courseTypeIds,
       no,
       ...categoryData
     } = createCategoriesDto;
+
+    const rawName = (categoryData.name ?? '').trim();
+    const normalizedName = rawName.replace(/\s+/g, ' ');
+    if (!normalizedName) {
+      throw new BadRequestException('Category name is required.');
+    }
+
+    const existing = await this.categoryRepository
+      .createQueryBuilder('c')
+      .where(
+        `LOWER(REGEXP_REPLACE(TRIM(c.name), '\\s+', ' ', 'g')) = LOWER(:normalizedName)`,
+        { normalizedName },
+      )
+      .getOne();
+
+    if (existing) {
+      throw new BadRequestException(
+        `Category name "${normalizedName}" already exists.`,
+      );
+    }
+
+    categoryData.name = normalizedName;
     this.normalizeLangNames(categoryData);
     const targetNo = this.parseNo(no, true) as number;
 
@@ -254,6 +292,30 @@ export class CategoriesService {
       no,
       ...updateData
     } = updateCategoriesDto;
+
+    if (updateData.name !== undefined) {
+      const rawName = (updateData.name ?? '').trim();
+      const normalizedName = rawName.replace(/\s+/g, ' ');
+      if (!normalizedName) {
+        throw new BadRequestException('Category name cannot be empty.');
+      }
+      const existing = await this.categoryRepository
+        .createQueryBuilder('c')
+        .where(
+          `LOWER(REGEXP_REPLACE(TRIM(c.name), '\\s+', ' ', 'g')) = LOWER(:normalizedName)`,
+          { normalizedName },
+        )
+        .andWhere('c.id != :categoryId', { categoryId })
+        .getOne();
+
+      if (existing) {
+        throw new BadRequestException(
+          `Category name "${normalizedName}" already exists.`,
+        );
+      }
+      updateData.name = normalizedName;
+    }
+
     this.normalizeLangNames(updateData);
 
     const oldNo = category.no;
