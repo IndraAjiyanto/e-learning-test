@@ -96,7 +96,7 @@
       method='post'
       enctype='multipart/form-data'
       novalidate
-      x-data='categoryCreateForm({ courseTypes: {{json courseTypes}}, noNumbers: {{json noNumbers}}, takenNumbers: {{json takenNumbers}} })'
+      x-data='categoryCreateForm({ courseTypes: {{json courseTypes}}, noNumbers: {{json noNumbers}}, takenNumbers: {{json takenNumbers}}, takenCategoryNames: {{json takenCategoryNames}} })'
       @submit.prevent='submitForm($event)'
       class='flex flex-col gap-4'
     >
@@ -266,13 +266,27 @@
     };
     const emptyImage = () => ({ previewUrl: null, errorMessage: '', isValid: true, hasFile: false, fileName: '' });
 
-    const errorFor = (path, value) => {
+    const normalizeName = (str) =>
+      (str ?? '')
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, ' ');
+
+    const errorFor = (path, value, takenNames = []) => {
       const [field, lang] = path.split('.');
       const val = (value ?? '').toString().trim();
 
       switch (field) {
-        case 'name':
-          return val ? '' : 'Category name is required.';
+        case 'name': {
+          if (!val) return 'Category name is required.';
+          const normalized = normalizeName(val);
+          const isDuplicate = (takenNames || []).some(
+            (existing) => normalizeName(existing) === normalized,
+          );
+          if (isDuplicate) return 'Category name already exists.';
+          return '';
+        }
         case 'type':
           return val ? '' : 'Please select a category type.';
         case 'no':
@@ -293,10 +307,14 @@
       }
     };
 
-    window.categoryCreateForm = function categoryCreateForm({ courseTypes, noNumbers, takenNumbers }) {
+    window.categoryCreateForm = function categoryCreateForm({ courseTypes, noNumbers, takenNumbers, takenCategoryNames = [] }) {
       return {
         loading: false,
         lang: 'id',
+
+        errorFor(path, value) {
+          return errorFor(path, value, takenCategoryNames);
+        },
 
         typeOptions: TYPES.map((t) => ({ value: t, label: t })),
         noOptions: (noNumbers || []).map((n) => ({
@@ -350,7 +368,7 @@
 
         validateField(path, value) {
           writePath(this.formData, path, value ?? '');
-          writePath(this.formErrors, path, readPath(this.touched, path) ? errorFor(path, value) : '');
+          writePath(this.formErrors, path, readPath(this.touched, path) ? this.errorFor(path, value) : '');
         },
 
         touch(path) {
@@ -438,7 +456,7 @@
         validateAll() {
           FIELD_PATHS.forEach((path) => {
             writePath(this.touched, path, true);
-            writePath(this.formErrors, path, errorFor(path, readPath(this.formData, path)));
+            writePath(this.formErrors, path, this.errorFor(path, readPath(this.formData, path)));
           });
 
           Object.entries(IMAGE_RULES).forEach(([key, rules]) => {
@@ -456,7 +474,7 @@
         canSubmit() {
           const imagesValid = Object.values(this.images).every((slot) => slot.hasFile && slot.isValid);
           const fieldsOk = FIELD_PATHS.every(
-            (path) => errorFor(path, readPath(this.formData, path)) === '',
+            (path) => this.errorFor(path, readPath(this.formData, path)) === '',
           );
 
           return imagesValid && fieldsOk;

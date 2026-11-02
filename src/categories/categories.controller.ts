@@ -118,11 +118,14 @@ export class CategoriesController {
     const count = await this.categoriesService.count();
     const noNumbers = Array.from({ length: count + 1 }, (_, i) => i + 1);
     const takenNumbers = await this.categoriesService.getTakenNumbers();
+    const takenCategoryNames =
+      await this.categoriesService.getTakenCategoryNames();
     res.render('super_admin/category/create', {
       user: req.user,
       courseTypes,
       noNumbers,
       takenNumbers,
+      takenCategoryNames,
     });
   }
 
@@ -302,12 +305,15 @@ export class CategoriesController {
     );
     const takenNumbers =
       await this.categoriesService.getTakenNumbers(categoryId);
+    const takenCategoryNames =
+      await this.categoriesService.getTakenCategoryNames(categoryId);
     res.render('super_admin/category/edit', {
       user: req.user,
       category,
       courseTypes,
       noNumbers,
       takenNumbers,
+      takenCategoryNames,
     });
   }
 
