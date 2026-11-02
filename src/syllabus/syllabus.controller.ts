@@ -439,7 +439,7 @@ export class SyllabusController {
         downloadUrl.startsWith('https://')
       ) {
         try {
-          const response = await axios.get(downloadUrl, {
+          const response = await axios.get<NodeJS.ReadableStream>(downloadUrl, {
             responseType: 'stream',
             timeout: 30000,
           });
@@ -450,7 +450,8 @@ export class SyllabusController {
             'Content-Disposition': `attachment; filename="${encodeURIComponent(safeFilename)}"`,
           });
 
-          return response.data.pipe(res);
+          response.data.pipe(res);
+          return;
         } catch {
           req.flash(
             'error',

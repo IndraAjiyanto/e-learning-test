@@ -1625,7 +1625,7 @@ export class CoursesController {
         res.render('detail_program/paid_program/index', {
           course,
           userActivePayment: null,
-            category: course.category,
+          category: course.category,
           kelass,
           studentList,
           courseQuestions,

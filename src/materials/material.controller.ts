@@ -511,7 +511,7 @@ export class MaterialController {
         downloadUrl.startsWith('https://')
       ) {
         try {
-          const response = await axios.get(downloadUrl, {
+          const response = await axios.get<NodeJS.ReadableStream>(downloadUrl, {
             responseType: 'stream',
             timeout: 30000,
           });
@@ -522,8 +522,9 @@ export class MaterialController {
             'Content-Disposition': `attachment; filename="${encodeURIComponent(safeFilename)}"`,
           });
 
-          return response.data.pipe(res);
-        } catch (err: unknown) {
+          response.data.pipe(res);
+          return;
+        } catch {
           req.flash(
             'error',
             'Gagal mengunduh berkas presentasi dari tautan penyedia.',

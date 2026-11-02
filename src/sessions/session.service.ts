@@ -300,54 +300,58 @@ export class SessionService {
 
     if (subsequentSessions.length > 0) {
       const subsequentSessionIds = subsequentSessions.map((s) => s.id);
-      const [attendedRows, logbookRows, taskAnswerRows, subsequentWeekProgressRows] =
-        await Promise.all([
-          this.attendanceRepository
-            .createQueryBuilder('a')
-            .innerJoin('a.session', 's')
-            .innerJoin('a.user', 'u')
-            .where('s.id IN (:...subsequentSessionIds)', { subsequentSessionIds })
-            .andWhere('u.id IN (:...userIds)', { userIds })
-            .select('u.id', 'userId')
-            .distinct(true)
-            .getRawMany<{ userId: string }>(),
+      const [
+        attendedRows,
+        logbookRows,
+        taskAnswerRows,
+        subsequentWeekProgressRows,
+      ] = await Promise.all([
+        this.attendanceRepository
+          .createQueryBuilder('a')
+          .innerJoin('a.session', 's')
+          .innerJoin('a.user', 'u')
+          .where('s.id IN (:...subsequentSessionIds)', { subsequentSessionIds })
+          .andWhere('u.id IN (:...userIds)', { userIds })
+          .select('u.id', 'userId')
+          .distinct(true)
+          .getRawMany<{ userId: string }>(),
 
-          this.logBookRepository
-            .createQueryBuilder('lb')
-            .innerJoin('lb.session', 's')
-            .innerJoin('lb.user', 'u')
-            .where('s.id IN (:...subsequentSessionIds)', { subsequentSessionIds })
-            .andWhere('u.id IN (:...userIds)', { userIds })
-            .select('u.id', 'userId')
-            .distinct(true)
-            .getRawMany<{ userId: string }>(),
+        this.logBookRepository
+          .createQueryBuilder('lb')
+          .innerJoin('lb.session', 's')
+          .innerJoin('lb.user', 'u')
+          .where('s.id IN (:...subsequentSessionIds)', { subsequentSessionIds })
+          .andWhere('u.id IN (:...userIds)', { userIds })
+          .select('u.id', 'userId')
+          .distinct(true)
+          .getRawMany<{ userId: string }>(),
 
-          this.answerTaskRepository
-            .createQueryBuilder('at')
-            .innerJoin('at.task', 'asg')
-            .innerJoin('asg.session', 's')
-            .innerJoin('at.user', 'u')
-            .where('s.id IN (:...subsequentSessionIds)', {
-              subsequentSessionIds,
-            })
-            .andWhere('u.id IN (:...userIds)', { userIds })
-            .select('u.id', 'userId')
-            .distinct(true)
-            .getRawMany<{ userId: string }>(),
+        this.answerTaskRepository
+          .createQueryBuilder('at')
+          .innerJoin('at.task', 'asg')
+          .innerJoin('asg.session', 's')
+          .innerJoin('at.user', 'u')
+          .where('s.id IN (:...subsequentSessionIds)', {
+            subsequentSessionIds,
+          })
+          .andWhere('u.id IN (:...userIds)', { userIds })
+          .select('u.id', 'userId')
+          .distinct(true)
+          .getRawMany<{ userId: string }>(),
 
-          this.weekProgressRepository
-            .createQueryBuilder('wp')
-            .innerJoin('wp.week', 'w')
-            .innerJoin('w.course', 'c')
-            .innerJoin('wp.user', 'u')
-            .where('c.id = :courseId', { courseId })
-            .andWhere('w.weekNumber > :currentWeekNumber', { currentWeekNumber })
-            .andWhere('u.id IN (:...userIds)', { userIds })
-            .andWhere('wp.quiz = true')
-            .select('u.id', 'userId')
-            .distinct(true)
-            .getRawMany<{ userId: string }>(),
-        ]);
+        this.weekProgressRepository
+          .createQueryBuilder('wp')
+          .innerJoin('wp.week', 'w')
+          .innerJoin('w.course', 'c')
+          .innerJoin('wp.user', 'u')
+          .where('c.id = :courseId', { courseId })
+          .andWhere('w.weekNumber > :currentWeekNumber', { currentWeekNumber })
+          .andWhere('u.id IN (:...userIds)', { userIds })
+          .andWhere('wp.quiz = true')
+          .select('u.id', 'userId')
+          .distinct(true)
+          .getRawMany<{ userId: string }>(),
+      ]);
 
       attendedRows.forEach((r) => activeUserIds.add(r.userId));
       logbookRows.forEach((r) => activeUserIds.add(r.userId));

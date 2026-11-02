@@ -43,7 +43,10 @@ export class CategoriesService {
   private parseCourseType(val: unknown, required: boolean): string[] {
     let ids: string[] = [];
     if (Array.isArray(val)) {
-      ids = val.map(String).map((s) => s.trim()).filter(Boolean);
+      ids = val
+        .map(String)
+        .map((s) => s.trim())
+        .filter(Boolean);
     } else if (typeof val === 'string' && val.trim().length > 0) {
       ids = [val.trim()];
     }
@@ -147,7 +150,9 @@ export class CategoriesService {
   async create(createCategoriesDto: CreateCategoriesDto) {
     const rawCourseTypes =
       createCategoriesDto.courseType ??
-      (createCategoriesDto as unknown as Record<string, unknown>)['courseType[]'];
+      (createCategoriesDto as unknown as Record<string, unknown>)[
+        'courseType[]'
+      ];
     const courseTypeIds = this.parseCourseType(rawCourseTypes, true);
     this.validateCaption(createCategoriesDto.text, true);
     this.validateContact(createCategoriesDto.contact, true);
@@ -343,13 +348,16 @@ export class CategoriesService {
 
     const hasCourseTypeInPayload =
       updateCategoriesDto.courseType !== undefined ||
-      (updateCategoriesDto as unknown as Record<string, unknown>)['courseType[]'] !==
-        undefined;
+      (updateCategoriesDto as unknown as Record<string, unknown>)[
+        'courseType[]'
+      ] !== undefined;
 
     const courseTypeIds = hasCourseTypeInPayload
       ? this.parseCourseType(
           updateCategoriesDto.courseType ??
-            (updateCategoriesDto as unknown as Record<string, unknown>)['courseType[]'],
+            (updateCategoriesDto as unknown as Record<string, unknown>)[
+              'courseType[]'
+            ],
           true,
         )
       : undefined;

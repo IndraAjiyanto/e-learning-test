@@ -301,8 +301,9 @@ export class InvoiceService {
         const saved = await this.invoiceRepository.save(invoice);
         payment.invoice = saved;
         return saved;
-      } catch (err: any) {
-        if (err?.code === '23505' && attempts < 5) {
+      } catch (err: unknown) {
+        const dbErr = err as { code?: string } | null;
+        if (dbErr?.code === '23505' && attempts < 5) {
           continue;
         }
         throw err;
