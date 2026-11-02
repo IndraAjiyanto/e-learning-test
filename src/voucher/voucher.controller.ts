@@ -173,7 +173,11 @@ export class VoucherController {
     @Req() req: Request,
   ) {
     try {
-      await this.voucherService.update(id, updateVoucherDto);
+      await this.voucherService.update(id, {
+        ...updateVoucherDto,
+        courseIds: updateVoucherDto.courseIds ?? [],
+        allowed_user_ids: updateVoucherDto.allowed_user_ids ?? [],
+      });
       flashToast(
         req,
         'Voucher Updated',
