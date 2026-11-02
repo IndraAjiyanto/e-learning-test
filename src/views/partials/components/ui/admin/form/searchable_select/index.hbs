@@ -73,7 +73,7 @@
   }"
   @click.away='showDropdown = false'
 >
-  {{#> components/ui/admin/form/form-field label=label for=forId errorId=errorId}}
+  {{#> components/ui/admin/form/form-field label=label for=forId errorId=errorId required=required}}
     <div class='relative'>
       <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
         {{#if validateKey}}:class="(locked ? 'bg-[#F5F5F5] ' : '') + borderClass('{{validateKey}}')"{{else}}:class="locked ? 'bg-[#F5F5F5]' : ''"{{/if}}>
