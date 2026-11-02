@@ -29,18 +29,15 @@ export class CreateCategoriesDto {
   @IsArray()
   description: string[];
 
-  @IsOptional()
   @IsArray()
-  text?: string[];
+  text: string[];
 
-  @IsOptional()
   @IsString()
-  contact?: string;
+  contact: string;
 
-  @IsOptional()
   @IsArray()
   @IsUUID('all', { each: true })
-  courseType?: string[];
+  courseType: string[];
 
   @IsEnum(['Special Program', 'Paid Program', 'Free Program'])
   type: 'Special Program' | 'Paid Program' | 'Free Program';
