@@ -747,7 +747,9 @@ export class PaymentsController {
             'Pembayaran Sudah Diterima',
             'Anda sudah terdaftar di program ini.',
           );
-          return res.redirect(`/program/myProgram/${req.user.id}?courseId=${courseId}`);
+          return res.redirect(
+            `/program/myProgram/${req.user.id}?courseId=${courseId}`,
+          );
         } else if (activePayment.process === 'process') {
           flashToast(
             req,

@@ -140,12 +140,14 @@ export class LogbookService {
           },
         });
         if (quiz) {
-          const existingQuizProgress = await this.progresQuizRepository.findOne({
-            where: {
-              quiz: { id: quiz.id },
-              user: { id: userId },
+          const existingQuizProgress = await this.progresQuizRepository.findOne(
+            {
+              where: {
+                quiz: { id: quiz.id },
+                user: { id: userId },
+              },
             },
-          });
+          );
           if (existingQuizProgress) {
             await this.progresQuizRepository.save({
               id: existingQuizProgress.id,

@@ -11,7 +11,7 @@ import { Not, Repository } from 'typeorm';
 import { Course } from 'src/entities/course.entity';
 import { User } from 'src/entities/user.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
-import { Payment } from 'src/entities/payment.entity';
+import { Payment, currentStatus } from 'src/entities/payment.entity';
 import { InvoiceService } from 'src/invoice/invoice.service';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -77,7 +77,7 @@ export class RegistrationsService {
         (user.biodata as { no?: string })?.no ||
         undefined,
       current_status:
-        (createRegistrationDto.current_status as any) || undefined,
+        (createRegistrationDto.current_status as currentStatus) || undefined,
       referalSource: createRegistrationDto.referal_source || undefined,
       attend_program: Boolean(createRegistrationDto.attend_program),
     });

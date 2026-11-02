@@ -692,7 +692,7 @@ export class CoursesService {
       ? previous.sessionProgress?.[0]?.logbook === true ||
         previous.logbooks?.[0]?.process === 'approved'
       : false;
-    let unlocked =
+    const unlocked =
       index === 0 ||
       current.sessionProgress?.[0]?.isAttended === true ||
       prevLogbookDone;

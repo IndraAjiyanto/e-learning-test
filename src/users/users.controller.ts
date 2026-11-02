@@ -557,10 +557,10 @@ export class UsersController {
     const activeCourse = course[0] ?? null;
     const caps = capabilitiesForCourse(activeCourse);
 
-    let dashboardStats: any = null;
-    let ongoingCourses: any[] = [];
-    let programComposition: any[] = [];
-    let portfolio: any[] = [];
+    let dashboardStats: Record<string, unknown> | null = null;
+    let ongoingCourses: unknown[] = [];
+    let programComposition: unknown[] = [];
+    let portfolio: unknown[] = [];
 
     if (initialSection === 'dashboard') {
       const dbData = await this.usersService.getDashboardData(req.user.id);

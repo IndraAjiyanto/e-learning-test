@@ -84,6 +84,9 @@ describe('CategoriesService - Unique Name Validation (Scenario A)', () => {
       no: 1,
       icon: 'icon.svg',
       description: ['Deskripsi'],
+      text: { id: 'Caption ID', en: 'Caption EN', ja: 'Caption JA' } as any,
+      contact: '08123456789',
+      courseType: ['a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'],
     };
 
     it('should reject exact duplicate category name', async () => {
