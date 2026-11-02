@@ -1,8 +1,9 @@
 {{!--
-  Halaman: Add User ke Program — Admin
+  Halaman: Add User ke Program — Admin & Super Admin
   Lokasi: src/views/admin/course/addUser.hbs
   Level: L4 Page
 
+  - Tombol kembali (Back) ke daftar program (/program)
   - Pencarian student (nama atau email) + submit ke /program/addStudent/:courseId
   - Tabel student terdaftar dari table/card + clientTable() (pagination di client)
   - Hapus lewat modal delete_confirm
@@ -13,12 +14,27 @@
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='flex flex-col gap-7'>
 
-    <div class='flex flex-col gap-1'>
-      {{> components/ui/super_admin/page_header/index title='Add User' }}
+    <div class='flex flex-col gap-3'>
+      <div>
+        <a
+          href='/program'
+          class='inline-flex w-fit items-center gap-1 font-inter text-base font-medium leading-5 text-[#718096] transition-colors hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
+        >
+          {{!-- lucide: chevron-left --}}
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' class='h-4 w-4'>
+            <path d='m15 18-6-6 6-6' />
+          </svg>
+          Back to program list
+        </a>
+      </div>
 
-      {{> components/ui/super_admin/description/index
-        text=(concat "Manage the students enrolled in '" course.name "'.")
-      }}
+      <div class='flex flex-col gap-1'>
+        {{> components/ui/super_admin/page_header/index title='Add User' }}
+
+        {{> components/ui/super_admin/description/index
+          text=(concat "Manage the students enrolled in '" course.name "'.")
+        }}
+      </div>
     </div>
 
     <div

@@ -160,7 +160,7 @@
                     <p class="font-inter text-base font-bold leading-snug text-white">{{t 'test.navbar.classCtaTitle'}}</p>
                     <p class="font-inter text-[11px] leading-relaxed text-white/70">{{t 'test.navbar.classCtaDesc'}}</p>
                   </div>
-                      <a href="{{#if social.length}}{{waLink social.[0].number}}{{else}}#{{/if}}" target="_blank" rel="noopener" class="rounded-md bg-white py-2.5 text-center font-inter text-xs font-bold text-[#003060] transition hover:bg-white/90">{{t 'test.navbar.classCtaButton'}}</a>
+                      <a href="{{#if (or footerData.number social.[0].number)}}{{waLink (default footerData.number social.[0].number)}}{{else}}#{{/if}}" target="_blank" rel="noopener" class="rounded-md bg-white py-2.5 text-center font-inter text-xs font-bold text-[#003060] transition hover:bg-white/90">{{t 'test.navbar.classCtaButton'}}</a>
                     </div>
                   </template>
                 </div>

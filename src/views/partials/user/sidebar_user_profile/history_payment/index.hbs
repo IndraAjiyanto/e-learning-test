@@ -115,9 +115,10 @@
               class="appearance-none w-full h-[42px] px-4 pr-8 bg-white border border-[#D9D9D9] rounded-lg font-montserrat text-sm transition-colors hover:border-[#A3A3A3] focus:border-[#003060] focus:outline-none focus:ring-1 focus:ring-[#003060]"
               :class="formData.status ? 'text-[#171717]' : 'text-[#718096]'"
             >
-              <template x-for="opt in statusOptions" :key="opt.value">
-                <option :value="opt.value" x-text="opt.label"></option>
-              </template>
+              <option value="">{{t "test.historyPayment.allStatus"}}</option>
+              <option value="paid">{{t "test.historyPayment.accepted"}}</option>
+              <option value="processing">{{t "test.historyPayment.processing"}}</option>
+              <option value="failed">{{t "test.historyPayment.rejected"}}</option>
             </select>
             <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#718096]">
               <svg class="w-2.5 h-2.5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -137,9 +138,8 @@
               class="appearance-none w-full h-[42px] px-4 pr-8 bg-white border border-[#D9D9D9] rounded-lg font-montserrat text-sm transition-colors hover:border-[#A3A3A3] focus:border-[#003060] focus:outline-none focus:ring-1 focus:ring-[#003060]"
               :class="formData.method ? 'text-[#171717]' : 'text-[#718096]'"
             >
-              <template x-for="opt in methodOptions" :key="opt.value">
-                <option :value="opt.value" x-text="opt.label"></option>
-              </template>
+              <option value="">{{t "test.historyPayment.allMethods"}}</option>
+              <option value="manual">Manual</option>
             </select>
             <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#718096]">
               <svg class="w-2.5 h-2.5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -159,9 +159,10 @@
               class="appearance-none w-full h-[42px] px-4 pr-8 bg-white border border-[#D9D9D9] rounded-lg font-montserrat text-sm transition-colors hover:border-[#A3A3A3] focus:border-[#003060] focus:outline-none focus:ring-1 focus:ring-[#003060]"
               :class="formData.transactionType ? 'text-[#171717]' : 'text-[#718096]'"
             >
-              <template x-for="opt in transactionTypeOptions" :key="opt.value">
-                <option :value="opt.value" x-text="opt.label"></option>
-              </template>
+              <option value="">{{t "test.historyPayment.all"}}</option>
+              <option value="registration">{{t "test.historyPayment.kind.registration"}}</option>
+              <option value="full payment">{{t "test.historyPayment.kind.full"}}</option>
+              <option value="installment">{{t "test.historyPayment.kind.installment"}}</option>
             </select>
             <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#718096]">
               <svg class="w-2.5 h-2.5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -365,7 +366,7 @@
     // memanggil dirinya sendiri dan daftar berhenti di keadaan loading.
     const baseLoad = base.load;
 
-      const emptyDraft = () => ({ from: '', to: '', status: '', method: '', program: '', transactionType: '' });
+    const emptyDraft = () => ({ from: '', to: '', status: '', method: '', program: '', transactionType: '' });
 
     const extension = {
       // Semua baris apa adanya dari server. `items` milik clientTable adalah
@@ -395,7 +396,7 @@
         return [
           { value: '', label: '{{t "test.historyPayment.allMethods"}}' },
           { value: 'manual', label: 'Manual' },
-          { value: 'xendit', label: 'Xendit' },
+          {{!-- { value: 'xendit', label: 'Xendit' }, --}}
         ];
       },
 
@@ -438,7 +439,7 @@
 
       async load() {
         await baseLoad.call(this);
-        this.source = this.items;
+        this.source = Array.isArray(this.items) ? [...this.items] : [];
         this.applyFilters();
       },
 
@@ -453,20 +454,25 @@
 
       applyFilters() {
         const { from, to, status, method, program, transactionType } = this.formData;
+        const isAll = (v) => {
+          if (!v) return true;
+          const s = String(v).trim().toLowerCase();
+          return s === '' || s === 'all' || s === 'all status' || s === 'semua status' || s === 'all methods' || s === 'semua metode' || s === 'semua';
+        };
 
-        this.items = this.source.filter((row) => {
-          if (status && row.status !== status) return false;
-          if (method) {
+        this.items = (this.source || []).filter((row) => {
+          if (!isAll(status) && String(row.status || '').toLowerCase() !== String(status).toLowerCase()) return false;
+          if (!isAll(method)) {
             const ch = row.paymentChannel || row.channel || '';
             if (String(ch).toLowerCase() !== String(method).toLowerCase()) return false;
           }
-          if (transactionType) {
+          if (!isAll(transactionType)) {
             const t = row.transactionType || row.transactionKind || row.type || row.kind;
             if (String(t).toLowerCase() !== String(transactionType).toLowerCase()) return false;
           }
           // Program dicocokkan dengan teks di kotak search: sebagian nama
           // sudah diketik pengguna tetap menyaring baris yang relevan.
-          if (program) {
+          if (program && !isAll(program)) {
             const name = String(row.courseName || '').toLowerCase();
             if (!name.includes(String(program).trim().toLowerCase())) return false;
           }
