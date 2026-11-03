@@ -14,30 +14,37 @@ export class InformationController {
     await this.userActivityService.purgeExpired(60).catch(() => undefined);
     const WEEKLY_THRESHOLD_MINUTES = 5;
 
-    const [summary, weekly, activeUsersList] = await Promise.all([
+    const [summary, weekly, activeUsersList, learningList] = await Promise.all([
       this.userActivityService.getSummaryToday(),
       this.userActivityService.getWeeklyChart(),
       this.userActivityService.getActiveParticipants(WEEKLY_THRESHOLD_MINUTES),
+      this.userActivityService.getCurrentlyLearning(WEEKLY_THRESHOLD_MINUTES),
     ]);
 
     res.render('super_admin/information/index', {
       user: req.user,
       title: 'Dashboard Overview',
-      subtitle: 'Pantau aktivitas dan ringkasan metrik pengguna',
+      subtitle: 'Monitor user activity and metrics summary',
       summary,
+      totalUserLogin: summary.totalUserLogin ?? summary.onlineNow,
+      activeUserLearn: summary.activeUserLearn ?? learningList.length,
+      totalMentorLogin: summary.totalMentorLogin ?? summary.activeMentors,
       activeToday: summary.activeToday,
       activeUsers: summary.onlineNow,
       activeMentors: summary.activeMentors,
       chartData: weekly.map((w) => ({
         day: w.label,
-        loginHeight: Math.max(w.login > 0 ? 4 : 0, w.loginH),
-        activeHeight: Math.max(w.active > 0 ? 4 : 0, w.activeH),
+        loginHeight: w.login > 0 ? Math.max(8, w.loginH) : 3,
+        activeHeight: w.active > 0 ? Math.max(8, w.activeH) : 3,
+        mentorHeight: w.mentor > 0 ? Math.max(8, w.mentorH) : 3,
         login: w.login,
         active: w.active,
+        mentor: w.mentor,
         max: w.max,
       })),
       activeUsersList,
-      learningListJson: JSON.stringify(activeUsersList),
+      learningList,
+      learningListJson: JSON.stringify(learningList),
     });
   }
 
