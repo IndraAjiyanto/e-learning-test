@@ -746,9 +746,6 @@ function kelasTable() {
         const json = await res.json().catch(() => null);
 
         if (json && json.success) {
-          this.kelasList[index].status = json.status;
-          this.kelasList[index].launch = json.launch;
-
           const courseName = this.kelasList[index]?.name;
           const statusLabel = this.getStatusLabel(json.status);
           window.dispatchEvent(
@@ -761,6 +758,14 @@ function kelasTable() {
               },
             }),
           );
+
+          if (json.status === 'done' && (!this.selectedStatus || this.selectedStatus !== 'done')) {
+            // Ketika status program berubah menjadi complete / done, program otomatis menghilang dari list
+            await this.fetchKelas();
+          } else {
+            this.kelasList[index].status = json.status;
+            this.kelasList[index].launch = json.launch;
+          }
         } else {
           window.dispatchEvent(
             new CustomEvent('toast:error', {

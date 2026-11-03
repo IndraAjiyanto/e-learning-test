@@ -1335,14 +1335,28 @@ export class CoursesService {
         query.andWhere('course.process = :statusProcess', {
           statusProcess: 'approved',
         });
+        query.andWhere(
+          '(course.status != :excludeCompletedStatus OR course.status IS NULL)',
+          { excludeCompletedStatus: 'done' },
+        );
       } else if (params.status === 'pending' || params.status === 'process') {
         query.andWhere(
           '(course.process != :notApprovedStatusProcess OR course.process IS NULL)',
           { notApprovedStatusProcess: 'approved' },
         );
+        query.andWhere(
+          '(course.status != :excludeCompletedStatus OR course.status IS NULL)',
+          { excludeCompletedStatus: 'done' },
+        );
       } else {
         query.andWhere('course.status = :status', { status: params.status });
       }
+    } else {
+      // Default: sembunyikan program berstatus 'done' (Completed) dari list
+      query.andWhere(
+        '(course.status != :excludeCompletedStatus OR course.status IS NULL)',
+        { excludeCompletedStatus: 'done' },
+      );
     }
 
     query.skip((params.page - 1) * params.limit).take(params.limit);

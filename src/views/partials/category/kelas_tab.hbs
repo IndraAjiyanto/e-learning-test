@@ -427,6 +427,10 @@
         if (this.selectedStatus) {
           const rowStatus = row.status || 'unlaunch';
           if (rowStatus !== this.selectedStatus) return false;
+        } else {
+          // Default: sembunyikan program berstatus completed ('done')
+          const rowStatus = row.status || 'unlaunch';
+          if (rowStatus === 'done') return false;
         }
 
         // 4. Mentor filter
