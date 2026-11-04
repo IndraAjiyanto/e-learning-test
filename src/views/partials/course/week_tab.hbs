@@ -135,8 +135,17 @@
             </div>
           </template>
 
-          {{!-- Texts — hanya description, class sesuai components/ui/admin/text/subtitle --}}
-          <div class='text-[16px]/[normal] flex-1 min-w-0 w-full text-[#718096] font-inter font-medium text-left break-words' x-text='weeks.description' :title='weeks.description'></div>
+          {{!-- Texts --}}
+          <div class='flex flex-row items-center gap-[8px] flex-1 min-w-0'>
+            <span class='text-[16px]/[normal] text-[#718096] font-inter font-medium text-left truncate' x-text='weeks.description' :title='weeks.description'></span>
+            <template x-if="weeks.isFinal === true || weeks.isFinal === 'true' || weeks.isFinal === 1">
+              <span class='box-border h-[20px] bg-[#DCFCE7] rounded-[16px] px-[8px] py-[2px] flex items-center justify-center shrink-0'>
+                <span class='font-inter font-medium text-[11px] leading-[16px] text-[#15803D] whitespace-nowrap'>
+                  Final
+                </span>
+              </span>
+            </template>
+          </div>
 
           {{!-- Delete --}}
           <template x-if="!weeks.hasCompletedUser">

@@ -134,7 +134,16 @@
 
           {{!-- Texts + Meta --}}
           <div class='flex flex-col gap-[6px] flex-1 min-w-0 justify-center items-start'>
-            <div class='text-[14px]/[normal] w-full text-[#003060] font-inter font-semibold whitespace-nowrap overflow-hidden text-ellipsis' x-text='session.topic' :title='session.topic'></div>
+            <div class='w-full flex flex-row items-center gap-[8px]'>
+              <span class='text-[14px]/[normal] text-[#003060] font-inter font-semibold whitespace-nowrap overflow-hidden text-ellipsis truncate' x-text='session.topic' :title='session.topic'></span>
+              <template x-if="session.isFinal === true || session.isFinal === 'true' || session.isFinal === 1">
+                <span class='box-border h-[20px] bg-[#DCFCE7] rounded-[16px] px-[8px] py-[2px] flex items-center justify-center shrink-0'>
+                  <span class='font-inter font-medium text-[11px] leading-[16px] text-[#15803D] whitespace-nowrap'>
+                    Final
+                  </span>
+                </span>
+              </template>
+            </div>
             <div class='flex flex-row flex-wrap gap-x-[16px] gap-y-[4px] w-full justify-start items-center'>
               <div class='flex flex-row gap-[4px] justify-start items-center'>
                 <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px] shrink-0'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>
