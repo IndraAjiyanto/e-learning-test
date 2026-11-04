@@ -464,6 +464,8 @@ export class CoursesController {
     const courseType = await this.coursesService.findCourseTypes();
     const technologies = await this.coursesService.findTechnologies();
     const mentorings = await this.coursesService.findMentoring();
+
+
     return res.render('admin/course/create', {
       user: req.user,
       category,
@@ -485,6 +487,8 @@ export class CoursesController {
     const courseType = await this.coursesService.findCourseTypes();
     const technologies = await this.coursesService.findTechnologies();
     const mentorings = await this.coursesService.findMentoring();
+
+
     return res.render('admin/course/formCreate', {
       user: req.user,
       courseType,
@@ -892,7 +896,16 @@ export class CoursesController {
     const technologies = await this.coursesService.findTechnologies();
     const mentorings = await this.coursesService.findMentoring();
 
+
+
+    const structureLock =
+      await this.coursesService.checkLearningStructureLock(courseId);
+
+
     return res.render('admin/course/edit', {
+      learningStructureLocked: structureLock.isLocked,
+      learningStructureLockHint:
+        structureLock.hint || structureLock.reason,
       user: req.user,
       course,
       category,

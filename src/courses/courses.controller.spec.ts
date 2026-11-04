@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Reflector } from '@nestjs/core';
-import { Request, Response } from 'express';
 import { CoursesController } from './courses.controller';
 import { CoursesService } from './courses.service';
 import { UsersService } from 'src/users/users.service';
-import { FinalAssignmentService } from 'src/final_assignment/final_assignment.service';
 import { PaymentSettingsService } from 'src/payment-settings/payment-settings.service';
 import { PortfoliosService } from 'src/portfolios/portfolios.service';
+import { FinalAssignmentService } from 'src/final_assignment/final_assignment.service';
 import { UploadService } from 'src/common/upload/upload.service';
+import { Reflector } from '@nestjs/core';
+import { Request, Response } from 'express';
 
 describe('CoursesController', () => {
   let controller: CoursesController;
@@ -17,6 +17,7 @@ describe('CoursesController', () => {
     findCourseTypes: jest.Mock;
     findTechnologies: jest.Mock;
     findMentoring: jest.Mock;
+    checkLearningStructureLock: jest.Mock;
   };
 
   beforeEach(async () => {
@@ -26,6 +27,7 @@ describe('CoursesController', () => {
       findCourseTypes: jest.fn(),
       findTechnologies: jest.fn(),
       findMentoring: jest.fn(),
+      checkLearningStructureLock: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -65,6 +67,13 @@ describe('CoursesController', () => {
       coursesService.findCourseTypes.mockResolvedValue(mockTypes);
       coursesService.findTechnologies.mockResolvedValue(mockTech);
       coursesService.findMentoring.mockResolvedValue(mockMentorings);
+      coursesService.checkLearningStructureLock.mockResolvedValue({
+        isLocked: false,
+        hasWeeks: false,
+        hasPortfolioGuide: false,
+        hasFinalAssignment: false,
+        hasSyllabus: false,
+      });
 
       const renderSpy = jest.fn();
       const redirectSpy = jest.fn();
@@ -83,7 +92,12 @@ describe('CoursesController', () => {
       await controller.formEdit(mockRes, 'course-1', 'cat-1', mockReq);
 
       expect(coursesService.findOne).toHaveBeenCalledWith('course-1');
+      expect(coursesService.checkLearningStructureLock).toHaveBeenCalledWith(
+        'course-1',
+      );
       expect(renderSpy).toHaveBeenCalledWith('admin/course/edit', {
+        learningStructureLocked: false,
+        learningStructureLockHint: undefined,
         user: mockUser,
         course: mockCourse,
         category: mockCategories,
@@ -93,6 +107,50 @@ describe('CoursesController', () => {
         categoryId: 'cat-1',
       });
       expect(redirectSpy).not.toHaveBeenCalled();
+    });
+
+    it('should pass learningStructureLocked true and hint when locked', async () => {
+      const mockCourse = {
+        id: 'course-2',
+        name: 'Bootcamp Android',
+        programType: 'bootcamp',
+      };
+      coursesService.findOne.mockResolvedValue(mockCourse);
+      coursesService.findCategory.mockResolvedValue([]);
+      coursesService.findCourseTypes.mockResolvedValue([]);
+      coursesService.findTechnologies.mockResolvedValue([]);
+      coursesService.findMentoring.mockResolvedValue([]);
+      coursesService.checkLearningStructureLock.mockResolvedValue({
+        isLocked: true,
+        reason:
+          'Learning structure tidak dapat diubah karena program sudah memiliki week.',
+        hint: 'Learning structure cannot be edited because this program already has week.',
+        hasWeeks: true,
+        hasPortfolioGuide: false,
+        hasFinalAssignment: false,
+        hasSyllabus: false,
+      });
+
+      const renderSpy = jest.fn();
+      const mockRes = {
+        render: renderSpy,
+        redirect: jest.fn(),
+      } as unknown as Response;
+      const mockReq = {
+        user: { id: 'admin-1', role: 'admin' },
+        flash: jest.fn(),
+      } as unknown as Request;
+
+      await controller.formEdit(mockRes, 'course-2', '', mockReq);
+
+      expect(renderSpy).toHaveBeenCalledWith(
+        'admin/course/edit',
+        expect.objectContaining({
+          learningStructureLocked: true,
+          learningStructureLockHint:
+            'Learning structure cannot be edited because this program already has week.',
+        }),
+      );
     });
 
     it('should redirect to /program if course is not found', async () => {
