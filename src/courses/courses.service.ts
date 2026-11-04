@@ -1349,7 +1349,32 @@ export class CoursesService {
           { excludeCompletedStatus: 'done' },
         );
       } else {
-        query.andWhere('course.status = :status', { status: params.status });
+        const statusList = params.status
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => Boolean(s) && s !== '__none__');
+
+        if (statusList.length === 1) {
+          if (statusList[0] === 'unlaunch') {
+            query.andWhere(
+              '(course.status = :status OR course.status IS NULL)',
+              { status: 'unlaunch' },
+            );
+          } else {
+            query.andWhere('course.status = :status', { status: statusList[0] });
+          }
+        } else if (statusList.length > 1) {
+          if (statusList.includes('unlaunch')) {
+            query.andWhere(
+              '(course.status IN (:...statusList) OR course.status IS NULL)',
+              { statusList },
+            );
+          } else {
+            query.andWhere('course.status IN (:...statusList)', { statusList });
+          }
+        } else {
+          query.andWhere('1 = 0');
+        }
       }
     } else {
       // Default: sembunyikan program berstatus 'done' (Completed) dari list
