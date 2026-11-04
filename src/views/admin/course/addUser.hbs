@@ -3,28 +3,27 @@
   Lokasi: src/views/admin/course/addUser.hbs
   Level: L4 Page
 
-  - Tombol kembali (Back) ke daftar program (/program)
+  - Tombol kembali (Back) ke daftar program (/program) atau category detail
   - Pencarian student (nama atau email) + submit ke /program/addStudent/:courseId
   - Tabel student terdaftar dari table/card + clientTable() (pagination di client)
-  - Hapus lewat modal delete_confirm
-
-  courseId disimpan di state Alpine lewat `json`, bukan disisipkan ke ekspresi
-  :action — nilai server di ekspresi Alpine mentah rawan kutip rusak.
+  - Hapus lewat modal delete_confirm (single remove)
+  - Manage Delete mode (bulk select & remove students dari program)
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='flex flex-col gap-7'>
 
-    <div class='flex flex-col gap-3'>
+    <div class='flex flex-col gap-3' x-data='addUserBackNav()'>
       <div>
         <a
-          href='/program'
+          :href='backUrl'
+          @click.prevent='goBack()'
           class='inline-flex w-fit items-center gap-1 font-inter text-base font-medium leading-5 text-[#718096] transition-colors hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40'
         >
           {{!-- lucide: chevron-left --}}
           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true' class='h-4 w-4'>
             <path d='m15 18-6-6 6-6' />
           </svg>
-          Back to program list
+          <span x-text='backLabel'>Back to program list</span>
         </a>
       </div>
 
@@ -39,81 +38,202 @@
 
     <div
       class='flex flex-col gap-3.5'
-      x-data='clientTable({ items: {{json student}} })'
+      x-data='addUserTable({{json student}}, {{json course.id}})'
     >
-      <form
-        action='/program/addStudent/{{course.id}}'
-        method='POST'
-        x-data='userPicker({{json users}})'
-        @submit='loading = true'
-        class='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end'
-      >
-        <input type='hidden' name='userId' x-model='selected' required>
+      {{!-- Top Toolbar: Search Enrolled Students (left) + Manage Delete & Add User Picker (right) --}}
+      <div class='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+        <label class='relative block w-full sm:w-[320px]'>
+          <span class='sr-only'>Search enrolled student</span>
+          <input
+            type='search'
+            placeholder='Search enrolled student..'
+            x-model='searchInput'
+            @input='handleSearch()'
+            class='h-11 w-full rounded-lg border border-[#d4d4d4] bg-white py-2.5 pl-3.5 pr-11 font-inter text-base leading-6 text-[#404040] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#a3a3a3] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
+          />
+          <span class='pointer-events-none absolute right-3.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-[#a3a3a3]'>
+            {{!-- lucide: search --}}
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'>
+              <circle cx='11' cy='11' r='8' />
+              <path d='m21 21-4.3-4.3' />
+            </svg>
+          </span>
+        </label>
 
-        <div class='relative w-full sm:w-[400px]' @click.outside='open = false'>
-          <label class='relative block'>
-            <span class='sr-only'>Search student by name or email</span>
-            <input
-              type='search'
-              placeholder='Search student by name or email...'
-              x-model='query'
-              @focus='open = true'
-              @input='open = true; selected = ""'
-              @keydown.escape='open = false'
-              autocomplete='off'
-              class='h-11 w-full rounded-lg border border-[#d4d4d4] bg-white py-2.5 pl-3.5 pr-11 font-inter text-base leading-6 text-[#404040] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#a3a3a3] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
-            />
-            <span class='pointer-events-none absolute right-3.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-[#a3a3a3]'>
-              {{!-- lucide: search --}}
-              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'>
-                <circle cx='11' cy='11' r='8' />
-                <path d='m21 21-4.3-4.3' />
-              </svg>
-            </span>
-          </label>
-
-          <div
-            x-show='open && query.trim() !== ""'
-            x-transition.opacity.duration.100ms
-            class='absolute z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-[#e5e5e5] bg-white shadow-lg'
+        <div class='flex flex-wrap items-center gap-3'>
+          {{!-- Tombol Manage Delete --}}
+          <button
+            type='button'
+            @click='toggleSelectMode()'
+            class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border font-inter text-sm font-semibold transition-all shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] cursor-pointer'
+            :class="selectMode ? 'bg-[#F5F5F5] border-[#D4D4D4] hover:bg-[#E5E5E5] text-[#404040] w-11 px-0' : 'bg-white border-[#D4D4D4] hover:border-[#DC2626] hover:bg-[#FEF2F2] text-[#404040] hover:text-[#DC2626] px-4'"
+            :title="selectMode ? 'Close' : 'Manage Delete'"
+            :aria-label="selectMode ? 'Close' : 'Manage Delete'"
           >
-            <template x-for='user in results' :key='user.id'>
-              <button
-                type='button'
-                @click='pick(user)'
-                class='flex w-full items-center gap-3 border-b border-[#f5f5f5] px-4 py-3 text-left transition-colors last:border-0 hover:bg-[#f5f5f5]'
-              >
-                {{> components/ui/super_admin/table/avatar
-                  src='user.profile && user.profile.trim()'
-                  name='user.username'
-                  avatarClass='h-8 w-8'
-                }}
-                <span class='min-w-0'>
-                  <span class='block truncate font-inter text-sm font-medium leading-5 text-[#171717]' x-text='user.username'></span>
-                  <span class='block truncate font-inter text-xs leading-[18px] text-[#525252]' x-text='user.email'></span>
-                </span>
-              </button>
+            <template x-if='!selectMode'>
+              <div class='flex items-center gap-2'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#DC2626]'>
+                  <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+                </svg>
+                <span>Manage Delete</span>
+              </div>
             </template>
+            <template x-if='selectMode'>
+              <div class='flex items-center justify-center'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#525252]'>
+                  <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
+                </svg>
+              </div>
+            </template>
+          </button>
 
-            <p x-show='results.length === 0' class='p-4 text-center font-inter text-sm leading-5 text-[#a3a3a3]'>
-              No student found.
-            </p>
-          </div>
+          {{!-- Add Student Picker Form --}}
+          <form
+            action='/program/addStudent/{{course.id}}'
+            method='POST'
+            x-data='userPicker({{json users}})'
+            @submit='loading = true'
+            class='flex flex-wrap items-center gap-3'
+          >
+            <input type='hidden' name='userId' x-model='selected' required>
+
+            <div class='relative w-full sm:w-[320px]' @click.outside='open = false'>
+              <label class='relative block'>
+                <span class='sr-only'>Search student by name or email</span>
+                <input
+                  type='search'
+                  placeholder='Search student by name or email...'
+                  x-model='query'
+                  @focus='open = true'
+                  @input='open = true; selected = ""'
+                  @keydown.escape='open = false'
+                  autocomplete='off'
+                  class='h-11 w-full rounded-lg border border-[#d4d4d4] bg-white py-2.5 pl-3.5 pr-11 font-inter text-base leading-6 text-[#404040] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors placeholder:text-[#a3a3a3] hover:border-[#a3a3a3] focus:border-[#003060] focus:outline-none focus:ring-2 focus:ring-[#003060]/20'
+                />
+                <span class='pointer-events-none absolute right-3.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-[#a3a3a3]'>
+                  {{!-- lucide: search --}}
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-4 w-4'>
+                    <circle cx='11' cy='11' r='8' />
+                    <path d='m21 21-4.3-4.3' />
+                  </svg>
+                </span>
+              </label>
+
+              <div
+                x-show='open && query.trim() !== ""'
+                x-transition.opacity.duration.100ms
+                class='absolute z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-[#e5e5e5] bg-white shadow-lg'
+              >
+                <template x-for='user in results' :key='user.id'>
+                  <button
+                    type='button'
+                    @click='pick(user)'
+                    class='flex w-full items-center gap-3 border-b border-[#f5f5f5] px-4 py-3 text-left transition-colors last:border-0 hover:bg-[#f5f5f5]'
+                  >
+                    {{> components/ui/super_admin/table/avatar
+                      src='user.profile && user.profile.trim()'
+                      name='user.username'
+                      avatarClass='h-8 w-8'
+                    }}
+                    <span class='min-w-0'>
+                      <span class='block truncate font-inter text-sm font-medium leading-5 text-[#171717]' x-text='user.username'></span>
+                      <span class='block truncate font-inter text-xs leading-[18px] text-[#525252]' x-text='user.email'></span>
+                    </span>
+                  </button>
+                </template>
+
+                <p x-show='results.length === 0' class='p-4 text-center font-inter text-sm leading-5 text-[#a3a3a3]'>
+                  No student found.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type='submit'
+              :disabled='selected === "" || loading'
+              class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#00254a] hover:bg-[#00254a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:bg-[#001c39] disabled:cursor-not-allowed disabled:opacity-50'
+            >
+              <i x-show='loading' class='fas fa-spinner fa-spin'></i>
+              <span x-show='!loading'>Add User</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {{!-- Bulk Selection Action Bar --}}
+      <div
+        x-show='selectMode'
+        x-cloak
+        x-transition:enter='transition ease-out duration-150'
+        x-transition:enter-start='opacity-0 -translate-y-2'
+        x-transition:enter-end='opacity-100 translate-y-0'
+        x-transition:leave='transition ease-in duration-100'
+        x-transition:leave-start='opacity-100 translate-y-0'
+        x-transition:leave-end='opacity-0 -translate-y-2'
+        class='box-border w-full flex flex-col sm:flex-row justify-between items-center px-4 py-2.5 bg-[#FEF2F2] border border-[#FCA5A5] rounded-lg gap-2.5 shadow-sm'
+        style='display: none;'
+      >
+        <div class='flex flex-wrap items-center gap-2 text-[14px] text-[#991B1B] font-inter font-medium'>
+          <svg class='w-5 h-5 text-[#DC2626] shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/>
+          </svg>
+          <span>
+            <strong x-text='selectedIds ? selectedIds.length : 0'></strong> students selected
+          </span>
+
+          <span class='text-[#FCA5A5] mx-1'>•</span>
+
+          <button
+            type='button'
+            @click='toggleSelectAllOnPage()'
+            class='text-xs text-[#DC2626] hover:underline font-semibold cursor-pointer'
+            x-text="isAllSelected() ? 'Deselect Page' : 'Select All on Page'"
+          ></button>
+
+          <template x-if='selectedIds && selectedIds.length > 0'>
+            <button
+              type='button'
+              @click='clearSelection()'
+              class='text-xs text-[#7F1D1D] hover:underline font-normal cursor-pointer ml-1'
+            >
+              (Clear Selection)
+            </button>
+          </template>
         </div>
 
-        <button
-          type='submit'
-          :disabled='selected === "" || loading'
-          class='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-[#003060] bg-[#003060] px-[18px] py-2.5 font-inter text-base font-semibold leading-6 text-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#00254a] hover:bg-[#00254a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 focus-visible:ring-offset-2 active:bg-[#001c39] disabled:cursor-not-allowed disabled:opacity-50'
-        >
-          <i x-show='loading' class='fas fa-spinner fa-spin'></i>
-          <span x-show='!loading'>Add User</span>
-        </button>
-      </form>
+        <div class='flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end'>
+          <button
+            type='button'
+            @click='confirmDeleteSelected()'
+            :disabled='!selectedIds || selectedIds.length === 0'
+            :class="(!selectedIds || selectedIds.length === 0) ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'bg-[#DC2626] hover:bg-[#B91C1C] cursor-pointer'"
+            class='box-border h-[38px] px-3.5 flex flex-row items-center gap-2 text-white rounded-lg font-inter text-[13px] font-semibold transition-colors shadow-sm'
+          >
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+              <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+            </svg>
+            <span>Remove Selected (<span x-text='selectedIds ? selectedIds.length : 0'></span>)</span>
+          </button>
 
-      <div x-data='{ courseId: {{json course.id}} }'>
+          <button
+            type='button'
+            @click='toggleSelectMode()'
+            class='box-border h-[38px] w-[38px] flex items-center justify-center bg-white hover:bg-[#F5F5F5] text-[#525252] hover:text-[#171717] border border-[#D4D4D4] rounded-lg transition-colors shadow-sm cursor-pointer'
+            title='Close'
+            aria-label='Close'
+          >
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+              <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {{!-- Table Enrolled Students --}}
+      <div>
         {{#> components/ui/super_admin/table/card tableClass='min-w-[620px]'}}
           <colgroup>
+            <template x-if='selectMode'><col class='w-[48px]' /></template>
             <col class='w-[88px]' />
             <col />
             <col class='w-[36%]' />
@@ -121,6 +241,7 @@
           </colgroup>
           <thead>
             <tr>
+              {{> components/ui/super_admin/table/header_cell checkbox=true }}
               {{> components/ui/super_admin/table/header_cell label='User' }}
               {{> components/ui/super_admin/table/header_cell label='Name' }}
               {{> components/ui/super_admin/table/header_cell label='Email' }}
@@ -129,7 +250,11 @@
           </thead>
           <tbody>
             <template x-for='row in rows' :key='row.id'>
-              <tr class='transition-colors hover:bg-[#fafafa]'>
+              <tr
+                class='transition-colors hover:bg-[#fafafa]'
+                :class="selectedIds && selectedIds.some(id => String(id) === String(row.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+              >
+                {{> components/ui/super_admin/table/cell checkbox=true }}
 
                 {{#> components/ui/super_admin/table/cell}}
                   {{> components/ui/super_admin/table/avatar
@@ -146,7 +271,7 @@
                   <form :action='"/program/" + row.id + "/program/" + courseId + "?_method=DELETE"' method='post' class='flex justify-center'>
                     <button
                       type='button'
-                      onclick='openDeleteModal(this)'
+                      onclick="openDeleteModal(this, 'Remove Student?', 'Are you sure you want to remove this student from the program? This action cannot be undone.')"
                       title='Remove student'
                       aria-label='Remove student'
                       class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#dc2626] transition-colors hover:bg-[#fef2f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626]/40 active:bg-[#fee2e2]'
@@ -165,17 +290,97 @@
               </tr>
             </template>
 
-            {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='4'}}
+            {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='5'}}
               No students yet. Add a student using the search field above.
             {{/components/ui/super_admin/table/message_row}}
           </tbody>
         {{/components/ui/super_admin/table/card}}
+      </div>
+
+      <div x-show='totalPages > 1'>
+        {{> components/ui/super_admin/table/pagination paddingClass='pb-1 pt-1' }}
       </div>
     </div>
   </div>
 </div>
 
 <script>
+  function addUserBackNav() {
+    return {
+      backUrl: '/program',
+      backLabel: 'Back to program list',
+
+      init() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const returnUrl = urlParams.get('returnUrl');
+
+        const referrer = document.referrer;
+        const isExternalReferrer = referrer && !referrer.includes('/program/addUser') && !referrer.includes('/program/addStudent');
+
+        let candidate = returnUrl || localStorage.getItem('kelasPrevUrl');
+        if (!candidate && isExternalReferrer) {
+          candidate = referrer;
+        }
+
+        if (candidate) {
+          sessionStorage.setItem('addUserPrevUrl', candidate);
+        }
+
+        const saved = sessionStorage.getItem('addUserPrevUrl') || localStorage.getItem('kelasPrevUrl') || '/program';
+        this.backUrl = saved;
+
+        if (this.backUrl.includes('/category')) {
+          this.backLabel = 'Back to category';
+        } else if (this.backUrl.includes('/program/detail')) {
+          this.backLabel = 'Back to program detail';
+        } else if (this.backUrl.includes('/program')) {
+          this.backLabel = 'Back to program list';
+        } else {
+          this.backLabel = 'Back';
+        }
+      },
+
+      goBack() {
+        const target = sessionStorage.getItem('addUserPrevUrl') || localStorage.getItem('kelasPrevUrl') || '/program';
+        sessionStorage.removeItem('addUserPrevUrl');
+        localStorage.removeItem('kelasPrevUrl');
+        window.location.href = target;
+      },
+    };
+  }
+
+  function addUserTable(students, courseId) {
+    const base = clientTable({
+      items: students,
+      searchKeys: ['username', 'email'],
+      entityName: 'student',
+      deleteEntity: 'user_course',
+    });
+
+    base.courseId = courseId;
+
+    base.confirmDeleteSelected = function() {
+      const count = this.selectedIds.length;
+      if (count === 0) return;
+
+      openDeleteModal({
+        title: `Remove ${count} Selected Student${count > 1 ? 's' : ''}?`,
+        description: `Are you sure you want to remove ${count} selected student${count > 1 ? 's' : ''} from this program? This action cannot be undone.`,
+        cancelLabel: 'Cancel',
+        confirmLabel: `Remove (${count})`,
+        onConfirm: () => {
+          this.executeDeleteSelected();
+        },
+      });
+    };
+
+    base.executeDeleteSelected = function() {
+      submitDeleteForm('/program/removeStudents/' + this.courseId, { userIds: this.selectedIds });
+    };
+
+    return base;
+  }
+
   function userPicker(users) {
     return {
       users: users || [],

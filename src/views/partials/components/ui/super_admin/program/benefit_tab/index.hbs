@@ -28,9 +28,9 @@
 <div
   class='flex flex-col gap-3.5'
   {{#if categoryId}}
-    x-data='clientTable({ url: "/category/benefit/" + {{json categoryId}}, sortKey: "createdAt", searchKeys: ["title.id", "title.en", "title.ja", "description.id", "description.en", "description.ja"] })'
+    x-data='clientTable({ url: "/category/benefit/" + {{json categoryId}}, sortKey: "createdAt", searchKeys: ["title.id", "title.en", "title.ja", "description.id", "description.en", "description.ja"], entityName: "benefit", deleteEntity: "benefit_category" })'
   {{else}}
-    x-data='clientTable({ url: "/program/benefit/" + {{json courseId}}, sortKey: "createdAt", searchKeys: ["benefit.id", "benefit.en", "benefit.ja", "description.id", "description.en", "description.ja"] })'
+    x-data='clientTable({ url: "/program/benefit/" + {{json courseId}}, sortKey: "createdAt", searchKeys: ["benefit.id", "benefit.en", "benefit.ja", "description.id", "description.en", "description.ja"], entityName: "benefit", deleteEntity: "course_benefit" })'
   {{/if}}
   x-init='load()'
 >
@@ -39,7 +39,7 @@
     searchLabel='Search program benefit'
     createHref=(ternary categoryId (concat '/benefit_category/formCreate/' categoryId) (concat '/benefit-program/formCreate/' courseId))
     createLabel='Add Benefit'
-    hideBulkDelete=true
+
     fullWidth=true
   }}
 
@@ -57,6 +57,7 @@
 
     {{#> components/ui/super_admin/table/card tableClass='min-w-[944px]'}}
       <colgroup>
+        <template x-if='selectMode'><col class='w-[48px]' /></template>
         <col class='w-[73px]' />
         <col class='w-[377px]' />
         <col class='w-[378px]' />
@@ -64,6 +65,7 @@
       </colgroup>
       <thead>
         <tr>
+          {{> components/ui/super_admin/table/header_cell checkbox=true }}
           {{> components/ui/super_admin/table/header_cell label='Icon' }}
           {{> components/ui/super_admin/table/header_cell label='Benefit' }}
           {{> components/ui/super_admin/table/header_cell label='Description' }}
@@ -72,7 +74,11 @@
       </thead>
       <tbody>
         <template x-for='row in rows' :key='row.id'>
-          <tr class='transition-colors hover:bg-[#fafafa]'>
+          <tr
+            class='transition-colors hover:bg-[#fafafa]'
+            :class="selectedIds && selectedIds.some(id => String(id) === String(row.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+          >
+            {{> components/ui/super_admin/table/cell checkbox=true }}
 
             {{#> components/ui/super_admin/table/cell}}
               <i
@@ -114,11 +120,11 @@
           </tr>
         </template>
 
-        {{#> components/ui/super_admin/table/message_row show='loading' colspan='4'}}
+        {{#> components/ui/super_admin/table/message_row show='loading' colspan='5'}}
           Loading benefits…
         {{/components/ui/super_admin/table/message_row}}
 
-        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='4'}}
+        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='5'}}
           No benefits found.
         {{/components/ui/super_admin/table/message_row}}
       </tbody>

@@ -29,7 +29,7 @@
 --}}
 <div
   class='flex flex-col gap-3'
-  x-data='clientTable({ url: "/program/mentorProgram/" + {{json courseId}}, sortKey: "createdAt", searchKeys: ["name", "linkedin", "position.id", "position.en", "position.ja", "description.id", "description.en", "description.ja"] })'
+  x-data='clientTable({ url: "/program/mentorProgram/" + {{json courseId}}, sortKey: "createdAt", searchKeys: ["name", "linkedin", "position.id", "position.en", "position.ja", "description.id", "description.en", "description.ja"], entityName: "mentor", deleteEntity: "mentor" })'
   x-init='load()'
 >
   {{> components/ui/super_admin/table/toolbar
@@ -37,7 +37,6 @@
     searchLabel='Search program mentor'
     createHref=(concat '/mentor/formCreate/' courseId)
     createLabel='Add Mentor'
-    hideBulkDelete=true
     fullWidth=true
   }}
 
@@ -48,6 +47,7 @@
 
     {{#> components/ui/super_admin/table/card tableClass='min-w-[1264px]'}}
       <colgroup>
+        <template x-if='selectMode'><col class='w-[48px]' /></template>
         <col class='w-[268px]' />
         <col class='w-[240px]' />
         <col class='w-[240px]' />
@@ -57,6 +57,7 @@
       </colgroup>
       <thead>
         <tr>
+          {{> components/ui/super_admin/table/header_cell checkbox=true }}
           {{> components/ui/super_admin/table/header_cell label='Name' }}
           {{> components/ui/super_admin/table/header_cell label='Position' }}
           {{> components/ui/super_admin/table/header_cell label='Description' }}
@@ -67,7 +68,11 @@
       </thead>
       <tbody>
         <template x-for='row in rows' :key='row.id'>
-          <tr class='transition-colors hover:bg-[#fafafa]'>
+          <tr
+            class='transition-colors hover:bg-[#fafafa]'
+            :class="selectedIds && selectedIds.some(id => String(id) === String(row.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+          >
+            {{> components/ui/super_admin/table/cell checkbox=true }}
 
             {{#> components/ui/super_admin/table/cell}}
               <div class='flex items-center gap-2.5'>
@@ -140,11 +145,11 @@
           </tr>
         </template>
 
-        {{#> components/ui/super_admin/table/message_row show='loading' colspan='6'}}
+        {{#> components/ui/super_admin/table/message_row show='loading' colspan='7'}}
           Loading mentors…
         {{/components/ui/super_admin/table/message_row}}
 
-        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='6'}}
+        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='7'}}
           No mentors found.
         {{/components/ui/super_admin/table/message_row}}
       </tbody>

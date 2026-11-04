@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateInstallmentsDto } from './dto/create-installments.dto';
@@ -78,7 +82,18 @@ export class InstallmentsService {
   }
 
   async update(id: string, updateCicilanDto: UpdateInstallmentsDto) {
-    const installments = await this.findOne(id);
+    const installments = await this.installmentsRepository.findOne({
+      where: { id },
+      relations: ['payment'],
+    });
+    if (!installments) {
+      throw new NotFoundException(`Installment not found`);
+    }
+    if ((installments.payment || []).length > 0) {
+      throw new BadRequestException(
+        'Installment scheme cannot be deleted because participants have already made payments using this scheme.',
+      );
+    }
 
     if (updateCicilanDto.courseId) {
       const course = await this.courseRepository.findOne({
@@ -112,7 +127,18 @@ export class InstallmentsService {
   }
 
   async remove(id: string) {
-    const installments = await this.findOne(id);
+    const installments = await this.installmentsRepository.findOne({
+      where: { id },
+      relations: ['payment'],
+    });
+    if (!installments) {
+      throw new NotFoundException(`Installment not found`);
+    }
+    if ((installments.payment || []).length > 0) {
+      throw new BadRequestException(
+        'Installment scheme cannot be deleted because participants have already made payments using this scheme.',
+      );
+    }
     return await this.installmentsRepository.remove(installments);
   }
 }

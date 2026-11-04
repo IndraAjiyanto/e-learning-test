@@ -22,11 +22,12 @@
     searchLabel='Search alumni'
     createHref=(concat '/alumni/category/formCreate/' category.id)
     createLabel='Add Alumni'
-    hideBulkDelete=true
+
   }}
 
   {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
     <colgroup>
+      <template x-if='selectMode'><col class='w-[48px]' /></template>
       <col class='w-[66px]' />
       <col class='w-[88px]' />
       <col class='w-[160px]' />
@@ -37,6 +38,7 @@
     </colgroup>
     <thead>
       <tr>
+        {{> components/ui/super_admin/table/header_cell checkbox=true }}
         {{> components/ui/super_admin/table/header_cell label='No' }}
         {{> components/ui/super_admin/table/header_cell label='Profile' }}
         {{> components/ui/super_admin/table/header_cell label='Name' }}
@@ -48,7 +50,11 @@
     </thead>
     <tbody>
       <template x-for='(alumni, index) in rows' :key='alumni.id'>
-        <tr class='transition-colors hover:bg-[#fafafa]'>
+        <tr
+          class='transition-colors hover:bg-[#fafafa]'
+          :class="selectedIds && selectedIds.some(id => String(id) === String(alumni.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+        >
+          {{> components/ui/super_admin/table/cell checkbox=true }}
           {{> components/ui/super_admin/table/cell
             text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
           }}
@@ -103,6 +109,8 @@
     // getter rows/totalPages sekali dan mematikan reaktivitasnya.
     const state = clientTable({
       searchKeys: ['name', 'message', 'currentPosition', 'course.name'],
+      entityName: 'alumni',
+      deleteEntity: 'alumni',
     });
 
     state.categoryId = categoryId;

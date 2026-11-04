@@ -6,8 +6,112 @@
   Detail w81 outline #003060) + Add Assignment full-width h48 outline #3B82F6.
   BE: tugasData().fetchTugas → GET /session/task/:sessionId (Assignment[]).
       Detail GET /answer-assigment/:id; delete POST /task/:id/:sessionId.
-  Logika Alpine dipertahankan verbatim dari implementasi lama.
+  Logika Alpine dipertahankan dan diperluas dengan fitur Manage Delete.
 --}}
+
+  <!-- Header Toolbar (Manage Delete) -->
+  <div class='flex flex-col gap-3 w-full mb-3' x-show='data && data.length > 0'>
+    <div class='flex items-center justify-between'>
+      <div>
+        <span class='font-inter text-sm font-medium text-[#737373]' x-text="'Total ' + data.length + ' Assignment' + (data.length > 1 ? 's' : '')"></span>
+      </div>
+      <div>
+        <button
+          type='button'
+          @click='toggleSelectMode()'
+          class='inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border font-inter text-sm font-semibold transition-all shadow-sm cursor-pointer'
+          :class="selectMode ? 'bg-[#F5F5F5] border-[#D4D4D4] hover:bg-[#E5E5E5] text-[#404040] w-10 px-0' : 'bg-white border-[#D4D4D4] hover:border-[#DC2626] hover:bg-[#FEF2F2] text-[#404040] hover:text-[#DC2626] px-3.5'"
+          :title="selectMode ? 'Close' : 'Manage Delete'"
+        >
+          <template x-if='!selectMode'>
+            <div class='flex items-center gap-1.5'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#DC2626]'>
+                <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+              </svg>
+              <span>Manage Delete</span>
+            </div>
+          </template>
+          <template x-if='selectMode'>
+            <div class='flex items-center justify-center'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#525252]'>
+                <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
+              </svg>
+            </div>
+          </template>
+        </button>
+      </div>
+    </div>
+
+    {{!-- Bulk Selection Action Bar --}}
+    <div
+      x-show='selectMode'
+      x-cloak
+      x-transition:enter='transition ease-out duration-150'
+      x-transition:enter-start='opacity-0 -translate-y-2'
+      x-transition:enter-end='opacity-100 translate-y-0'
+      x-transition:leave='transition ease-in duration-100'
+      x-transition:leave-start='opacity-100 translate-y-0'
+      x-transition:leave-end='opacity-0 -translate-y-2'
+      class='box-border w-full flex flex-col sm:flex-row justify-between items-center px-4 py-2.5 bg-[#FEF2F2] border border-[#FCA5A5] rounded-lg gap-2.5 shadow-sm'
+      style='display: none;'
+    >
+      <div class='flex flex-wrap items-center gap-2 text-[14px] text-[#991B1B] font-inter font-medium'>
+        <svg class='w-5 h-5 text-[#DC2626] shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+          <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/>
+        </svg>
+        <span>
+          <strong x-text='selectedIds ? selectedIds.length : 0'></strong> assignment(s) selected
+        </span>
+
+        <span class='text-[#FCA5A5] mx-1'>•</span>
+
+        <button
+          type='button'
+          @click='toggleSelectAll()'
+          :disabled='!deletableAssignments || deletableAssignments.length === 0'
+          :class="(!deletableAssignments || deletableAssignments.length === 0) ? 'opacity-50 cursor-not-allowed hover:no-underline' : 'cursor-pointer hover:underline'"
+          class='text-xs text-[#DC2626] font-semibold'
+          x-text="isAllSelected() ? 'Deselect All' : 'Select All'"
+        ></button>
+
+        <template x-if='selectedIds && selectedIds.length > 0'>
+          <button
+            type='button'
+            @click='clearSelection()'
+            class='text-xs text-[#7F1D1D] hover:underline font-normal cursor-pointer ml-1'
+          >
+            (Clear Selection)
+          </button>
+        </template>
+      </div>
+
+      <div class='flex items-center gap-2 shrink-0'>
+        <button
+          type='button'
+          @click='confirmDeleteSelected()'
+          :disabled='!selectedIds || selectedIds.length === 0'
+          class='inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#DC2626] px-3.5 font-inter text-sm font-semibold text-white shadow-sm hover:bg-[#B91C1C] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer'
+        >
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+            <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+          </svg>
+          <span>Delete Selected (<span x-text='selectedIds ? selectedIds.length : 0'></span>)</span>
+        </button>
+
+        <button
+          type='button'
+          @click='toggleSelectMode()'
+          class='inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#FCA5A5] bg-white text-[#991B1B] hover:bg-[#FEE2E2] transition-colors cursor-pointer'
+          title='Close Manage Delete'
+        >
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+            <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Assignment List Section -->
   <template x-if="data && data.length > 0">
     <div class='flex flex-col gap-[10px] w-full mb-[10px]'>
@@ -16,8 +120,9 @@
       </template>
     </div>
   </template>
-    <!-- Empty State -->
-    <template x-if="!data || data.length === 0">
+
+  <!-- Empty State -->
+  <template x-if="!data || data.length === 0">
     <div class="flex flex-col items-center justify-center text-center py-16 bg-gray-50 border-2 border-dashed rounded-xl mb-6">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-gray-400 mb-4" fill="none"
            viewBox="0 0 24 24" stroke="currentColor">
@@ -30,7 +135,7 @@
         Click <span class="font-semibold">Add Assignment</span> to create a new one.
       </p>
     </div>
-    </template>
+  </template>
 
   <!-- Add Assignment -->
   <a href="/task/formCreate/{{session.id}}"
@@ -38,16 +143,76 @@
     <span class='text-[16px]/[normal] text-[#3B82F6] font-inter font-semibold whitespace-nowrap'>Add Assignment</span>
   </a>
 
-
-  <script>
+<script>
 function tugasData() {
   return {
     data: [],
+    selectMode: false,
+    selectedIds: [],
 
     async fetchTugas() {
       const res = await fetch('/session/task/{{session.id}}');
       this.data = await res.json();
     },
+
+    toggleSelectMode() {
+      this.selectMode = !this.selectMode;
+      if (!this.selectMode) {
+        this.selectedIds = [];
+      }
+    },
+
+    clearSelection() {
+      this.selectedIds = [];
+    },
+
+    isAssignmentDisabled(assigment) {
+      return Boolean(assigment && assigment.hasApprovedSubmission);
+    },
+
+    get deletableAssignments() {
+      return (this.data || []).filter(a => !this.isAssignmentDisabled(a));
+    },
+
+    isAllSelected() {
+      const deletable = this.deletableAssignments;
+      return deletable.length > 0 && deletable.every(a => this.selectedIds.includes(String(a.id)));
+    },
+
+    toggleSelectAll() {
+      const deletable = this.deletableAssignments;
+      if (this.isAllSelected()) {
+        this.selectedIds = [];
+      } else {
+        this.selectedIds = deletable.map(a => String(a.id));
+      }
+    },
+
+    confirmDeleteSelected() {
+      if (!this.selectedIds || this.selectedIds.length === 0) return;
+      const count = this.selectedIds.length;
+      const title = `Delete ${count} Assignment${count > 1 ? 's' : ''}?`;
+      const description = `Are you sure you want to permanently delete the ${count} selected assignment${count > 1 ? 's' : ''}? All submitted tasks and files will be removed too.`;
+
+      const performDelete = () => {
+        submitDeleteForm('/bulk-delete/selected', {
+          entity: 'assignment',
+          ids: this.selectedIds,
+        });
+      };
+
+      if (typeof openDeleteModal === 'function') {
+        openDeleteModal({
+          title,
+          description,
+          confirmLabel: `Delete (${count})`,
+          cancelLabel: 'Cancel',
+          onConfirm: performDelete,
+        });
+      } else if (confirm(`${title}\n\n${description}`)) {
+        performDelete();
+      }
+    }
   }
 }
 </script>

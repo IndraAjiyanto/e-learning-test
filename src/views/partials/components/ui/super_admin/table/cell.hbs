@@ -8,6 +8,8 @@
                | 'media' (py-2.5, agar gambar 52px tetap muat di baris 72px)
   - checkbox : boolean — bila true, render checkbox baris
   - idField  : string (default 'row.id') — ekspresi properti ID untuk :value
+  - disabled : string — ekspresi boolean untuk :disabled (default: isRowDisabled(row))
+  - title    : string — ekspresi string untuk :title (default: getRowDisabledTitle(row))
   - isi bebas lewat partial-block bila `text` tidak dipakai.
 --}}
 {{#if checkbox}}
@@ -16,7 +18,9 @@
     type='checkbox'
     :value='{{default idField "row.id"}}'
     x-model='selectedIds'
-    class='h-4 w-4 rounded border-[#d4d4d4] text-[#003060] focus:ring-[#003060] cursor-pointer'
+    :disabled='{{#if disabled}}{{{disabled}}}{{else}}typeof isRowDisabled === "function" ? isRowDisabled({{default idField "row"}}) : false{{/if}}'
+    :title='{{#if title}}{{{title}}}{{else}}typeof getRowDisabledTitle === "function" ? getRowDisabledTitle({{default idField "row"}}) : "Select item"{{/if}}'
+    class='h-4 w-4 rounded border-[#d4d4d4] text-[#003060] focus:ring-[#003060] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed'
   />
 </td>
 {{else}}

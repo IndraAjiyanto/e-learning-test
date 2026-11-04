@@ -45,6 +45,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Portofolios } from 'src/entities/portofolios.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
+import { FinalAssignment } from 'src/entities/final_assignment.entity';
 import { PortfolioGuide } from 'src/entities/portfolio-guide.entity';
 import { dateHelpers } from 'src/common/helpers/date.helpers';
 
@@ -101,6 +102,10 @@ export class CoursesService {
     private readonly sessionRepository: Repository<Session>,
     @InjectRepository(Portofolios)
     private readonly portfolioRepository: Repository<Portofolios>,
+    @InjectRepository(Syllabus)
+    private readonly syllabusRepository: Repository<Syllabus>,
+    @InjectRepository(FinalAssignment)
+    private readonly finalAssignmentRepository: Repository<FinalAssignment>,
   ) {}
 
   async findOneCategory(categoryId: string) {
@@ -1335,14 +1340,53 @@ export class CoursesService {
         query.andWhere('course.process = :statusProcess', {
           statusProcess: 'approved',
         });
+        query.andWhere(
+          '(course.status != :excludeCompletedStatus OR course.status IS NULL)',
+          { excludeCompletedStatus: 'done' },
+        );
       } else if (params.status === 'pending' || params.status === 'process') {
         query.andWhere(
           '(course.process != :notApprovedStatusProcess OR course.process IS NULL)',
           { notApprovedStatusProcess: 'approved' },
         );
+        query.andWhere(
+          '(course.status != :excludeCompletedStatus OR course.status IS NULL)',
+          { excludeCompletedStatus: 'done' },
+        );
       } else {
-        query.andWhere('course.status = :status', { status: params.status });
+        const statusList = params.status
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => Boolean(s) && s !== '__none__');
+
+        if (statusList.length === 1) {
+          if (statusList[0] === 'unlaunch') {
+            query.andWhere(
+              '(course.status = :status OR course.status IS NULL)',
+              { status: 'unlaunch' },
+            );
+          } else {
+            query.andWhere('course.status = :status', { status: statusList[0] });
+          }
+        } else if (statusList.length > 1) {
+          if (statusList.includes('unlaunch')) {
+            query.andWhere(
+              '(course.status IN (:...statusList) OR course.status IS NULL)',
+              { statusList },
+            );
+          } else {
+            query.andWhere('course.status IN (:...statusList)', { statusList });
+          }
+        } else {
+          query.andWhere('1 = 0');
+        }
       }
+    } else {
+      // Default: sembunyikan program berstatus 'done' (Completed) dari list
+      query.andWhere(
+        '(course.status != :excludeCompletedStatus OR course.status IS NULL)',
+        { excludeCompletedStatus: 'done' },
+      );
     }
 
     query.skip((params.page - 1) * params.limit).take(params.limit);
@@ -1657,6 +1701,20 @@ export class CoursesService {
   async findCourseInstallments(courseId: string) {
     const installments = await this.installmentsRepository.find({
       where: { course: { id: courseId } },
+      relations: ['payment'],
+      order: { month: 'ASC' },
+    });
+
+    return installments.map((i) => ({
+      ...i,
+      hasPayment: (i.payment || []).length > 0,
+      dueDates: dateHelpers.toDateOnlyArray(i.dueDates),
+    }));
+  }
+
+  async _unusedFindCourseInstallments(courseId: string) {
+    const installments = await this.installmentsRepository.find({
+      where: { course: { id: courseId } },
       order: { month: 'ASC' },
     });
 
@@ -1826,10 +1884,117 @@ export class CoursesService {
     }
   }
 
+  async checkLearningStructureLock(courseId: string): Promise<{
+    isLocked: boolean;
+    reason?: string;
+    hint?: string;
+    hasWeeks: boolean;
+    hasPortfolioGuide: boolean;
+    hasFinalAssignment: boolean;
+    hasSyllabus: boolean;
+  }> {
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+      select: ['id', 'programType'],
+    });
+
+    if (!course) {
+      throw new NotFoundException('Program not found');
+    }
+
+    const [weeksCount, portfolioGuideCount, finalAssignmentCount, syllabusCount] =
+      await Promise.all([
+        this.weeksRepository.count({ where: { course: { id: courseId } } }),
+        this.portfolioGuideRepository.count({
+          where: { course: { id: courseId } },
+        }),
+        this.finalAssignmentRepository.count({ where: { courseId } }),
+        this.syllabusRepository.count({ where: { course: { id: courseId } } }),
+      ]);
+
+    const hasWeeks = weeksCount > 0;
+    const hasPortfolioGuide = portfolioGuideCount > 0;
+    const hasFinalAssignment = finalAssignmentCount > 0;
+    const hasSyllabus = syllabusCount > 0;
+
+    const programType = course.programType || 'bootcamp';
+
+    if (programType === 'non_bootcamp') {
+      const isLocked = hasSyllabus || hasPortfolioGuide;
+      const components: string[] = [];
+      const componentsEn: string[] = [];
+      if (hasSyllabus) {
+        components.push('silabus');
+        componentsEn.push('syllabus');
+      }
+      if (hasPortfolioGuide) {
+        components.push('portfolio guide');
+        componentsEn.push('portfolio guide');
+      }
+
+      return {
+        isLocked,
+        hasWeeks,
+        hasPortfolioGuide,
+        hasFinalAssignment,
+        hasSyllabus,
+        reason: isLocked
+          ? `Learning structure tidak dapat diubah karena program sudah memiliki ${components.join(' dan ')}.`
+          : undefined,
+        hint: isLocked
+          ? `Learning structure cannot be edited because this program already has ${componentsEn.join(' and ')}.`
+          : undefined,
+      };
+    } else {
+      const isLocked = hasWeeks || hasPortfolioGuide || hasFinalAssignment;
+      const components: string[] = [];
+      const componentsEn: string[] = [];
+      if (hasWeeks) {
+        components.push('week');
+        componentsEn.push('week');
+      }
+      if (hasPortfolioGuide) {
+        components.push('portfolio guide');
+        componentsEn.push('portfolio guide');
+      }
+      if (hasFinalAssignment) {
+        components.push('final assignment');
+        componentsEn.push('final assignment');
+      }
+
+      return {
+        isLocked,
+        hasWeeks,
+        hasPortfolioGuide,
+        hasFinalAssignment,
+        hasSyllabus,
+        reason: isLocked
+          ? `Learning structure tidak dapat diubah karena program sudah memiliki ${components.join(', ')}.`
+          : undefined,
+        hint: isLocked
+          ? `Learning structure cannot be edited because this program already has ${componentsEn.join(', ')}.`
+          : undefined,
+      };
+    }
+  }
+
   async update(id: string, updateCourseDto: UpdateCoursesDto) {
     const course = await this.findOne(id);
     if (!course) {
       throw new NotFoundException(`Program not found`);
+    }
+
+    const currentProgramType = course.programType || 'bootcamp';
+    if (
+      updateCourseDto.programType !== undefined &&
+      updateCourseDto.programType !== currentProgramType
+    ) {
+      const lockInfo = await this.checkLearningStructureLock(id);
+      if (lockInfo.isLocked) {
+        throw new BadRequestException(
+          lockInfo.reason || 'Learning structure tidak dapat diubah.',
+        );
+      }
     }
     if (
       updateCourseDto.quota !== undefined &&
@@ -2004,6 +2169,22 @@ export class CoursesService {
 
     await this.courseRepository.remove(courses);
     return { success: true, count: courses.length };
+  }
+
+  async removeMultipleCourseUsers(userIds: string[], courseId: string) {
+    if (!userIds || userIds.length === 0) {
+      return 0;
+    }
+    const userCourses = await this.userCourseRepository.find({
+      where: {
+        user: { id: In(userIds) },
+        course: { id: courseId },
+      },
+    });
+    if (userCourses.length > 0) {
+      await this.userCourseRepository.remove(userCourses);
+    }
+    return userCourses.length;
   }
 
   async removeCourseUser(userId: string, courseId: string) {

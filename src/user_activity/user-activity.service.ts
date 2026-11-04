@@ -28,7 +28,7 @@ import { FinalAssignment } from 'src/entities/final_assignment.entity';
 import { format, startOfDay, subDays } from 'date-fns';
 import { matchLearningScope, ScopeContext } from './learning-scope';
 
-const DAY_LABELS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const EVENT_LEARNING_UPDATED = 'learning.updated';
 
@@ -77,9 +77,11 @@ export interface WeeklyStat {
   label: string;
   login: number;
   active: number;
+  mentor: number;
   learning: number;
   loginH: number;
   activeH: number;
+  mentorH: number;
   learningH: number;
   max: number;
 }
@@ -152,7 +154,9 @@ export class UserActivityService {
       where: { userId },
     });
 
+    let isNewLogin = false;
     if (!activity) {
+      isNewLogin = true;
       activity = this.activityRepository.create({
         userId,
         sessionId: sessionId ?? null,
@@ -168,11 +172,25 @@ export class UserActivityService {
       activity.sessionId = sessionId ?? activity.sessionId;
       activity.lastSeenAt = now;
       if (isStale) {
+        isNewLogin = true;
         activity.loginAt = now;
       }
     }
 
     await this.activityRepository.save(activity);
+
+    if (isNewLogin) {
+      await this.activityLogRepository
+        .save(
+          this.activityLogRepository.create({
+            userId,
+            eventType: 'login',
+            eventAt: now,
+          }),
+        )
+        .catch(() => undefined);
+    }
+
     this.events.emit(EVENT_LEARNING_UPDATED);
   }
 
@@ -186,6 +204,15 @@ export class UserActivityService {
 
   async markInactive(userId: string) {
     if (!userId) return;
+    await this.activityLogRepository
+      .save(
+        this.activityLogRepository.create({
+          userId,
+          eventType: 'logout',
+          eventAt: new Date(),
+        }),
+      )
+      .catch(() => undefined);
     await this.activityRepository.delete({ userId });
     this.events.emit(EVENT_LEARNING_UPDATED);
   }
@@ -326,12 +353,12 @@ export class UserActivityService {
   private humanize(date: Date): string {
     const diff = Math.max(0, Date.now() - new Date(date).getTime());
     const sec = Math.floor(diff / 1000);
-    if (sec < 60) return `${sec} detik lalu`;
+    if (sec < 60) return `${sec}s ago`;
     const min = Math.floor(sec / 60);
-    if (min < 60) return `${min} menit lalu`;
+    if (min < 60) return `${min}m ago`;
     const hour = Math.floor(min / 60);
-    if (hour < 24) return `${hour} jam lalu`;
-    return `${Math.floor(hour / 24)} hari lalu`;
+    if (hour < 24) return `${hour}h ago`;
+    return `${Math.floor(hour / 24)}d ago`;
   }
 
   private async loadCourseNames(ids: string[]): Promise<Map<string, string>> {
@@ -584,35 +611,35 @@ export class UserActivityService {
 
       // Status Absensi
       const hasAttended = attendanceMap.has(userCourseKey);
-      const attendanceLabel = hasAttended ? 'Sudah Absen' : 'Belum Absen';
+      const attendanceLabel = hasAttended ? 'Attended' : 'Not Attended';
 
       // Status Tugas / Assignment
       const totalAssign = assignTotalMap.get(courseId) ?? 0;
       const subAssign = assignSubMap.get(userCourseKey) ?? 0;
       let hasSubmittedAssignment = false;
-      let assignmentLabel = 'Belum Tugas';
+      let assignmentLabel = 'No Assignment';
       if (totalAssign === 0) {
         hasSubmittedAssignment = true;
-        assignmentLabel = 'Tidak Ada Tugas';
+        assignmentLabel = 'No Assignments';
       } else if (subAssign >= totalAssign) {
         hasSubmittedAssignment = true;
-        assignmentLabel = 'Tugas Selesai';
+        assignmentLabel = 'Assignment Done';
       } else {
         hasSubmittedAssignment = false;
-        assignmentLabel = `Tugas (${subAssign}/${totalAssign})`;
+        assignmentLabel = `Assignment (${subAssign}/${totalAssign})`;
       }
 
       // Status Quiz
       const totalQuiz = quizTotalMap.get(courseId) ?? 0;
       const compQuiz = quizCompMap.get(userCourseKey) ?? 0;
       let hasCompletedQuiz = false;
-      let quizLabel = 'Belum Quiz';
+      let quizLabel = 'Quiz Pending';
       if (totalQuiz === 0) {
         hasCompletedQuiz = true;
-        quizLabel = 'Tidak Ada Quiz';
+        quizLabel = 'No Quizzes';
       } else if (compQuiz >= totalQuiz) {
         hasCompletedQuiz = true;
-        quizLabel = 'Quiz Selesai';
+        quizLabel = 'Quiz Done';
       } else {
         hasCompletedQuiz = false;
         quizLabel = `Quiz (${compQuiz}/${totalQuiz})`;
@@ -701,18 +728,28 @@ export class UserActivityService {
       day: string;
       count: number | string;
     }
-    // Ambil data login dan user yang aktif belajar per hari selama 7 hari terakhir
-    const [loginRows, activeRows] = (await Promise.all([
+    // Ambil data user login, active learning, dan mentor login per hari selama 7 hari terakhir
+    const [loginRows, activeRows, mentorRows] = (await Promise.all([
+      // 1. User login (role = 'user')
       this.activityRepository.manager.query(
         `
-        SELECT TO_CHAR(ua."loginAt", 'YYYY-MM-DD') as day, COUNT(*)::int as count
-        FROM user_activity ua
-        JOIN "user" u ON ua."userId" = u.id
-        WHERE u.role = 'user' AND ua."loginAt" >= $1
-        GROUP BY TO_CHAR(ua."loginAt", 'YYYY-MM-DD')
+        SELECT TO_CHAR(login_day, 'YYYY-MM-DD') as day, COUNT(DISTINCT "userId")::int as count
+        FROM (
+          SELECT al."userId", al."eventAt" as login_day
+          FROM activity_log al
+          JOIN "user" u ON al."userId" = u.id
+          WHERE u.role = 'user' AND al."eventType" = 'login' AND al."eventAt" >= $1
+          UNION ALL
+          SELECT ua."userId", ua."loginAt" as login_day
+          FROM user_activity ua
+          JOIN "user" u2 ON ua."userId" = u2.id
+          WHERE u2.role = 'user' AND ua."loginAt" >= $1
+        ) combined_logins
+        GROUP BY TO_CHAR(login_day, 'YYYY-MM-DD')
       `,
         [start],
       ),
+      // 2. User active learning
       this.activityRepository.manager.query(
         `
         SELECT TO_CHAR(activity_day, 'YYYY-MM-DD') as day, COUNT(DISTINCT "userId")::int as count
@@ -737,7 +774,26 @@ export class UserActivityService {
       `,
         [start],
       ),
-    ])) as [DayCountRow[], DayCountRow[]];
+      // 3. Mentor login (role = 'admin')
+      this.activityRepository.manager.query(
+        `
+        SELECT TO_CHAR(login_day, 'YYYY-MM-DD') as day, COUNT(DISTINCT "userId")::int as count
+        FROM (
+          SELECT al."userId", al."eventAt" as login_day
+          FROM activity_log al
+          JOIN "user" u ON al."userId" = u.id
+          WHERE u.role = 'admin' AND al."eventType" = 'login' AND al."eventAt" >= $1
+          UNION ALL
+          SELECT ua."userId", ua."loginAt" as login_day
+          FROM user_activity ua
+          JOIN "user" u2 ON ua."userId" = u2.id
+          WHERE u2.role = 'admin' AND ua."loginAt" >= $1
+        ) combined_mentor_logins
+        GROUP BY TO_CHAR(login_day, 'YYYY-MM-DD')
+      `,
+        [start],
+      ),
+    ])) as [DayCountRow[], DayCountRow[], DayCountRow[]];
 
     const loginMap = new Map<string, number>(
       loginRows.map((r) => [r.day, Number(r.count) || 0]),
@@ -745,14 +801,18 @@ export class UserActivityService {
     const activeMap = new Map<string, number>(
       activeRows.map((r) => [r.day, Number(r.count) || 0]),
     );
+    const mentorMap = new Map<string, number>(
+      mentorRows.map((r) => [r.day, Number(r.count) || 0]),
+    );
     const statMap = new Map<string, { learningCount: number }>(
       activeRows.map((r) => [r.day, { learningCount: Number(r.count) || 0 }]),
     );
 
-    // Hari ini minimal memiliki nilai keaktifan sesuai user yang sedang belajar saat ini
+    // Hari ini minimal memiliki nilai keaktifan sesuai user & mentor yang sedang aktif saat ini
     const todayKey = format(today, 'yyyy-MM-dd');
     const currentLearners = await this.getCurrentlyLearning(30);
     const currentActiveUsers = await this.getActiveParticipants(30);
+    const currentActiveMentors = await this.countActiveMentors(30);
 
     activeMap.set(
       todayKey,
@@ -761,6 +821,10 @@ export class UserActivityService {
     loginMap.set(
       todayKey,
       Math.max(loginMap.get(todayKey) ?? 0, currentActiveUsers.length),
+    );
+    mentorMap.set(
+      todayKey,
+      Math.max(mentorMap.get(todayKey) ?? 0, currentActiveMentors),
     );
 
     const stats = Array.from({ length: 7 }, (_, i) => {
@@ -771,55 +835,67 @@ export class UserActivityService {
         label: DAY_LABELS[date.getDay()],
         login: loginMap.get(key) ?? 0,
         active: activeMap.get(key) ?? 0,
+        mentor: mentorMap.get(key) ?? 0,
         learning: statMap.get(key)?.learningCount ?? 0,
       };
     });
 
-    const max = Math.max(...stats.map((s) => Math.max(s.login, s.learning)), 1);
+    const max = Math.max(
+      ...stats.map((s) => Math.max(s.login, s.active, s.mentor, s.learning)),
+      1,
+    );
+    const CHART_BAR_MAX_HEIGHT = 200;
     return stats.map((s) => ({
       ...s,
       max,
-      loginH: Math.round((s.login / max) * 220),
-      activeH: Math.round((s.active / max) * 220),
-      learningH: Math.round((s.learning / max) * 220),
+      loginH: Math.round((s.login / max) * CHART_BAR_MAX_HEIGHT),
+      activeH: Math.round((s.active / max) * CHART_BAR_MAX_HEIGHT),
+      mentorH: Math.round((s.mentor / max) * CHART_BAR_MAX_HEIGHT),
+      learningH: Math.round((s.learning / max) * CHART_BAR_MAX_HEIGHT),
     }));
   }
 
   async getSummaryToday() {
     const start = startOfDay(new Date());
+    const THRESHOLD = 5;
 
-    // 1. Hitung user yang loginAt-nya hari ini dari user_activity
-    const activeTodayRows = await this.activityRepository
-      .createQueryBuilder('ua')
-      .innerJoin('ua.user', 'user')
-      .select('COUNT(DISTINCT ua.userId)', 'count')
-      .where('user.role = :role', { role: 'user' })
-      .andWhere('ua.loginAt >= :start', { start })
-      .getRawOne<{ count?: string | number }>();
+    const [
+      activeTodayRows,
+      activeParticipantsCount,
+      activeLearnersCount,
+      activeMentorCount,
+    ] = await Promise.all([
+      // 1. User login hari ini
+      this.activityRepository
+        .createQueryBuilder('ua')
+        .innerJoin('ua.user', 'user')
+        .select('COUNT(DISTINCT ua.userId)', 'count')
+        .where('user.role = :role', { role: 'user' })
+        .andWhere('ua.loginAt >= :start', { start })
+        .getRawOne<{ count?: string | number }>(),
 
-    // 2. User online sekarang
-    const activeParticipants = await this.getActiveParticipants(5);
+      // 2. Total user (role 'user') yang sedang login
+      this.countActiveParticipants(THRESHOLD),
 
-    // 3. Mentor yang aktif / terdaftar
-    interface CountRow {
-      count?: string | number;
-    }
-    const [mentorUserRows, mentorTableRows] = (await Promise.all([
-      this.activityRepository.manager.query(`
-        SELECT COUNT(DISTINCT id)::int as count FROM "user" WHERE role = 'admin'
-      `),
-      this.activityRepository.manager.query(`
-        SELECT COUNT(DISTINCT id)::int as count FROM mentors
-      `),
-    ])) as [CountRow[], CountRow[]];
-    const adminMentorCount = Number(mentorUserRows[0]?.count) || 0;
-    const mentorTableCount = Number(mentorTableRows[0]?.count) || 0;
-    const activeMentors = Math.max(adminMentorCount, mentorTableCount);
+      // 3. User yang sedang akses halaman untuk belajar
+      this.countCurrentlyLearning(THRESHOLD),
+
+      // 4. Mentor (role 'admin') yang sedang login
+      this.countActiveMentors(THRESHOLD),
+    ]);
+
+    const totalUserLogin = activeParticipantsCount;
+    const activeUserLearn = activeLearnersCount;
+    const totalMentorLogin = activeMentorCount;
+    const activeToday = Number(activeTodayRows?.count ?? 0);
 
     return {
-      activeToday: Number(activeTodayRows?.count ?? 0),
-      onlineNow: activeParticipants.length,
-      activeMentors,
+      activeToday,
+      onlineNow: totalUserLogin,
+      activeMentors: totalMentorLogin,
+      totalUserLogin,
+      activeUserLearn,
+      totalMentorLogin,
     };
   }
 
@@ -846,7 +922,7 @@ export class UserActivityService {
   }
 
   /** User role 'user' yang sedang belajar (currentCourseId terisi) & lastSeenAt segar. */
-  private async countCurrentlyLearning(thresholdMinutes = 5): Promise<number> {
+  async countCurrentlyLearning(thresholdMinutes = 5): Promise<number> {
     const threshold = new Date(Date.now() - thresholdMinutes * 60 * 1000);
     return this.activityRepository
       .createQueryBuilder('ua')

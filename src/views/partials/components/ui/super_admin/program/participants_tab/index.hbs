@@ -20,7 +20,7 @@
 --}}
 <div
   class='flex flex-col gap-3.5'
-  x-data='clientTable({ url: "/program/participants/" + {{json courseId}}, searchKeys: ["title.id", "title.en", "title.ja", "description.id", "description.en", "description.ja"] })'
+  x-data='clientTable({ url: "/program/participants/" + {{json courseId}}, searchKeys: ["title.id", "title.en", "title.ja", "description.id", "description.en", "description.ja"], entityName: "participant", deleteEntity: "participants" })'
   x-init='load()'
 >
   {{> components/ui/super_admin/table/toolbar
@@ -28,7 +28,6 @@
     searchLabel='Search program participant'
     createHref=(concat '/participants/formCreate/' courseId)
     createLabel='Add Participant'
-    hideBulkDelete=true
     fullWidth=true
   }}
 
@@ -39,6 +38,7 @@
 
     {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
       <colgroup>
+        <template x-if='selectMode'><col class='w-[48px]' /></template>
         <col class='w-[66px]' />
         <col class='w-[73px]' />
         <col class='w-[377px]' />
@@ -47,6 +47,7 @@
       </colgroup>
       <thead>
         <tr>
+          {{> components/ui/super_admin/table/header_cell checkbox=true }}
           {{> components/ui/super_admin/table/header_cell label='No' }}
           {{> components/ui/super_admin/table/header_cell label='Icon' }}
           {{> components/ui/super_admin/table/header_cell label='Participant' }}
@@ -56,7 +57,11 @@
       </thead>
       <tbody>
         <template x-for='(row, index) in rows' :key='row.id'>
-          <tr class='transition-colors hover:bg-[#fafafa]'>
+          <tr
+            class='transition-colors hover:bg-[#fafafa]'
+            :class="selectedIds && selectedIds.some(id => String(id) === String(row.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+          >
+            {{> components/ui/super_admin/table/cell checkbox=true }}
 
             {{> components/ui/super_admin/table/cell
               text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
@@ -94,11 +99,11 @@
           </tr>
         </template>
 
-        {{#> components/ui/super_admin/table/message_row show='loading' colspan='5'}}
+        {{#> components/ui/super_admin/table/message_row show='loading' colspan='6'}}
           Loading participants…
         {{/components/ui/super_admin/table/message_row}}
 
-        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='5'}}
+        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='6'}}
           No participants found.
         {{/components/ui/super_admin/table/message_row}}
       </tbody>

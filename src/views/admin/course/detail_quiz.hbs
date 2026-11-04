@@ -5,12 +5,7 @@
 --}}
 <div class='min-h-screen bg-[#F3F3F3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='max-w-[1052px] mx-auto flex flex-col gap-[16px] items-start'
-    x-data="{
-      openQuestionId: {{#if questions.[0]}}'{{questions.[0].id}}'{{else}}null{{/if}},
-      toggleQuestion(id) {
-        this.openQuestionId = this.openQuestionId === id ? null : id;
-      }
-    }">
+    x-data="detailQuizData()">
 
     {{!-- Feature Card 1: Header Card --}}
     {{#> components/ui/admin/form/form-card noNumber=true class="gap-[14px]"}}
@@ -50,7 +45,7 @@
               <button
                 type='button'
                 onclick="openDeleteModal(this, 'Delete Quiz?', 'Are you sure you want to delete this quiz? All associated questions and scores will be removed permanently.')"
-                class='box-border w-[87px] h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors'>
+                class='box-border w-[87px] h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors cursor-pointer'>
                 <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#EF4444] whitespace-nowrap'>
                   Delete
                 </span>
@@ -147,22 +142,121 @@
     {{!-- Questions Section Card --}}
     {{#> components/ui/admin/form/form-card noNumber=true class="p-[12px_20px_20px] gap-[10px]"}}
 
-      {{!-- Header: Questions : --}}
-      <div class='w-full flex flex-row items-center justify-between'>
-        <span class='font-inter font-semibold text-[14px] leading-[20px] text-[#171717]'>
-          Questions ({{#if questions}}{{questions.length}}{{else}}0{{/if}}) :
-        </span>
-        {{#unless isAttempted}}
-        <a
-          href='/question/formCreate/{{quiz.id}}'
-          class='inline-flex items-center gap-[6px] text-[#003060] hover:text-[#002244] font-inter font-semibold text-[14px] leading-[20px] transition-colors'>
-          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
-            <line x1='12' y1='5' x2='12' y2='19'></line>
-            <line x1='5' y1='12' x2='19' y2='12'></line>
-          </svg>
-          Add Question
-        </a>
-        {{/unless}}
+      {{!-- Header Toolbar: Questions + Manage Delete --}}
+      <div class='w-full flex flex-col gap-3'>
+        <div class='w-full flex flex-row items-center justify-between'>
+          <span class='font-inter font-semibold text-[14px] leading-[20px] text-[#171717]'>
+            Questions ({{#if questions}}{{questions.length}}{{else}}0{{/if}}) :
+          </span>
+          <div class='flex items-center gap-3'>
+            {{#if (and questions questions.length)}}
+            <button
+              type='button'
+              @click='toggleSelectMode()'
+              class='inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg border font-inter text-xs font-semibold transition-all shadow-sm cursor-pointer'
+              :class="selectMode ? 'bg-[#F5F5F5] border-[#D4D4D4] hover:bg-[#E5E5E5] text-[#404040] w-9 px-0' : 'bg-white border-[#D4D4D4] hover:border-[#DC2626] hover:bg-[#FEF2F2] text-[#404040] hover:text-[#DC2626] px-3'"
+              :title="selectMode ? 'Close' : 'Manage Delete'"
+            >
+              <template x-if='!selectMode'>
+                <div class='flex items-center gap-1.5'>
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-3.5 h-3.5 text-[#DC2626]'>
+                    <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+                  </svg>
+                  <span>Manage Delete</span>
+                </div>
+              </template>
+              <template x-if='selectMode'>
+                <div class='flex items-center justify-center'>
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-3.5 h-3.5 text-[#525252]'>
+                    <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
+                  </svg>
+                </div>
+              </template>
+            </button>
+            {{/if}}
+
+            {{#unless isAttempted}}
+            <a
+              href='/question/formCreate/{{quiz.id}}'
+              class='inline-flex items-center gap-[6px] text-[#003060] hover:text-[#002244] font-inter font-semibold text-[14px] leading-[20px] transition-colors'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+                <line x1='12' y1='5' x2='12' y2='19'></line>
+                <line x1='5' y1='12' x2='19' y2='12'></line>
+              </svg>
+              Add Question
+            </a>
+            {{/unless}}
+          </div>
+        </div>
+
+        {{!-- Bulk Action Bar --}}
+        <div
+          x-show='selectMode'
+          x-cloak
+          x-transition:enter='transition ease-out duration-150'
+          x-transition:enter-start='opacity-0 -translate-y-2'
+          x-transition:enter-end='opacity-100 translate-y-0'
+          x-transition:leave='transition ease-in duration-100'
+          x-transition:leave-start='opacity-100 translate-y-0'
+          x-transition:leave-end='opacity-0 -translate-y-2'
+          class='box-border w-full flex flex-col sm:flex-row justify-between items-center px-4 py-2.5 bg-[#FEF2F2] border border-[#FCA5A5] rounded-lg gap-2.5 shadow-sm'
+          style='display: none;'
+        >
+          <div class='flex flex-wrap items-center gap-2 text-[14px] text-[#991B1B] font-inter font-medium'>
+            <svg class='w-5 h-5 text-[#DC2626] shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/>
+            </svg>
+            <span>
+              <strong x-text='selectedIds ? selectedIds.length : 0'></strong> question(s) selected
+            </span>
+
+            <span class='text-[#FCA5A5] mx-1'>•</span>
+
+            <button
+              type='button'
+              @click='toggleSelectAll()'
+              :disabled='isAttempted'
+              :class="isAttempted ? 'opacity-50 cursor-not-allowed hover:no-underline' : 'cursor-pointer hover:underline'"
+              class='text-xs text-[#DC2626] font-semibold'
+              x-text="isAllSelected() ? 'Deselect All' : 'Select All'"
+            ></button>
+
+            <template x-if='selectedIds && selectedIds.length > 0'>
+              <button
+                type='button'
+                @click='clearSelection()'
+                class='text-xs text-[#7F1D1D] hover:underline font-normal cursor-pointer ml-1'
+              >
+                (Clear Selection)
+              </button>
+            </template>
+          </div>
+
+          <div class='flex items-center gap-2 w-full sm:w-auto justify-end'>
+            <button
+              type='button'
+              @click='confirmDeleteSelected()'
+              :disabled='!selectedIds || selectedIds.length === 0'
+              class='inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-[#DC2626] bg-[#DC2626] px-3.5 py-1.5 font-inter text-xs font-semibold text-white shadow-sm transition-colors hover:border-[#B91C1C] hover:bg-[#B91C1C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626]/40 active:bg-[#991B1B] disabled:cursor-not-allowed disabled:opacity-50'
+            >
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-3.5 h-3.5'>
+                <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+              </svg>
+              <span>Delete Selected (<span x-text='selectedIds ? selectedIds.length : 0'></span>)</span>
+            </button>
+
+            <button
+              type='button'
+              @click='toggleSelectMode()'
+              class='inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#FCA5A5] bg-white text-[#991B1B] hover:bg-[#FEE2E2] transition-colors cursor-pointer'
+              title='Close Manage Delete'
+            >
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+                <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
 
       {{!-- Frame 2147229624: List Questions --}}
@@ -170,29 +264,49 @@
 
         {{#if (and questions questions.length)}}
           {{#each questions}}
-            <div class='box-border w-full border border-[#D9D9D9] rounded-[8px] overflow-hidden flex flex-col items-start'>
+            <div
+              class='box-border w-full border border-[#D9D9D9] rounded-[8px] overflow-hidden flex flex-col items-start transition-colors'
+              :class="selectMode && selectedIds.includes('{{this.id}}') ? 'bg-[#FEF2F2]/60 border-[#FCA5A5]' : ''"
+            >
               {{!-- Accordion Trigger Header --}}
-              <button
-                type='button'
-                @click="toggleQuestion('{{this.id}}')"
-                class='w-full min-h-[53px] px-[14px] py-[16px] flex flex-row items-center justify-between gap-[28px] text-left hover:bg-[#FAFAFA] transition-colors focus:outline-none'
+              <div
+                class='w-full min-h-[53px] px-[14px] py-[16px] flex flex-row items-center justify-between gap-[16px] text-left transition-colors'
                 :class="openQuestionId === '{{this.id}}' ? 'bg-[#FAFAFA] border-b border-[#D9D9D9]' : 'bg-[#FFFFFF]'">
-                <span class='font-inter font-normal text-[16px] leading-[20px] text-[#171717] flex-1 truncate'>
-                  {{add @index 1}}. {{this.questionText}}
-                </span>
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  viewBox='0 0 24 24'
-                  fill='none'
-                  stroke='#525252'
-                  stroke-width='2'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  class='w-[20px] h-[20px] shrink-0 transition-transform duration-200'
-                  :class="openQuestionId === '{{this.id}}' ? 'rotate-180' : ''">
-                  <polyline points='6 9 12 15 18 9'></polyline>
-                </svg>
-              </button>
+                
+                {{!-- Checkbox in Select Mode --}}
+                <div x-show='selectMode' x-cloak class='shrink-0' style='display: none;'>
+                  <input
+                    type='checkbox'
+                    value='{{this.id}}'
+                    x-model='selectedIds'
+                    :disabled='isAttempted'
+                    :title='isAttempted ? "Question cannot be deleted because participants have already attempted this quiz." : "Select question"'
+                    @click.stop
+                    class='h-4 w-4 rounded border-[#d4d4d4] text-[#003060] focus:ring-[#003060] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed'
+                  />
+                </div>
+
+                <button
+                  type='button'
+                  @click="toggleQuestion('{{this.id}}')"
+                  class='flex-1 min-w-0 flex flex-row items-center justify-between gap-[20px] text-left hover:text-[#003060] transition-colors focus:outline-none cursor-pointer'>
+                  <span class='font-inter font-normal text-[16px] leading-[20px] text-[#171717] flex-1 truncate'>
+                    {{add @index 1}}. {{this.questionText}}
+                  </span>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='#525252'
+                    stroke-width='2'
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
+                    class='w-[20px] h-[20px] shrink-0 transition-transform duration-200'
+                    :class="openQuestionId === '{{this.id}}' ? 'rotate-180' : ''">
+                    <polyline points='6 9 12 15 18 9'></polyline>
+                  </svg>
+                </button>
+              </div>
 
               {{!-- Accordion Content (Option Answers & Action Buttons) --}}
               <div x-show="openQuestionId === '{{this.id}}'" x-cloak class='box-border w-full bg-[#FFFFFF] p-[14px] flex flex-col items-end gap-[16px]'>
@@ -231,19 +345,26 @@
 
                 {{!-- Question Actions (Delete + Edit) --}}
                 <div class='flex flex-row items-center gap-[12px]'>
-                  {{!-- Delete question button --}}
-                  {{#unless ../isAttempted}}
+                  {{#if ../isAttempted}}
+                  <div
+                    class='box-border w-[87px] h-[44px] bg-[#F5F5F5] border border-[#E5E5E5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center opacity-50 cursor-not-allowed'
+                    title='Question cannot be deleted because participants have already attempted this quiz.'>
+                    <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#A3A3A3] whitespace-nowrap'>
+                      Delete
+                    </span>
+                  </div>
+                  {{else}}
                   <form action='/question/{{this.id}}/{{../quiz.id}}?_method=DELETE' method='POST' class='m-0 p-0 inline'>
                     <button
                       type='button'
                       onclick="openDeleteModal(this, 'Delete Question?', 'Are you sure you want to delete this question? This action cannot be undone.')"
-                      class='box-border w-[87px] h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors'>
+                      class='box-border w-[87px] h-[44px] bg-[#FEF2F2] border border-[#FCA5A5] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] px-[18px] py-[10px] flex items-center justify-center hover:bg-[#FEE2E2] transition-colors cursor-pointer'>
                       <span class='font-inter font-semibold text-[16px] leading-[24px] text-[#EF4444] whitespace-nowrap'>
                         Delete
                       </span>
                     </button>
                   </form>
-                  {{/unless}}
+                  {{/if}}
 
                   {{!-- Edit question button --}}
                   <a
@@ -296,3 +417,79 @@
 
 {{!-- Toast sukses --}}
 {{> components/ui/admin/toast/success/index toast=toast }}
+
+<script>
+function detailQuizData() {
+  const isAttempted = {{#if isAttempted}}true{{else}}false{{/if}};
+  const allQuestionIds = [
+    {{#each questions}}
+      '{{this.id}}',
+    {{/each}}
+  ];
+
+  return {
+    openQuestionId: {{#if questions.[0]}}'{{questions.[0].id}}'{{else}}null{{/if}},
+    selectMode: false,
+    selectedIds: [],
+    isAttempted: isAttempted,
+    allQuestionIds: allQuestionIds,
+
+    toggleQuestion(id) {
+      this.openQuestionId = this.openQuestionId === id ? null : id;
+    },
+
+    toggleSelectMode() {
+      this.selectMode = !this.selectMode;
+      if (!this.selectMode) {
+        this.selectedIds = [];
+      }
+    },
+
+    get deletableQuestionIds() {
+      return this.isAttempted ? [] : this.allQuestionIds;
+    },
+
+    isAllSelected() {
+      const deletable = this.deletableQuestionIds;
+      if (!deletable || deletable.length === 0) return false;
+      return deletable.every(id => this.selectedIds.includes(id));
+    },
+
+    toggleSelectAll() {
+      const deletable = this.deletableQuestionIds;
+      if (this.isAllSelected()) {
+        const delSet = new Set(deletable);
+        this.selectedIds = this.selectedIds.filter(id => !delSet.has(id));
+      } else {
+        this.selectedIds = Array.from(new Set([...this.selectedIds, ...deletable]));
+      }
+    },
+
+    clearSelection() {
+      this.selectedIds = [];
+    },
+
+    confirmDeleteSelected() {
+      const count = this.selectedIds.length;
+      if (count === 0) return;
+
+      openDeleteModal({
+        title: `Delete ${count} Selected Question(s)?`,
+        description: `Are you sure you want to delete ${count} selected question(s)? Answers and media will also be permanently removed. This action cannot be undone.`,
+        confirmLabel: `Delete (${count})`,
+        cancelLabel: 'Cancel',
+        onConfirm: async () => {
+          await this.executeDeleteSelected();
+        },
+      });
+    },
+
+    executeDeleteSelected() {
+      submitDeleteForm('/bulk-delete/selected', {
+        entity: 'question',
+        ids: this.selectedIds,
+      });
+    },
+  };
+}
+</script>

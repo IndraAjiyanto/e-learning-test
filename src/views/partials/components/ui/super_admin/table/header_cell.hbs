@@ -20,7 +20,8 @@
     type='checkbox'
     :checked='isAllSelected()'
     @change='toggleSelectAll($event)'
-    class='h-4 w-4 rounded border-[#d4d4d4] text-[#003060] focus:ring-[#003060] cursor-pointer'
+    :disabled='typeof isRowDisabled === "function" ? !((rows || filtered || []).some(row => !isRowDisabled(row))) : (rows || filtered || []).length === 0'
+    class='h-4 w-4 rounded border-[#d4d4d4] text-[#003060] focus:ring-[#003060] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed'
     title='Select All'
   />
   {{else}}

@@ -17,20 +17,20 @@
 --}}
 <div
   class='flex flex-col gap-3.5'
-  x-data='clientTable({ url: "/program/portfolio/" + {{json courseId}}, sortKey: "createdAt", searchKeys: ["title", "description", "user.username"] })'
+  x-data='clientTable({ url: "/program/portfolio/" + {{json courseId}}, sortKey: "createdAt", searchKeys: ["title", "description", "user.username"], entityName: "portfolio", deleteEntity: "portfolio" })'
   x-init='load()'
 >
   {{> components/ui/super_admin/table/toolbar
     placeholder='Search portfolio..'
     searchLabel='Search program portfolio'
     hideCreate=true
-    hideBulkDelete=true
     fullWidth=true
   }}
 
   <div class='flex flex-col gap-5' x-data='{ parentId: {{json courseId}} }'>
     {{#> components/ui/super_admin/table/card tableClass='min-w-[960px]'}}
       <colgroup>
+        <template x-if='selectMode'><col class='w-[48px]' /></template>
         <col class='w-[66px]' />
         <col class='w-[240px]' />
         <col class='w-[380px]' />
@@ -39,6 +39,7 @@
       </colgroup>
       <thead>
         <tr>
+          {{> components/ui/super_admin/table/header_cell checkbox=true }}
           {{> components/ui/super_admin/table/header_cell label='No' }}
           {{> components/ui/super_admin/table/header_cell label='Title' }}
           {{> components/ui/super_admin/table/header_cell label='Description' }}
@@ -48,7 +49,12 @@
       </thead>
       <tbody>
         <template x-for='(row, index) in rows' :key='row.id'>
-          <tr class='transition-colors hover:bg-[#fafafa]'>
+          <tr
+            class='transition-colors hover:bg-[#fafafa]'
+            :class="selectedIds && selectedIds.some(id => String(id) === String(row.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+          >
+            {{> components/ui/super_admin/table/cell checkbox=true }}
+
             {{> components/ui/super_admin/table/cell
               text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
             }}
@@ -123,11 +129,11 @@
           </tr>
         </template>
 
-        {{#> components/ui/super_admin/table/message_row show='loading' colspan='5'}}
+        {{#> components/ui/super_admin/table/message_row show='loading' colspan='6'}}
           Loading portfolios…
         {{/components/ui/super_admin/table/message_row}}
 
-        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='5'}}
+        {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='6'}}
           No portfolios found.
         {{/components/ui/super_admin/table/message_row}}
       </tbody>

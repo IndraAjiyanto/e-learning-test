@@ -59,7 +59,7 @@
     </div>
 
     {{!-- Table Detail Week --}}
-    <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[20px] justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px] overflow-hidden p-[12px_20px_20px_20px]' x-data="tabData()">
+    <div class='box-border w-full h-fit shrink-0 flex flex-col justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] rounded-[12px] overflow-hidden p-[12px_20px_20px_20px]' x-data="tabData()">
 
       {{!-- Tab Bar: underline-tabs component --}}
       <div x-data="{ tabs: [
@@ -128,3 +128,5 @@ function tabData() {
   }
 }
 </script>
+
+{{> components/ui/admin/modal/confirm_action/index}}

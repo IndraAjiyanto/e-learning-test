@@ -122,10 +122,80 @@ function absenData() {
     pageNumber: 0,
     size: 5,
     amount: 0,
+    selectMode: false,
+    selectedIds: [],
 
     async fetchAbsens() {
       const res = await fetch('/session/attendance/{{session.id}}');
       this.data = await res.json();
+    },
+
+    toggleSelectMode() {
+      this.selectMode = !this.selectMode;
+      if (!this.selectMode) {
+        this.selectedIds = [];
+      }
+    },
+
+    clearSelection() {
+      this.selectedIds = [];
+    },
+
+    isAttendanceDisabled(att, peserta) {
+      return (att && att.canDelete === false) || (peserta && peserta.canDelete === false);
+    },
+
+    get deletableAttendances() {
+      const list = [];
+      (this.data || []).forEach(u => {
+        const items = u.attendance ?? u.absent ?? [];
+        items.forEach(att => {
+          if (att && !this.isAttendanceDisabled(att, u)) {
+            list.push(att);
+          }
+        });
+      });
+      return list;
+    },
+
+    isAllSelected() {
+      const deletable = this.deletableAttendances;
+      return deletable.length > 0 && deletable.every(att => this.selectedIds.includes(String(att.id)));
+    },
+
+    toggleSelectAll() {
+      const deletable = this.deletableAttendances;
+      if (this.isAllSelected()) {
+        this.selectedIds = [];
+      } else {
+        this.selectedIds = deletable.map(att => String(att.id));
+      }
+    },
+
+    confirmDeleteSelected() {
+      if (!this.selectedIds || this.selectedIds.length === 0) return;
+      const count = this.selectedIds.length;
+      const title = `Delete ${count} Attendance${count > 1 ? 's' : ''}?`;
+      const description = `Are you sure you want to permanently delete the ${count} selected attendance record${count > 1 ? 's' : ''}? This action cannot be undone.`;
+
+      const performDelete = () => {
+        submitDeleteForm('/bulk-delete/selected', {
+          entity: 'attendance',
+          ids: this.selectedIds,
+        });
+      };
+
+      if (typeof openDeleteModal === 'function') {
+        openDeleteModal({
+          title,
+          description,
+          confirmLabel: `Delete (${count})`,
+          cancelLabel: 'Cancel',
+          onConfirm: performDelete,
+        });
+      } else if (confirm(`${title}\n\n${description}`)) {
+        performDelete();
+      }
     },
 
     get filteredData() {

@@ -232,18 +232,14 @@ function materiData() {
     async toggleFetchMateri(url, jenis) {
       this.tabMateri = jenis;
       localStorage.setItem('syllabus_tabMateri', jenis);
-      try{
-      const res = await fetch(url);
-      this.dataMateri = await res.json();
-
-      localStorage.setItem('syllabus_dataMateri', JSON.stringify(this.dataMateri));
+      try {
+        const res = await fetch(url);
+        this.dataMateri = await res.json();
+        localStorage.setItem('syllabus_dataMateri', JSON.stringify(this.dataMateri));
       } catch (error) {
         console.error('❌ Error:', error);
       }
-
     }
-
-
   }
 }
 </script>

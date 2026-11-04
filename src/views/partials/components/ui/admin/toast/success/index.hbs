@@ -10,6 +10,8 @@
      (src/common/utils/toast.util.ts).
   2. Client-side — `window.dispatchEvent(new CustomEvent('toast:success', {
        detail: { title, description } }))`.
+  3. Lintas Reload — simpan ke `sessionStorage.setItem('pendingToast', JSON.stringify({ title, description }))`
+     sebelum memanggil `window.location.reload()`.
 
   Partial global `sweetalert` merender flash `success` sebagai toast SweetAlert,
   jadi komponen ini memakai key flash terpisah (`toast`) agar tidak muncul dua
@@ -140,6 +142,17 @@
       timer: null,
 
       init() {
+        try {
+          const pending = sessionStorage.getItem('pendingToast') || sessionStorage.getItem('pendingSuccessToast');
+          if (pending) {
+            sessionStorage.removeItem('pendingToast');
+            sessionStorage.removeItem('pendingSuccessToast');
+            const detail = JSON.parse(pending);
+            this.$nextTick(() => this.show(detail));
+            return;
+          }
+        } catch (e) {}
+
         if (config.autoShow) this.$nextTick(() => this.show());
       },
 
