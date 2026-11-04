@@ -38,110 +38,6 @@
       </button>
     </div>
 
-    <!-- Header Toolbar (Manage Delete) -->
-    <div class='flex flex-col gap-3 w-full mb-3' x-show='dataMateri && dataMateri.length > 0'>
-      <div class='flex items-center justify-between'>
-        <div>
-          <span class='font-inter text-sm font-medium text-[#737373]' x-text="'Total ' + dataMateri.length + ' ' + tabMateri.toUpperCase() + ' Material' + (dataMateri.length > 1 ? 's' : '')"></span>
-        </div>
-        <div>
-          <button
-            type='button'
-            @click='toggleSelectMode()'
-            :disabled='isCompleted'
-            class='inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border font-inter text-sm font-semibold transition-all shadow-sm'
-            :class="isCompleted ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 border-gray-200' : (selectMode ? 'bg-[#F5F5F5] border-[#D4D4D4] hover:bg-[#E5E5E5] text-[#404040] w-10 px-0 cursor-pointer' : 'bg-white border-[#D4D4D4] hover:border-[#DC2626] hover:bg-[#FEF2F2] text-[#404040] hover:text-[#DC2626] px-3.5 cursor-pointer')"
-            :title="isCompleted ? 'Materials cannot be deleted because this syllabus has already been completed by a participant.' : (selectMode ? 'Close' : 'Manage Delete')"
-          >
-            <template x-if='!selectMode'>
-              <div class='flex items-center gap-1.5'>
-                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4' :class="isCompleted ? 'text-gray-400' : 'text-[#DC2626]'">
-                  <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
-                </svg>
-                <span>Manage Delete</span>
-              </div>
-            </template>
-            <template x-if='selectMode'>
-              <div class='flex items-center justify-center'>
-                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#525252]'>
-                  <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
-                </svg>
-              </div>
-            </template>
-          </button>
-        </div>
-      </div>
-
-      {{!-- Bulk Selection Action Bar --}}
-      <div
-        x-show='selectMode'
-        x-cloak
-        x-transition:enter='transition ease-out duration-150'
-        x-transition:enter-start='opacity-0 -translate-y-2'
-        x-transition:enter-end='opacity-100 translate-y-0'
-        x-transition:leave='transition ease-in duration-100'
-        x-transition:leave-start='opacity-100 translate-y-0'
-        x-transition:leave-end='opacity-0 -translate-y-2'
-        class='box-border w-full flex flex-col sm:flex-row justify-between items-center px-4 py-2.5 bg-[#FEF2F2] border border-[#FCA5A5] rounded-lg gap-2.5 shadow-sm'
-        style='display: none;'
-      >
-        <div class='flex flex-wrap items-center gap-2 text-[14px] text-[#991B1B] font-inter font-medium'>
-          <svg class='w-5 h-5 text-[#DC2626] shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/>
-          </svg>
-          <span>
-            <strong x-text='selectedIds ? selectedIds.length : 0'></strong> material(s) selected
-          </span>
-
-          <span class='text-[#FCA5A5] mx-1'>•</span>
-
-          <button
-            type='button'
-            @click='toggleSelectAll()'
-            :disabled='isCompleted || !deletableMaterials || deletableMaterials.length === 0'
-            :class="(isCompleted || !deletableMaterials || deletableMaterials.length === 0) ? 'opacity-50 cursor-not-allowed hover:no-underline' : 'cursor-pointer hover:underline'"
-            class='text-xs text-[#DC2626] font-semibold'
-            x-text="isAllSelected() ? 'Deselect All' : 'Select All'"
-          ></button>
-
-          <template x-if='selectedIds && selectedIds.length > 0'>
-            <button
-              type='button'
-              @click='clearSelection()'
-              class='text-xs text-[#7F1D1D] hover:underline font-normal cursor-pointer ml-1'
-            >
-              (Clear Selection)
-            </button>
-          </template>
-        </div>
-
-        <div class='flex items-center gap-2 shrink-0'>
-          <button
-            type='button'
-            @click='confirmDeleteSelected()'
-            :disabled='isCompleted || !selectedIds || selectedIds.length === 0'
-            class='inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#DC2626] px-3.5 font-inter text-sm font-semibold text-white shadow-sm hover:bg-[#B91C1C] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer'
-          >
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
-              <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
-            </svg>
-            <span>Delete Selected (<span x-text='selectedIds ? selectedIds.length : 0'></span>)</span>
-          </button>
-
-          <button
-            type='button'
-            @click='toggleSelectMode()'
-            class='inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#FCA5A5] bg-white text-[#991B1B] hover:bg-[#FEE2E2] transition-colors cursor-pointer'
-            title='Close Manage Delete'
-          >
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
-              <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
 {{> sub_partials/syllabus/materi_tab/pdf}}
 
 {{> sub_partials/syllabus/materi_tab/video}}
@@ -322,9 +218,6 @@ function materiData() {
   return {
     tabMateri: localStorage.getItem('syllabus_tabMateri') || 'pdf',
     dataMateri: localStorage.getItem('syllabus_dataMateri') ? JSON.parse(localStorage.getItem('syllabus_dataMateri')) : [],
-    isCompleted: {{#if isCompleted}}true{{else}}false{{/if}},
-    selectMode: false,
-    selectedIds: [],
 
     async init() {
       const urlMap = {
@@ -338,7 +231,6 @@ function materiData() {
 
     async toggleFetchMateri(url, jenis) {
       this.tabMateri = jenis;
-      this.selectedIds = [];
       localStorage.setItem('syllabus_tabMateri', jenis);
       try {
         const res = await fetch(url);
@@ -346,66 +238,6 @@ function materiData() {
         localStorage.setItem('syllabus_dataMateri', JSON.stringify(this.dataMateri));
       } catch (error) {
         console.error('❌ Error:', error);
-      }
-    },
-
-    toggleSelectMode() {
-      if (this.isCompleted) return;
-      this.selectMode = !this.selectMode;
-      if (!this.selectMode) {
-        this.selectedIds = [];
-      }
-    },
-
-    clearSelection() {
-      this.selectedIds = [];
-    },
-
-    isMaterialDisabled(materi) {
-      return Boolean(this.isCompleted);
-    },
-
-    get deletableMaterials() {
-      return (this.dataMateri || []).filter(m => !this.isMaterialDisabled(m));
-    },
-
-    isAllSelected() {
-      const deletable = this.deletableMaterials;
-      return deletable.length > 0 && deletable.every(m => this.selectedIds.includes(String(m.id)));
-    },
-
-    toggleSelectAll() {
-      const deletable = this.deletableMaterials;
-      if (this.isAllSelected()) {
-        this.selectedIds = [];
-      } else {
-        this.selectedIds = deletable.map(m => String(m.id));
-      }
-    },
-
-    confirmDeleteSelected() {
-      if (this.isCompleted || !this.selectedIds || this.selectedIds.length === 0) return;
-      const count = this.selectedIds.length;
-      const title = `Delete ${count} Material${count > 1 ? 's' : ''}?`;
-      const description = `Are you sure you want to permanently delete the ${count} selected material${count > 1 ? 's' : ''}? Physical files will also be removed.`;
-
-      const performDelete = () => {
-        submitDeleteForm('/bulk-delete/selected', {
-          entity: 'material',
-          ids: this.selectedIds,
-        });
-      };
-
-      if (typeof openDeleteModal === 'function') {
-        openDeleteModal({
-          title,
-          description,
-          confirmLabel: `Delete (${count})`,
-          cancelLabel: 'Cancel',
-          onConfirm: performDelete,
-        });
-      } else if (confirm(`${title}\n\n${description}`)) {
-        performDelete();
       }
     }
   }
