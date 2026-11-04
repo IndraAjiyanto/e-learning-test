@@ -10,6 +10,7 @@ import * as path from 'path';
 
 // Entities
 import { About } from '../entities/about.entity';
+import { Alumni } from '../entities/alumni.entity';
 import { Award } from '../entities/award.entity';
 import { Background } from '../entities/background.entity';
 import { Benefit } from '../entities/benefit.entity';
@@ -18,11 +19,14 @@ import { Category } from '../entities/category.entity';
 import { CategoryPartner } from '../entities/category_partner.entity';
 import { Commitment } from '../entities/commitment.entity';
 import { Course } from '../entities/course.entity';
+import { ProgramBenefits } from '../entities/course_benefit.entity';
 import { CourseFlow } from '../entities/course_flow.entity';
+import { CourseQuestions } from '../entities/course_question.entity';
 import { CourseType } from '../entities/course_type.entity';
 import { Experience } from '../entities/experience.entity';
 import { Faq } from '../entities/faq.entity';
 import { CategoryFaq } from '../entities/faqs.entity';
+import { Gallery } from '../entities/gallery.entity';
 import { Installment } from '../entities/installment.entity';
 import { Mission } from '../entities/mission.entity';
 import { Paragraph } from '../entities/paragraph.entity';
@@ -43,6 +47,9 @@ export class BulkDeleteService {
   private readonly entityMap: Record<string, EntityTarget<ObjectLiteral>> = {
     category: Category,
     categories: Category,
+    alumni: Alumni,
+    gallery: Gallery,
+    galleries: Gallery,
     voucher: Voucher,
     vouchers: Voucher,
     partner: Partner,
@@ -52,10 +59,18 @@ export class BulkDeleteService {
     categorypartner: CategoryPartner,
     faq: Faq,
     faqs: CategoryFaq,
+    category_faq: CategoryFaq,
+    categoryfaq: CategoryFaq,
+    category_faqs: CategoryFaq,
+    categoryfaqs: CategoryFaq,
+    course_question: CourseQuestions,
+    coursequestion: CourseQuestions,
     benefit: Benefit,
     benefits: Benefit,
     benefit_category: BenefitCategory,
     benefitcategory: BenefitCategory,
+    course_benefit: ProgramBenefits,
+    coursebenefit: ProgramBenefits,
     course_type: CourseType,
     coursetype: CourseType,
     type_program: CourseType,
@@ -238,6 +253,7 @@ export class BulkDeleteService {
       'profile',
       'banner',
       'video',
+      'filePath',
     ];
     const filesToClean: string[] = [];
     for (const item of items) {
@@ -361,6 +377,7 @@ export class BulkDeleteService {
       'profile',
       'banner',
       'video',
+      'filePath',
     ];
     const filesToClean: string[] = [];
     for (const item of items) {

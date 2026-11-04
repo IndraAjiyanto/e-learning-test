@@ -291,6 +291,7 @@
           {{!-- View Detail Button (Eye Icon) — redirect ke halaman detail program admin --}}
           <a :href="'/program/detail/program/admin/' + course.id"
              x-show="!isSuperAdmin || course.process === 'approved'"
+             @click="localStorage.setItem('kelasPrevUrl', window.location.href)"
              class='box-border w-[40px] shrink-0 h-[40px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] hover:bg-[#EFF6FF] transition-colors'
              title='View Detail' aria-label='View Detail'>
             <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#3B82F6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'>
@@ -301,6 +302,7 @@
           {{!-- Users Button — redirect ke halaman manajemen user program --}}
           <a :href="'/program/addUser/' + course.id"
              x-show="!isSuperAdmin || course.process === 'approved'"
+             @click="localStorage.setItem('kelasPrevUrl', window.location.href)"
              class='box-border w-[40px] shrink-0 h-[40px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] hover:bg-[#F0FDF4] transition-colors'
              title='Manage Users' aria-label='Manage Users'>
             <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 15' preserveAspectRatio='none' class='box-border w-[20px] h-[13px] overflow-visible'>

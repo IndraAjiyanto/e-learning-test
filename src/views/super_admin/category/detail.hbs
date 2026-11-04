@@ -58,7 +58,7 @@
               {{> components/ui/super_admin/form/button
                 variant='danger-soft'
                 label='Delete'
-                onclick='openDeleteModal(this)'
+                onclick="openDeleteModal(this, 'Delete Category?', 'Are you sure you want to delete this category? This action will permanently remove the category and cannot be undone.')"
               }}
             </form>
           {{/if}}
@@ -202,9 +202,11 @@
 
 {{> components/ui/super_admin/table/fa_icon }}
 
+{{> components/ui/admin/modal/confirm_action/index }}
+
 {{> components/ui/super_admin/modal/delete_confirm/index
-  title='Delete Category?'
-  description='Are you sure you want to delete this category? This action will permanently remove the category and cannot be undone.'
+  title='Delete Item?'
+  description='Are you sure you want to delete this item? This action will permanently remove it and cannot be undone.'
 }}
 
 <script>
