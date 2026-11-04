@@ -89,6 +89,12 @@
         messageLang: 'id',
         currentPositionLang: 'id',
 
+        init() {
+          window.addEventListener('file-type-error', (e) => {
+            this.setImageError(e.detail?.message || 'Invalid file type.');
+          });
+        },
+
         courseOptions: (courses || []).map((c) => ({ value: c.id, label: c.name })),
         initialCourse: course ? [{ value: course.id, label: course.name }] : [],
 
@@ -151,7 +157,7 @@
         },
 
         // Batas mengikuti kontrak backend (ValidateImage pada AlumniController):
-        // JPG/PNG, 300–2000 px, maks 5 MB.
+        // JPG/PNG, maks 5 MB. Tanpa batasan dimensi piksel agar bebas di-crop.
         validateImage(file) {
           this.clearPreview();
 
@@ -174,30 +180,10 @@
             return;
           }
 
-          const img = new Image();
-          const objectUrl = URL.createObjectURL(file);
-
-          img.onload = () => {
-            if (img.width < 300 || img.width > 2000 || img.height < 300 || img.height > 2000) {
-              URL.revokeObjectURL(objectUrl);
-              this.setImageError(
-                `Image is ${img.width}x${img.height}px. Required: 300x300 to 2000x2000 pixels`,
-              );
-              return;
-            }
-
-            this.objectUrl = objectUrl;
-            this.previewUrl = objectUrl;
-            this.isValid = true;
-            this.errorMessage = '';
-          };
-
-          img.onerror = () => {
-            URL.revokeObjectURL(objectUrl);
-            this.setImageError('Failed to load image');
-          };
-
-          img.src = objectUrl;
+          this.objectUrl = URL.createObjectURL(file);
+          this.previewUrl = this.objectUrl;
+          this.isValid = true;
+          this.errorMessage = '';
         },
 
         // Berkas ditolak dikosongkan dari input agar tidak ikut terkirim;
@@ -221,7 +207,7 @@
 
         clearFile() {
           this.clearPreview();
-          this.$refs.dropInput.value = null;
+          if (this.$refs.dropInput) this.$refs.dropInput.value = null;
         },
 
         hasPhoto() {

@@ -41,10 +41,6 @@ export class AlumniController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 300,
-    maxWidth: 2000,
-    minHeight: 300,
-    maxHeight: 2000,
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'alumni',
@@ -81,10 +77,6 @@ export class AlumniController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 300,
-    maxWidth: 2000,
-    minHeight: 300,
-    maxHeight: 2000,
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'alumni',
@@ -174,10 +166,6 @@ export class AlumniController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 300,
-    maxWidth: 2000,
-    minHeight: 300,
-    maxHeight: 2000,
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'alumni',
@@ -219,10 +207,6 @@ export class AlumniController {
     ValidateImageInterceptor,
   )
   @ValidateImage({
-    minWidth: 300,
-    maxWidth: 2000,
-    minHeight: 300,
-    maxHeight: 2000,
     maxSize: 5 * 1024 * 1024,
     allowedTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     folder: 'alumni',
