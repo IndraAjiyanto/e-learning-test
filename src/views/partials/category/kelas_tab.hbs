@@ -257,8 +257,10 @@
             type='checkbox'
             :value='kelasItem.id'
             x-model='selectedIds'
+            :disabled='isCourseDisabled(kelasItem)'
+            :title='isCourseDisabled(kelasItem) ? ("Program cannot be deleted because it already has " + (kelasItem.userCourses ? kelasItem.userCourses.length : 0) + " enrolled participant(s).") : "Select program"'
             @click.stop
-            class='h-4 w-4 rounded border-[#d4d4d4] text-[#003060] focus:ring-[#003060] cursor-pointer'
+            class='h-4 w-4 rounded border-[#d4d4d4] text-[#003060] focus:ring-[#003060] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed'
           />
         </div>
         <div class='flex flex-col gap-3.5'>
@@ -435,17 +437,29 @@
                 <path d="M10.97833 10.3c1.01813-0.6636 1.79468-1.63832 2.214-2.779 0.41495-1.13408 0.44726-2.37282 0.092-3.527-0.3591-1.16005-1.08429-2.17258-2.067-2.886-0.99139-0.72042-2.1855-1.1083-3.411-1.108-1.2255-0.0003-2.41961 0.38758-3.411 1.108-0.98271 0.71342-1.7079 1.72595-2.067 2.886-0.35504 1.15387-0.32272 2.39222 0.092 3.526 0.41913 1.14104 1.1957 2.11614 2.214 2.78-1.84215 0.66224-3.42164 1.90087-4.504 3.532-0.11426 0.1661-0.15581 0.37162-0.11504 0.56906 0.04077 0.19744 0.16033 0.36969 0.33104 0.47694 0.35649 0.22762 0.82972 0.12647 1.062-0.227 0.69763-1.0498 1.64541-1.90961 2.758-2.502 1.1206-0.59624 2.37065-0.90772 3.64-0.907 1.2693-0.00031 2.51925 0.31115 3.64 0.907 1.11259 0.59239 2.06037 1.4522 2.758 2.502 0.2376 0.33941 0.70013 0.43192 1.05 0.21 0.16753-0.10525 0.28593-0.27321 0.32877-0.46637 0.04284-0.19315 0.00655-0.39542-0.10077-0.56163-1.0822-1.63151-2.66171-2.8705-4.504-3.533m-7.37-4.677c0-0.815 0.247-1.612 0.708-2.29 0.46551-0.67985 1.1207-1.20775 1.884-1.518 0.76836-0.31217 1.611-0.39383 2.425-0.235 0.81173 0.15632 1.55928 0.54871 2.149 1.128 0.58474 0.57295 0.98457 1.30783 1.148 2.11 0.162 0.8 0.08 1.63-0.239 2.382-0.32012 0.75625-0.85791 1.40022-1.545 1.85-1.66791 1.09272-3.87124 0.87896-5.298-0.514-0.78337-0.76731-1.22672-1.81645-1.231-2.913m20.046 9.246c-0.35304 0.2248-0.82084 0.12823-1.056-0.218-0.69622-1.05128-1.64432-1.91172-2.758-2.503-1.12028-0.59674-2.3707-0.90729-3.64-0.904-0.20188 0.00029-0.3958-0.07871-0.54-0.22-0.14219-0.1397-0.22228-0.33067-0.22228-0.53 0-0.19933 0.08009-0.3903 0.22228-0.53 0.14436-0.14092 0.33826-0.21956 0.54-0.219 0.618 0 1.229-0.135 1.788-0.394 0.55697-0.25823 1.05055-0.63541 1.446-1.105 0.39209-0.46642 0.67529-1.01437 0.829-1.604 0.15288-0.58763 0.17168-1.20212 0.055-1.798-0.1181-0.59747-0.36781-1.16112-0.731-1.65-0.36655-0.49134-0.8362-0.89649-1.376-1.187-1.10113-0.59126-2.40637-0.66914-3.57-0.213-0.28814 0.12218-0.62148 0.05906-0.845-0.16-0.14367-0.14344-0.22305-0.339-0.22-0.542 0.00372-0.20322 0.09088-0.39597 0.241-0.533 0.07533-0.06788 0.16289-0.12082 0.258-0.156 1.3157-0.51463 2.77368-0.53311 4.102-0.052 1.32016 0.47613 2.41827 1.42256 3.084 2.658 0.65752 1.22583 0.82891 2.65443 0.48 4.001-0.35308 1.35337-1.19813 2.52646-2.37 3.29 1.84252 0.66205 3.42239 1.9007 4.505 3.532 0.11077 0.16618 0.14967 0.37007 0.10787 0.56535-0.04181 0.19529-0.16077 0.36538-0.32987 0.47165" fill="currentColor"/>
               </svg>
             </a>
-            <button
-              type='button'
-              @click.stop='confirmDeleteProgram(kelasItem)'
-              class='inline-flex items-center justify-center rounded-lg border border-[#fecaca] bg-white p-1.5 text-[#dc2626] hover:bg-[#fef2f2] transition-colors cursor-pointer'
-              title='Delete Program'
-              aria-label='Delete Program'
-            >
-              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
-                <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
-              </svg>
-            </button>
+            <template x-if='isCourseDisabled(kelasItem)'>
+              <div
+                class='inline-flex items-center justify-center rounded-lg border border-[#E5E5E5] bg-[#F5F5F5] p-1.5 text-[#A3A3A3] opacity-50 cursor-not-allowed'
+                :title="'Program cannot be deleted because it already has ' + (kelasItem.userCourses ? kelasItem.userCourses.length : 0) + ' enrolled participant(s).'"
+              >
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+                  <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+                </svg>
+              </div>
+            </template>
+            <template x-if='!isCourseDisabled(kelasItem)'>
+              <button
+                type='button'
+                @click.stop='confirmDeleteProgram(kelasItem)'
+                class='inline-flex items-center justify-center rounded-lg border border-[#fecaca] bg-white p-1.5 text-[#dc2626] hover:bg-[#fef2f2] transition-colors cursor-pointer'
+                title='Delete Program'
+                aria-label='Delete Program'
+              >
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+                  <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+                </svg>
+              </button>
+            </template>
             <button
               type='button'
               @click='openDetail(kelasItem)'
@@ -494,6 +508,18 @@
       entityName: 'programs',
       deleteEntity: 'course',
     });
+
+    state.isCourseDisabled = function (item) {
+      return Boolean(item && item.userCourses && item.userCourses.length > 0);
+    };
+
+    state.getCourseDisabledTitle = function (item) {
+      if (this.isCourseDisabled(item)) {
+        const count = item && item.userCourses ? item.userCourses.length : 0;
+        return `Program cannot be deleted because it already has ${count} enrolled participant(s).`;
+      }
+      return 'Select program';
+    };
 
     state.selectedProcess = '';
     state.selectedStatuses = ['unlaunch', 'launch', 'learning'];
@@ -843,6 +869,18 @@
     state.confirmDeleteProgram = function (kelasItem) {
       if (!kelasItem) return;
 
+      if (this.isCourseDisabled(kelasItem)) {
+        window.dispatchEvent(
+          new CustomEvent('toast:error', {
+            detail: {
+              title: 'Cannot Delete Program',
+              description: this.getCourseDisabledTitle(kelasItem),
+            },
+          }),
+        );
+        return;
+      }
+
       openDeleteModal({
         title: 'Delete Program?',
         description: `Are you sure you want to delete program "${kelasItem.name}"? Program data will be permanently deleted.`,
@@ -913,49 +951,8 @@
       });
     };
 
-    state.executeBulkDeletePrograms = async function () {
-      try {
-        const res = await fetch('/program/bulk-delete', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify({ ids: this.selectedIds }),
-        });
-        const json = await res.json().catch(() => null);
-
-        if (json && json.success) {
-          this.selectedIds = [];
-          window.dispatchEvent(
-            new CustomEvent('toast:success', {
-              detail: {
-                title: 'Deleted Successfully',
-                description: json.message || 'Selected programs have been deleted.',
-              },
-            }),
-          );
-          await this.fetchKelas();
-        } else {
-          window.dispatchEvent(
-            new CustomEvent('toast:error', {
-              detail: {
-                title: 'Failed to Delete',
-                description: json?.message || 'Failed to delete selected programs.',
-              },
-            }),
-          );
-        }
-      } catch (err) {
-        window.dispatchEvent(
-          new CustomEvent('toast:error', {
-            detail: {
-              title: 'Error',
-              description: 'A network or server error occurred while deleting selected programs.',
-            },
-          }),
-        );
-      }
+    state.executeBulkDeletePrograms = function () {
+      submitDeleteForm('/program/bulk-delete', { ids: this.selectedIds });
     };
 
     return state;

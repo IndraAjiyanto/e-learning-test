@@ -9,8 +9,7 @@
          menjadi <a target=_blank>; bila tidak, dispatch open-materi-modal),
          {{syllabusId}} (optional — bila set, delete action memakai route
          syllabus-scoped /learning-material/syllabus/:id/:syllabusId),
-         {{readOnly}} (optional — bila truthy, tombol edit & delete
-         disembunyikan; dipakai saat sylabus locked/completed).
+         {{readOnly}} (optional — bila truthy, delete dinonaktifkan dengan tooltip).
   Alpine scope (parent): `materi` { id, title, file, fileType }, `session` id
          server-side ({{session.id}}) untuk URL delete.
 
@@ -19,10 +18,23 @@
   #D9D9D9 (trash-2 16 #C80606); Detail w81 h44 outline #003060 shadow teks
   #003060 Inter 16/600.
   BE: edit GET /learning-material/formEdit/:id; delete POST
-  /learning-material/:id/:sessionId?_method=DELETE + confirmDelete (perilaku
-  lama dipertahankan).
+  /learning-material/:id/:sessionId?_method=DELETE + confirmDelete.
 --}}
-<div class='box-border w-full shrink-0 min-h-[68px] h-fit flex flex-row gap-[6px] p-[8px_14px] justify-start items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#fafafa] transition-colors'>
+<div class='box-border w-full shrink-0 min-h-[68px] h-fit flex flex-row gap-[6px] p-[8px_14px] justify-start items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#fafafa] transition-colors'
+  :class="selectMode && selectedIds.includes(String(materi.id)) ? 'bg-[#FEF2F2]/60 [outline:1px_solid_#FCA5A5]' : ''">
+
+  {{!-- Checkbox in Select Mode --}}
+  <div x-show='selectMode' x-cloak class='shrink-0 mr-1.5' style='display: none;'>
+    <input
+      type='checkbox'
+      :value='String(materi.id)'
+      x-model='selectedIds'
+      :disabled="typeof isMaterialDisabled === 'function' ? isMaterialDisabled(materi) : false"
+      :title="(typeof isMaterialDisabled === 'function' && isMaterialDisabled(materi)) ? 'Material cannot be deleted because syllabus has already been completed by a participant.' : 'Select material'"
+      @click.stop
+      class='h-4 w-4 rounded border-[#d4d4d4] text-[#003060] focus:ring-[#003060] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed'
+    />
+  </div>
 
   {{!-- Title (+ optional file link) --}}
   <div class='flex-1 min-w-0 flex flex-col gap-[2px] justify-center items-start'>
@@ -36,33 +48,56 @@
     {{/if}}
   </div>
 
+  {{!-- Edit (always available if not readOnly) --}}
   {{#unless readOnly}}
-  {{!-- Edit --}}
   <a :href="'/learning-material/formEdit/' + materi.id"
     class='box-border w-[44px] shrink-0 h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#f5f5f5] transition-colors'
     title='Edit Material' aria-label='Edit Material'>
     <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#525252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'>
-      <path d='M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0.623.622l4.353-1.32a2 2 0 0 0 .83-.497z'/>
+      <path d='M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z'/>
       <path d='m15 5 4 4'/>
     </svg>
   </a>
+  {{/unless}}
 
   {{!-- Delete --}}
-  {{#if syllabusId}}
-  <form :action="'/learning-material/syllabus/' + materi.id + '/{{syllabusId}}?_method=DELETE'" method='post' class='box-border w-[44px] shrink-0 h-[44px]'>
-  {{else}}
-  <form :action="'/learning-material/' + materi.id + '/{{session.id}}?_method=DELETE'" method='post' class='box-border w-[44px] shrink-0 h-[44px]'>
-  {{/if}}
-    <button type='button'
-      onclick="openDeleteModal(this, 'Delete Material?', 'Are you sure you want to delete this material?')"
-      class='box-border w-[44px] h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#FEF2F2] transition-colors'
-      title='Delete Material' aria-label='Delete Material'>
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#C80606' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+  {{#if readOnly}}
+    <button type='button' disabled
+      class='box-border w-[44px] h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] rounded-[8px] [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] opacity-60 cursor-not-allowed'
+      title='Material cannot be deleted because syllabus has already been completed by a participant.'
+      aria-label='Cannot delete material'>
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#A3A3A3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
         <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
       </svg>
     </button>
-  </form>
-  {{/unless}}
+  {{else}}
+    <template x-if="typeof isMaterialDisabled === 'function' && isMaterialDisabled(materi)">
+      <button type='button' disabled
+        class='box-border w-[44px] h-[44px] flex flex-row gap-0 justify-center items-center bg-[#F5F5F5] rounded-[8px] [outline:1px_solid_#E5E5E5] [outline-offset:-0.5px] opacity-60 cursor-not-allowed'
+        title='Material cannot be deleted because syllabus has already been completed by a participant.'
+        aria-label='Cannot delete material'>
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#A3A3A3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+          <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+        </svg>
+      </button>
+    </template>
+    <template x-if="typeof isMaterialDisabled !== 'function' || !isMaterialDisabled(materi)">
+      {{#if syllabusId}}
+      <form :action="'/learning-material/syllabus/' + materi.id + '/{{syllabusId}}?_method=DELETE'" method='post' class='box-border w-[44px] shrink-0 h-[44px] m-0 p-0'>
+      {{else}}
+      <form :action="'/learning-material/' + materi.id + '/{{session.id}}?_method=DELETE'" method='post' class='box-border w-[44px] shrink-0 h-[44px] m-0 p-0'>
+      {{/if}}
+        <button type='button'
+          onclick="openDeleteModal(this, 'Delete Material?', 'Are you sure you want to delete this material?')"
+          class='box-border w-[44px] h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#FEF2F2] transition-colors cursor-pointer'
+          title='Delete Material' aria-label='Delete Material'>
+          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#C80606' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+            <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+          </svg>
+        </button>
+      </form>
+    </template>
+  {{/if}}
 
   {{!-- Detail --}}
   {{#if detailLink}}

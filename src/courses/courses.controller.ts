@@ -207,56 +207,123 @@ export class CoursesController {
 
   @Roles('super_admin')
   @Post('delete-all')
-  async removeAllPost(@Res() res: Response) {
+  async removeAllPost(
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const wantsJson =
+      req.xhr ||
+      (req.headers.accept &&
+        req.headers.accept.includes('application/json') &&
+        !req.headers.accept.includes('text/html'));
+
     try {
       const result = await this.coursesService.removeAll();
-      return res.json({
-        success: true,
-        message: `Successfully deleted all programs (${result.count} data).`,
-        count: result.count,
-      });
+      if (wantsJson) {
+        return res.json({
+          success: true,
+          message: `Successfully deleted all programs (${result.count} data).`,
+          count: result.count,
+        });
+      }
+      flashToast(
+        req,
+        'Deleted Successfully',
+        `Successfully deleted all programs (${result.count} data).`,
+      );
+      return res.redirect(redirectUrl || req.header('Referer') || '/program');
     } catch (error: unknown) {
-      return res.status(400).json({
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : 'Failed to delete all programs',
-      });
+      const msg =
+        error instanceof Error ? error.message : 'Failed to delete all programs';
+      if (wantsJson) {
+        return res.status(400).json({
+          success: false,
+          message: msg,
+        });
+      }
+      flashToastError(req, 'Failed to Delete', msg);
+      return res.redirect(redirectUrl || req.header('Referer') || '/program');
     }
   }
 
   @Roles('super_admin')
   @Delete('delete-all')
-  async removeAllDelete(@Res() res: Response) {
-    return this.removeAllPost(res);
+  async removeAllDelete(
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.removeAllPost(redirectUrl, req, res);
   }
 
   @Roles('super_admin')
   @Post('bulk-delete')
-  async removeManyPost(@Body('ids') ids: string[], @Res() res: Response) {
+  async removeManyPost(
+    @Body('ids') rawIds: any,
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const wantsJson =
+      req.xhr ||
+      (req.headers.accept &&
+        req.headers.accept.includes('application/json') &&
+        !req.headers.accept.includes('text/html'));
+
+    let ids: string[] = [];
+    if (Array.isArray(rawIds)) {
+      ids = rawIds.map(String).filter(Boolean);
+    } else if (typeof rawIds === 'string' && rawIds.trim()) {
+      try {
+        const parsed = JSON.parse(rawIds);
+        if (Array.isArray(parsed)) ids = parsed.map(String).filter(Boolean);
+        else ids = rawIds.split(',').map((s) => s.trim()).filter(Boolean);
+      } catch {
+        ids = rawIds.split(',').map((s) => s.trim()).filter(Boolean);
+      }
+    }
+
     try {
       const result = await this.coursesService.removeMany(ids);
-      return res.json({
-        success: true,
-        message: `Successfully deleted ${result.count} selected program(s).`,
-        count: result.count,
-      });
+      if (wantsJson) {
+        return res.json({
+          success: true,
+          message: `Successfully deleted ${result.count} selected program(s).`,
+          count: result.count,
+        });
+      }
+      flashToast(
+        req,
+        'Deleted Successfully',
+        `Successfully deleted ${result.count} selected program(s).`,
+      );
+      return res.redirect(redirectUrl || req.header('Referer') || '/program');
     } catch (error: unknown) {
-      return res.status(400).json({
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : 'Failed to delete selected programs',
-      });
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Failed to delete selected programs';
+      if (wantsJson) {
+        return res.status(400).json({
+          success: false,
+          message: msg,
+        });
+      }
+      flashToastError(req, 'Failed to Delete', msg);
+      return res.redirect(redirectUrl || req.header('Referer') || '/program');
     }
   }
 
   @Roles('super_admin')
   @Delete('bulk-delete')
-  async removeManyDelete(@Body('ids') ids: string[], @Res() res: Response) {
-    return this.removeManyPost(ids, res);
+  async removeManyDelete(
+    @Body('ids') rawIds: any,
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.removeManyPost(rawIds, redirectUrl, req, res);
   }
 
   @Roles('admin', 'super_admin')
@@ -1990,6 +2057,94 @@ export class CoursesController {
         previous || `/program/detail/program/admin/${courseId}`,
       );
     }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('removeStudents/:courseId')
+  async removeStudentsFromCourse(
+    @Param('courseId') courseId: string,
+    @Body('userIds') rawUserIds: any,
+    @Body('ids') rawIds: any,
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const wantsJson =
+      req.xhr ||
+      (req.headers.accept &&
+        req.headers.accept.includes('application/json') &&
+        !req.headers.accept.includes('text/html'));
+
+    let userIds: string[] = [];
+    const source = rawUserIds ?? rawIds;
+    if (Array.isArray(source)) {
+      userIds = source.map(String).filter(Boolean);
+    } else if (typeof source === 'string' && source.trim()) {
+      try {
+        const parsed = JSON.parse(source);
+        if (Array.isArray(parsed)) userIds = parsed.map(String).filter(Boolean);
+        else userIds = source.split(',').map((s) => s.trim()).filter(Boolean);
+      } catch {
+        userIds = source.split(',').map((s) => s.trim()).filter(Boolean);
+      }
+    }
+
+    try {
+      const count = await this.coursesService.removeMultipleCourseUsers(
+        userIds,
+        courseId,
+      );
+      if (wantsJson) {
+        return res.json({
+          success: true,
+          count,
+          message: `Successfully removed ${count} student(s) from the program.`,
+        });
+      }
+      flashToast(
+        req,
+        'Removed Successfully',
+        `Successfully removed ${count} student(s) from the program.`,
+      );
+      return res.redirect(
+        redirectUrl || req.header('Referer') || `/program/addUser/${courseId}`,
+      );
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Failed to remove students from program';
+      if (wantsJson) {
+        return res.status(400).json({
+          success: false,
+          message: msg,
+        });
+      }
+      flashToastError(req, 'Failed to Remove', msg);
+      return res.redirect(
+        redirectUrl || req.header('Referer') || `/program/addUser/${courseId}`,
+      );
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Delete('removeStudents/:courseId')
+  async removeStudentsFromCourseDelete(
+    @Param('courseId') courseId: string,
+    @Body('userIds') rawUserIds: any,
+    @Body('ids') rawIds: any,
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.removeStudentsFromCourse(
+      courseId,
+      rawUserIds,
+      rawIds,
+      redirectUrl,
+      req,
+      res,
+    );
   }
 
   @Roles('admin', 'super_admin')

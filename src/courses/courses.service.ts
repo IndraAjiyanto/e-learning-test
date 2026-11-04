@@ -1696,6 +1696,20 @@ export class CoursesService {
   async findCourseInstallments(courseId: string) {
     const installments = await this.installmentsRepository.find({
       where: { course: { id: courseId } },
+      relations: ['payment'],
+      order: { month: 'ASC' },
+    });
+
+    return installments.map((i) => ({
+      ...i,
+      hasPayment: (i.payment || []).length > 0,
+      dueDates: dateHelpers.toDateOnlyArray(i.dueDates),
+    }));
+  }
+
+  async _unusedFindCourseInstallments(courseId: string) {
+    const installments = await this.installmentsRepository.find({
+      where: { course: { id: courseId } },
       order: { month: 'ASC' },
     });
 
@@ -2043,6 +2057,22 @@ export class CoursesService {
 
     await this.courseRepository.remove(courses);
     return { success: true, count: courses.length };
+  }
+
+  async removeMultipleCourseUsers(userIds: string[], courseId: string) {
+    if (!userIds || userIds.length === 0) {
+      return 0;
+    }
+    const userCourses = await this.userCourseRepository.find({
+      where: {
+        user: { id: In(userIds) },
+        course: { id: courseId },
+      },
+    });
+    if (userCourses.length > 0) {
+      await this.userCourseRepository.remove(userCourses);
+    }
+    return userCourses.length;
   }
 
   async removeCourseUser(userId: string, courseId: string) {

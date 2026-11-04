@@ -299,51 +299,11 @@
         });
       },
 
-      async executeDeleteSelected() {
-        try {
-          const res = await fetch('/api/bulk-delete/selected', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              entity: 'user',
-              ids: this.selectedIds,
-            }),
-          });
-          const json = await res.json();
-
-          if (json.success) {
-            this.selectedIds = [];
-            window.dispatchEvent(
-              new CustomEvent('toast:success', {
-                detail: {
-                  title: 'Deleted Successfully',
-                  description: json.message || 'Selected users have been deleted successfully.',
-                },
-              }),
-            );
-            await this.fetchUsers();
-          } else {
-            window.dispatchEvent(
-              new CustomEvent('toast:error', {
-                detail: {
-                  title: 'Failed to Delete',
-                  description: json.message || 'An error occurred while deleting data.',
-                },
-              }),
-            );
-          }
-        } catch (err) {
-          window.dispatchEvent(
-            new CustomEvent('toast:error', {
-              detail: {
-                title: 'Error',
-                description: 'A network or server error occurred while deleting data.' ,
-              },
-            }),
-          );
-        }
+      executeDeleteSelected() {
+        submitDeleteForm('/bulk-delete/selected', {
+          entity: 'user',
+          ids: this.selectedIds,
+        });
       },
 
       init() {

@@ -50,14 +50,52 @@
         return p || 'data';
       },
 
+      isRowDisabled(row) {
+        if (!row) return false;
+        if (typeof this.rowDisabled === 'function') return this.rowDisabled(row);
+        if (row.cannotDelete !== undefined) return Boolean(row.cannotDelete);
+        if (row.hasPayment !== undefined) return Boolean(row.hasPayment);
+        if (row.hasCompletedUser !== undefined) return Boolean(row.hasCompletedUser);
+        if (row.isCompleted !== undefined) return Boolean(row.isCompleted);
+
+        const ent = (this.deleteEntity || this.entityName || '').toLowerCase();
+        if (ent.includes('categor') || ent === 'category' || ent === 'categories') {
+          if (row.courses && Array.isArray(row.courses) && row.courses.length > 0) return true;
+        }
+        if (ent.includes('course') || ent.includes('program')) {
+          if (row.userCourses && Array.isArray(row.userCourses) && row.userCourses.length > 0) return true;
+        }
+        return false;
+      },
+
+      getRowDisabledTitle(row) {
+        if (!row) return 'Select item';
+        if (row.hasPayment) return 'Installment scheme cannot be deleted because participants have made payments with it.';
+        if (row.hasCompletedUser) return 'Meeting cannot be deleted because participants have completed progress in it.';
+        if (row.isCompleted) return 'Syllabus cannot be deleted because it has already been completed by a user.';
+
+        const ent = (this.deleteEntity || this.entityName || '').toLowerCase();
+        if (ent.includes('categor') || ent === 'category' || ent === 'categories') {
+          if (row.courses && Array.isArray(row.courses) && row.courses.length > 0) {
+            return `Category cannot be deleted because it still contains ${row.courses.length} related program(s).`;
+          }
+        }
+        if (ent.includes('course') || ent.includes('program')) {
+          if (row.userCourses && Array.isArray(row.userCourses) && row.userCourses.length > 0) {
+            return `Program cannot be deleted because it already has ${row.userCourses.length} enrolled participant(s).`;
+          }
+        }
+        return 'Select item';
+      },
+
       isAllSelected() {
-        const list = this.rows || this.filtered || [];
+        const list = (this.rows || this.filtered || []).filter((row) => !this.isRowDisabled(row));
         if (!list || list.length === 0) return false;
         return list.every((row) => this.selectedIds.some((id) => String(id) === String(row.id)));
       },
 
       toggleSelectAll(event) {
-        const list = this.rows || this.filtered || [];
+        const list = (this.rows || this.filtered || []).filter((row) => !this.isRowDisabled(row));
         if (event.target.checked) {
           const currentIds = list.map((r) => r.id);
           const currentSet = new Set(this.selectedIds.map(String));
@@ -74,7 +112,7 @@
       },
 
       toggleSelectAllOnPage() {
-        const list = this.rows || this.filtered || [];
+        const list = (this.rows || this.filtered || []).filter((row) => !this.isRowDisabled(row));
         if (this.isAllSelected()) {
           const currentSet = new Set(list.map((r) => String(r.id)));
           this.selectedIds = this.selectedIds.filter((id) => !currentSet.has(String(id)));
@@ -96,6 +134,20 @@
 
       confirmDeleteSingle(item) {
         if (!item) return;
+
+        if (this.isRowDisabled(item)) {
+          const reason = this.getRowDisabledTitle(item);
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Cannot Delete',
+                description: reason,
+              },
+            }),
+          );
+          return;
+        }
+
         const itemName = item.name || item.title || 'this item';
         const label = this.entityName
           ? (this.entityName.endsWith('ies')
@@ -133,21 +185,24 @@
             this.selectedIds = this.selectedIds.filter(
               (selectedId) => String(selectedId) !== String(id),
             );
-            window.dispatchEvent(
-              new CustomEvent('toast:success', {
-                detail: {
-                  title: 'Deleted Successfully',
-                  description:
-                    json.message || 'Item has been deleted successfully.',
-                },
-              }),
-            );
             if (url) {
+              window.dispatchEvent(
+                new CustomEvent('toast:success', {
+                  detail: {
+                    title: 'Deleted Successfully',
+                    description:
+                      json.message || 'Item has been deleted successfully.',
+                  },
+                }),
+              );
               await this.load();
             } else {
-              setTimeout(() => {
-                window.location.reload();
-              }, 500);
+              sessionStorage.setItem('pendingToast', JSON.stringify({
+                title: 'Deleted Successfully',
+                description:
+                  json.message || 'Item has been deleted successfully.',
+              }));
+              window.location.reload();
             }
           } else {
             window.dispatchEvent(
@@ -197,63 +252,11 @@
         }
       },
 
-      async executeDeleteSelected() {
-        try {
-          const res = await fetch('/api/bulk-delete/selected', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-              entity: this.resolveEntity(),
-              ids: this.selectedIds,
-            }),
-          });
-          const json = await res.json().catch(() => null);
-
-          if (json && json.success) {
-            this.selectedIds = [];
-            window.dispatchEvent(
-              new CustomEvent('toast:success', {
-                detail: {
-                  title: 'Deleted Successfully',
-                  description:
-                    json.message ||
-                    'Selected data has been deleted successfully.',
-                },
-              }),
-            );
-            if (url) {
-              await this.load();
-            } else {
-              setTimeout(() => {
-                window.location.reload();
-              }, 600);
-            }
-          } else {
-            window.dispatchEvent(
-              new CustomEvent('toast:error', {
-                detail: {
-                  title: 'Failed to Delete',
-                  description:
-                    json?.message ||
-                    'An error occurred while deleting data.',
-                },
-              }),
-            );
-          }
-        } catch (err) {
-          window.dispatchEvent(
-            new CustomEvent('toast:error', {
-              detail: {
-                title: 'Error',
-                description:
-                  'A network or server error occurred while deleting data.',
-              },
-            }),
-          );
-        }
+      executeDeleteSelected() {
+        submitDeleteForm('/bulk-delete/selected', {
+          entity: this.resolveEntity(),
+          ids: this.selectedIds,
+        });
       },
 
       confirmDeleteAll() {
@@ -274,62 +277,10 @@
         }
       },
 
-      async executeDeleteAll() {
-        try {
-          const res = await fetch('/api/bulk-delete/all', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-              entity: this.resolveEntity(),
-            }),
-          });
-          const json = await res.json().catch(() => null);
-
-          if (json && json.success) {
-            this.selectedIds = [];
-            this.selectMode = false;
-            window.dispatchEvent(
-              new CustomEvent('toast:success', {
-                detail: {
-                  title: 'Deleted Successfully',
-                  description:
-                    json.message || 'All data has been deleted successfully.',
-                },
-              }),
-            );
-            if (url) {
-              await this.load();
-            } else {
-              setTimeout(() => {
-                window.location.reload();
-              }, 600);
-            }
-          } else {
-            window.dispatchEvent(
-              new CustomEvent('toast:error', {
-                detail: {
-                  title: 'Failed to Delete',
-                  description:
-                    json?.message ||
-                    'An error occurred while deleting all data.',
-                },
-              }),
-            );
-          }
-        } catch (err) {
-          window.dispatchEvent(
-            new CustomEvent('toast:error', {
-              detail: {
-                title: 'Error',
-                description:
-                  'A network or server error occurred while deleting all data.',
-              },
-            }),
-          );
-        }
+      executeDeleteAll() {
+        submitDeleteForm('/bulk-delete/all', {
+          entity: this.resolveEntity(),
+        });
       },
 
       async load() {

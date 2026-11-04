@@ -414,27 +414,38 @@ function kelasTable() {
       }
     },
 
+    isCourseDisabled(course) {
+      return Boolean(course && course.userCourses && course.userCourses.length > 0);
+    },
+
+    get deletableCoursesOnPage() {
+      return (this.kelasList || []).filter(c => !this.isCourseDisabled(c));
+    },
+
     isAllSelected() {
-      if (!this.kelasList || this.kelasList.length === 0) return false;
-      return this.kelasList.every(c => this.selectedCourses.includes(c.id));
+      const list = this.deletableCoursesOnPage;
+      if (!list || list.length === 0) return false;
+      return list.every(c => this.selectedCourses.includes(c.id));
     },
 
     toggleSelectAll(event) {
+      const list = this.deletableCoursesOnPage;
       if (event.target.checked) {
-        const currentIds = this.kelasList.map(c => c.id);
+        const currentIds = list.map(c => c.id);
         this.selectedCourses = Array.from(new Set([...this.selectedCourses, ...currentIds]));
       } else {
-        const currentIds = new Set(this.kelasList.map(c => c.id));
+        const currentIds = new Set(list.map(c => c.id));
         this.selectedCourses = this.selectedCourses.filter(id => !currentIds.has(id));
       }
     },
 
     toggleSelectAllOnPage() {
+      const list = this.deletableCoursesOnPage;
       if (this.isAllSelected()) {
-        const currentIds = new Set(this.kelasList.map(c => c.id));
+        const currentIds = new Set(list.map(c => c.id));
         this.selectedCourses = this.selectedCourses.filter(id => !currentIds.has(id));
       } else {
-        const currentIds = this.kelasList.map(c => c.id);
+        const currentIds = list.map(c => c.id);
         this.selectedCourses = Array.from(new Set([...this.selectedCourses, ...currentIds]));
       }
     },
@@ -458,48 +469,8 @@ function kelasTable() {
       });
     },
 
-    async executeBulkDelete() {
-      try {
-        const res = await fetch('/program/bulk-delete', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ ids: this.selectedCourses }),
-        });
-        const json = await res.json().catch(() => null);
-
-        if (json && json.success) {
-          this.selectedCourses = [];
-          window.dispatchEvent(
-            new CustomEvent('toast:success', {
-              detail: {
-                title: 'Deleted Successfully',
-                description: json.message || 'Selected programs have been deleted.',
-              },
-            }),
-          );
-          await this.fetchKelas();
-        } else {
-          window.dispatchEvent(
-            new CustomEvent('toast:error', {
-              detail: {
-                title: 'Failed to Delete',
-                description: json?.message || 'Failed to delete selected programs.',
-              },
-            }),
-          );
-        }
-      } catch (err) {
-        window.dispatchEvent(
-          new CustomEvent('toast:error', {
-            detail: {
-              title: 'Error',
-              description: 'A network or server error occurred while deleting data.',
-            },
-          }),
-        );
-      }
+    executeBulkDelete() {
+      submitDeleteForm('/program/bulk-delete', { ids: this.selectedCourses });
     },
 
     confirmDeleteAll() {
@@ -516,52 +487,24 @@ function kelasTable() {
       });
     },
 
-    async executeDeleteAll() {
-      try {
-        const res = await fetch('/program/delete-all', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        const json = await res.json().catch(() => null);
-
-        if (json && json.success) {
-          this.selectedCourses = [];
-          this.selectMode = false;
-          this.currentPage = 1;
-          window.dispatchEvent(
-            new CustomEvent('toast:success', {
-              detail: {
-                title: 'Deleted Successfully',
-                description: json.message || 'All programs have been deleted.',
-              },
-            }),
-          );
-          await this.fetchKelas();
-        } else {
-          window.dispatchEvent(
-            new CustomEvent('toast:error', {
-              detail: {
-                title: 'Failed to Delete',
-                description: json?.message || 'Failed to delete all programs.',
-              },
-            }),
-          );
-        }
-      } catch (err) {
-        window.dispatchEvent(
-          new CustomEvent('toast:error', {
-            detail: {
-              title: 'Error',
-              description: 'A network or server error occurred while deleting all programs.',
-            },
-          }),
-        );
-      }
+    executeDeleteAll() {
+      submitDeleteForm('/program/delete-all', {});
     },
 
     confirmDeleteSingle(courseId, name) {
+      const course = (this.kelasList || []).find(c => String(c.id) === String(courseId));
+      if (course && this.isCourseDisabled(course)) {
+        window.dispatchEvent(
+          new CustomEvent('toast:error', {
+            detail: {
+              title: 'Cannot Delete Program',
+              description: `Program "${name}" cannot be deleted because it already has ${course.userCourses.length} enrolled participant(s).`,
+            },
+          }),
+        );
+        return;
+      }
+
       openDeleteModal({
         title: 'Delete Program?',
         description: `Are you sure you want to delete program "${name}"? Program data will be permanently deleted.`,

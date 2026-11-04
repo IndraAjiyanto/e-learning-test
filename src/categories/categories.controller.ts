@@ -246,29 +246,71 @@ export class CategoriesController {
 
   @Roles('super_admin')
   @Post('bulk-delete')
-  async removeManyPost(@Body('ids') ids: string[], @Res() res: Response) {
+  async removeManyPost(
+    @Body('ids') rawIds: any,
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const wantsJson =
+      req.xhr ||
+      (req.headers.accept &&
+        req.headers.accept.includes('application/json') &&
+        !req.headers.accept.includes('text/html'));
+
+    let ids: string[] = [];
+    if (Array.isArray(rawIds)) {
+      ids = rawIds.map(String).filter(Boolean);
+    } else if (typeof rawIds === 'string' && rawIds.trim()) {
+      try {
+        const parsed = JSON.parse(rawIds);
+        if (Array.isArray(parsed)) ids = parsed.map(String).filter(Boolean);
+        else ids = rawIds.split(',').map((s) => s.trim()).filter(Boolean);
+      } catch {
+        ids = rawIds.split(',').map((s) => s.trim()).filter(Boolean);
+      }
+    }
+
     try {
       const result = await this.categoriesService.removeMany(ids);
-      return res.json({
-        success: true,
-        message: `Successfully deleted ${result.count} selected category(ies).`,
-        count: result.count,
-      });
+      if (wantsJson) {
+        return res.json({
+          success: true,
+          message: `Successfully deleted ${result.count} selected category(ies).`,
+          count: result.count,
+        });
+      }
+      flashToast(
+        req,
+        'Deleted Successfully',
+        `Successfully deleted ${result.count} selected category(ies).`,
+      );
+      return res.redirect(redirectUrl || req.header('Referer') || '/category');
     } catch (error: unknown) {
-      return res.status(400).json({
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : 'Failed to delete selected categories',
-      });
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Failed to delete selected categories';
+      if (wantsJson) {
+        return res.status(400).json({
+          success: false,
+          message: msg,
+        });
+      }
+      flashToastError(req, 'Failed to Delete', msg);
+      return res.redirect(redirectUrl || req.header('Referer') || '/category');
     }
   }
 
   @Roles('super_admin')
   @Delete('bulk-delete')
-  async removeManyDelete(@Body('ids') ids: string[], @Res() res: Response) {
-    return this.removeManyPost(ids, res);
+  async removeManyDelete(
+    @Body('ids') rawIds: any,
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.removeManyPost(rawIds, redirectUrl, req, res);
   }
 
   @Roles('super_admin')

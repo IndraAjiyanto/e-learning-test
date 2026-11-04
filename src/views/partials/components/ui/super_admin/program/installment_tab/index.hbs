@@ -29,7 +29,7 @@
 --}}
 <div
   class='flex flex-col gap-3.5'
-  x-data='clientTable({ url: "/program/installment/" + {{json courseId}}, searchKeys: ["month", "downPayment"], dataKey: "installments" })'
+  x-data='clientTable({ url: "/program/installment/" + {{json courseId}}, searchKeys: ["month", "downPayment"], dataKey: "installments", entityName: "installment", deleteEntity: "installment" })'
   x-init='load()'
 >
   {{!-- Tombol create lewat slot aksi, bukan prop createHref: tampil hanya bila
@@ -38,7 +38,6 @@
     placeholder='Search installment..'
     searchLabel='Search program installment'
     hideCreate=true
-    hideBulkDelete=true
     fullWidth=true
   }}
     <template x-if='(raw?.availableMonths || []).length > 0'>
@@ -51,6 +50,7 @@
 
   {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
     <colgroup>
+      <template x-if='selectMode'><col class='w-[48px]' /></template>
       <col class='w-[66px]' />
       <col class='w-[201.5px]' />
       <col class='w-[201.5px]' />
@@ -59,6 +59,7 @@
     </colgroup>
     <thead>
       <tr>
+        {{> components/ui/super_admin/table/header_cell checkbox=true }}
         {{> components/ui/super_admin/table/header_cell label='No' }}
         {{> components/ui/super_admin/table/header_cell label='Duration' }}
         {{> components/ui/super_admin/table/header_cell label='Down Payment' }}
@@ -68,7 +69,11 @@
     </thead>
     <tbody>
       <template x-for='(row, index) in rows' :key='row.id'>
-        <tr class='align-middle transition-colors hover:bg-[#fafafa]'>
+        <tr
+          class='align-middle transition-colors hover:bg-[#fafafa]'
+          :class="selectedIds && selectedIds.some(id => String(id) === String(row.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+        >
+          {{> components/ui/super_admin/table/cell checkbox=true disabled='row.hasPayment' title="row.hasPayment ? 'Cannot be deleted because it has payment records' : ''" }}
 
           {{> components/ui/super_admin/table/cell
             text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
@@ -90,20 +95,68 @@
           {{/components/ui/super_admin/table/cell}}
 
           {{#> components/ui/super_admin/table/cell variant='action'}}
-            {{> components/ui/super_admin/table/row_actions
-              entity='installment'
-              deleteAction="'/installment/' + row.id + '?_method=DELETE'"
-              editHref="'/installment/formEdit/' + row.id"
-            }}
+            <div class='flex items-center gap-1'>
+              <a
+                :href="'/installment/formEdit/' + row.id"
+                title='Edit installment'
+                aria-label='Edit installment'
+                class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#525252] transition-colors hover:bg-[#f5f5f5] hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40 active:bg-[#e5e5e5]'
+              >
+                {{!-- lucide: edit-2 --}}
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+                  <path d='M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z' />
+                </svg>
+              </a>
+
+              <template x-if='!row.hasPayment'>
+                <form :action="'/installment/' + row.id + '?_method=DELETE'" method='post'>
+                  <button
+                    type='button'
+                    onclick="openDeleteModal(this, 'Delete Installment?', 'Are you sure you want to delete this installment scheme? This action will permanently remove it and cannot be undone.')"
+                    title='Delete installment'
+                    aria-label='Delete installment'
+                    class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#dc2626] transition-colors hover:bg-[#fef2f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626]/40 active:bg-[#fee2e2]'
+                  >
+                    {{!-- lucide: trash-2 --}}
+                    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+                      <path d='M3 6h18' />
+                      <path d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
+                      <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
+                      <line x1='10' x2='10' y1='11' y2='17' />
+                      <line x1='14' x2='14' y1='11' y2='17' />
+                    </svg>
+                  </button>
+                </form>
+              </template>
+
+              <template x-if='row.hasPayment'>
+                <button
+                  type='button'
+                  disabled
+                  title='Cannot be deleted because it has payment records'
+                  aria-label='Cannot be deleted because it has payment records'
+                  class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#a3a3a3] opacity-40 cursor-not-allowed'
+                >
+                  {{!-- lucide: trash-2 --}}
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+                    <path d='M3 6h18' />
+                    <path d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
+                    <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
+                    <line x1='10' x2='10' y1='11' y2='17' />
+                    <line x1='14' x2='14' y1='11' y2='17' />
+                  </svg>
+                </button>
+              </template>
+            </div>
           {{/components/ui/super_admin/table/cell}}
         </tr>
       </template>
 
-      {{#> components/ui/super_admin/table/message_row show='loading' colspan='5'}}
+      {{#> components/ui/super_admin/table/message_row show='loading' colspan='6'}}
         Loading installments…
       {{/components/ui/super_admin/table/message_row}}
 
-      {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='5'}}
+      {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='6'}}
         No installments found.
       {{/components/ui/super_admin/table/message_row}}
     </tbody>
