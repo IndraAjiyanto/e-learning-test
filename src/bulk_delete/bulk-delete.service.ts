@@ -496,6 +496,31 @@ export class BulkDeleteService {
       await this.deletePhysicalFiles(materials.map((m) => m.file));
     }
 
+    // Safety check khusus Voucher: bersihkan relasi junction table voucher_programs
+    if (key === 'voucher' || key === 'vouchers') {
+      const vouchers = (await repo.find({
+        where: { id: In(ids) },
+        relations: ['courses'],
+      })) as Voucher[];
+      if (!vouchers || vouchers.length === 0) {
+        throw new NotFoundException('Selected voucher(s) not found.');
+      }
+      try {
+        await this.dataSource
+          .createQueryBuilder()
+          .delete()
+          .from('voucher_programs')
+          .where('"voucherId" IN (:...ids)', { ids })
+          .execute();
+      } catch {}
+      await repo.remove(vouchers);
+      return {
+        success: true,
+        count: vouchers.length,
+        message: `Successfully deleted ${vouchers.length} selected voucher(s).`,
+      };
+    }
+
     const items = await repo.findBy({ id: In(ids) });
     if (!items || items.length === 0) {
       throw new NotFoundException('Selected items were not found.');
@@ -821,6 +846,33 @@ export class BulkDeleteService {
           'Cannot delete all assignments because some have already been completed by user.',
         );
       }
+    }
+
+    // Safety check khusus Voucher: bersihkan relasi junction table voucher_programs
+    if (key === 'voucher' || key === 'vouchers') {
+      const vouchers = (await repo.find({
+        relations: ['courses'],
+      })) as Voucher[];
+      if (!vouchers || vouchers.length === 0) {
+        return {
+          success: true,
+          count: 0,
+          message: 'No data to delete.',
+        };
+      }
+      try {
+        await this.dataSource
+          .createQueryBuilder()
+          .delete()
+          .from('voucher_programs')
+          .execute();
+      } catch {}
+      await repo.remove(vouchers);
+      return {
+        success: true,
+        count: vouchers.length,
+        message: `Successfully deleted all vouchers (${vouchers.length} items).`,
+      };
     }
 
     const items = await repo.find();

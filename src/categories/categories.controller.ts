@@ -260,14 +260,53 @@ export class CategoriesController {
 
     let ids: string[] = [];
     if (Array.isArray(rawIds)) {
-      ids = rawIds.map(String).filter(Boolean);
+      const flattened = rawIds.flatMap((item) =>
+        typeof item === 'string' && item.includes(',')
+          ? item.split(',')
+          : item,
+      );
+      ids = Array.from(
+        new Set(
+          flattened
+            .map((s) => String(s).trim())
+            .filter((s) => s.length > 0),
+        ),
+      );
     } else if (typeof rawIds === 'string' && rawIds.trim()) {
       try {
         const parsed = JSON.parse(rawIds);
-        if (Array.isArray(parsed)) ids = parsed.map(String).filter(Boolean);
-        else ids = rawIds.split(',').map((s) => s.trim()).filter(Boolean);
+        if (Array.isArray(parsed)) {
+          const flattened = parsed.flatMap((item) =>
+            typeof item === 'string' && item.includes(',')
+              ? item.split(',')
+              : item,
+          );
+          ids = Array.from(
+            new Set(
+              flattened
+                .map((s) => String(s).trim())
+                .filter((s) => s.length > 0),
+            ),
+          );
+        } else {
+          ids = Array.from(
+            new Set(
+              rawIds
+                .split(',')
+                .map((s) => s.trim())
+                .filter((s) => s.length > 0),
+            ),
+          );
+        }
       } catch {
-        ids = rawIds.split(',').map((s) => s.trim()).filter(Boolean);
+        ids = Array.from(
+          new Set(
+            rawIds
+              .split(',')
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0),
+          ),
+        );
       }
     }
 

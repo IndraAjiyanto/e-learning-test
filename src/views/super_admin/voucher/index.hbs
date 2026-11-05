@@ -31,7 +31,12 @@
 
     <div
       class='flex flex-col gap-2.5'
-      x-data='clientTable({ items: {{json vouchers}}, searchKeys: ["code_voucher", "type", "target_users_label"] })'
+      x-data='clientTable({
+        items: {{json vouchers}},
+        searchKeys: ["code_voucher", "type", "target_users_label"],
+        entityName: "vouchers",
+        deleteEntity: "voucher"
+      })'
     >
       {{> components/ui/super_admin/table/toolbar
         placeholder='Search voucher..'

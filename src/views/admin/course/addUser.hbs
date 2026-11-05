@@ -187,7 +187,7 @@
             type='button'
             @click='toggleSelectAllOnPage()'
             class='text-xs text-[#DC2626] hover:underline font-semibold cursor-pointer'
-            x-text="isAllSelected() ? 'Deselect Page' : 'Select All on Page'"
+            x-text="isAllSelected() ? 'Deselect All' : 'Select All'"
           ></button>
 
           <template x-if='selectedIds && selectedIds.length > 0'>

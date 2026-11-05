@@ -191,11 +191,6 @@
             input.value = item;
             form.appendChild(input);
           });
-          var fallback = document.createElement('input');
-          fallback.type = 'hidden';
-          fallback.name = key;
-          fallback.value = val.join(',');
-          form.appendChild(fallback);
         } else if (val !== undefined && val !== null) {
           var input = document.createElement('input');
           input.type = 'hidden';
