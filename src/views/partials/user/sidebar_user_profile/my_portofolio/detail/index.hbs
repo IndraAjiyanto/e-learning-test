@@ -193,10 +193,10 @@
   <!-- Main Content Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Left Column: Description & Overview -->
-    <div class="lg:col-span-2">
+    <div class="lg:col-span-2 min-w-0">
       <div class="space-y-6">
         <!-- Project Description Card -->
-        <div class="bg-[#FFFFFF] rounded-2xl p-6 sm:p-8 border border-[#D9D9D9]">
+        <div class="bg-[#FFFFFF] rounded-2xl p-6 sm:p-8 border border-[#D9D9D9] min-w-0 max-w-full overflow-hidden">
           <h2 class="font-inter font-bold text-[18px] leading-[24px] text-[#003060] mb-3 pb-3 border-b border-[#D9D9D9]">
             {{t "test.detailPortfolio.projectDescription"}}
           </h2>
@@ -215,13 +215,13 @@
         </div>
 
         <!-- Project Overview Card -->
-        <div class="bg-[#FFFFFF] rounded-2xl p-6 sm:p-8 border border-[#D9D9D9]">
+        <div class="bg-[#FFFFFF] rounded-2xl p-6 sm:p-8 border border-[#D9D9D9] min-w-0 max-w-full overflow-hidden">
           <h2 class="font-inter font-bold text-[18px] leading-[24px] text-[#003060] mb-3 pb-3 border-b border-[#D9D9D9]">
             {{t "test.detailPortfolio.projectOverview"}}
           </h2>
           <div
             id="overviewDetail"
-            class="font-inter font-normal text-[16px] leading-[26px] text-[#475569] prose prose-sm max-w-none"
+            class="font-inter font-normal text-[16px] leading-[26px] text-[#475569] prose prose-sm max-w-none min-w-0 max-w-full break-words [overflow-wrap:anywhere] [word-break:break-word] overflow-hidden"
             x-html="renderOverview(selectedPortfolio ? selectedPortfolio.overview : '') || '<p class=\'italic text-gray-400\'>{{default (t 'test.detailPortfolio.noOverview') 'No detailed overview provided.'}}</p>'"
           ></div>
         </div>
@@ -229,7 +229,7 @@
     </div>
 
     <!-- Right Column: Student Profile, Meta Info, Technologies & CTA -->
-    <div class="lg:col-span-1">
+    <div class="lg:col-span-1 min-w-0">
       <div class="space-y-4">
         <!-- Student Profile & Program Details Card -->
         <div class="bg-[#FFFFFF] rounded-2xl p-6 border border-[#D9D9D9]">

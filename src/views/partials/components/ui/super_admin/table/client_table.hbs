@@ -88,14 +88,19 @@
         return 'Select item';
       },
 
+      getAllSelectableItems() {
+        const source = (this.filtered !== undefined && this.filtered !== null) ? this.filtered : (this.items || []);
+        return source.filter((row) => !this.isRowDisabled(row));
+      },
+
       isAllSelected() {
-        const list = (this.rows || this.filtered || []).filter((row) => !this.isRowDisabled(row));
+        const list = this.getAllSelectableItems();
         if (!list || list.length === 0) return false;
         return list.every((row) => this.selectedIds.some((id) => String(id) === String(row.id)));
       },
 
       toggleSelectAll(event) {
-        const list = (this.rows || this.filtered || []).filter((row) => !this.isRowDisabled(row));
+        const list = this.getAllSelectableItems();
         if (event.target.checked) {
           const currentIds = list.map((r) => r.id);
           const currentSet = new Set(this.selectedIds.map(String));
@@ -112,7 +117,7 @@
       },
 
       toggleSelectAllOnPage() {
-        const list = (this.rows || this.filtered || []).filter((row) => !this.isRowDisabled(row));
+        const list = this.getAllSelectableItems();
         if (this.isAllSelected()) {
           const currentSet = new Set(list.map((r) => String(r.id)));
           this.selectedIds = this.selectedIds.filter((id) => !currentSet.has(String(id)));
@@ -126,6 +131,10 @@
             }
           });
         }
+      },
+
+      toggleSelectAllItems() {
+        return this.toggleSelectAllOnPage();
       },
 
       clearSelection() {
@@ -260,7 +269,7 @@
       },
 
       confirmDeleteAll() {
-        const total = (this.rows || this.filtered || this.items || []).length;
+        const total = (this.filtered || this.items || []).length;
         if (total === 0) return;
         const label = this.entityName || 'items';
 

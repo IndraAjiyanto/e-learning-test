@@ -34,12 +34,12 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       
       <!-- Left Column: Description & Overview -->
-      <div class="lg:col-span-2 space-y-6">
+      <div class="lg:col-span-2 space-y-6 min-w-0">
         {{> portfolio/detail/content portfolio=portfolio}}
       </div>
 
       <!-- Right Column: Sidebar Meta Info, Tools & CTA -->
-      <div class="lg:col-span-1 space-y-4">
+      <div class="lg:col-span-1 space-y-4 min-w-0">
         {{> portfolio/detail/sidebar portfolio=portfolio}}
 
         {{!-- Action Button (Edit) if user owns this portfolio --}}

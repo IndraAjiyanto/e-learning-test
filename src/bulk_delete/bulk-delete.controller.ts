@@ -11,17 +11,32 @@ export class BulkDeleteController {
 
   private extractIds(rawIds: any): string[] {
     if (Array.isArray(rawIds)) {
-      return rawIds.map(String).filter(Boolean);
+      const flattened = rawIds.flatMap((item) =>
+        typeof item === 'string' && item.includes(',')
+          ? item.split(',')
+          : item,
+      );
+      return Array.from(
+        new Set(
+          flattened
+            .map((s) => String(s).trim())
+            .filter((s) => s.length > 0),
+        ),
+      );
     }
     if (typeof rawIds === 'string' && rawIds.trim()) {
       try {
         const parsed = JSON.parse(rawIds);
-        if (Array.isArray(parsed)) return parsed.map(String).filter(Boolean);
+        if (Array.isArray(parsed)) return this.extractIds(parsed);
       } catch {}
-      return rawIds
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean);
+      return Array.from(
+        new Set(
+          rawIds
+            .split(',')
+            .map((s) => s.trim())
+            .filter((s) => s.length > 0),
+        ),
+      );
     }
     return [];
   }

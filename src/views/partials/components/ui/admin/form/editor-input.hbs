@@ -19,7 +19,7 @@
   })'
   class='w-full'
 >
-  <div class='box-border w-full min-h-[200px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] overflow-hidden focus-within:border-[#003060] focus-within:ring-1 focus-within:ring-[#003060] transition-colors {{class}}'>
+  <div class='box-border w-full min-h-[200px] bg-[#FFFFFF] border border-[#D4D4D4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[8px] focus-within:border-[#003060] focus-within:ring-1 focus-within:ring-[#003060] transition-colors {{class}}'>
     {{!-- x-ignore prevents Alpine from re-scanning and breaking editor listeners --}}
     <div
       id='{{default id "editorjs"}}'
@@ -41,16 +41,48 @@
 </div>
 
 <style>
+  :root {
+    --editor-toolbar-top: 0px;
+  }
+  body:has(> header.sticky) {
+    --editor-toolbar-top: 64px;
+  }
+  @media (min-width: 1024px) {
+    body:has(> header.sticky) {
+      --editor-toolbar-top: 76px;
+    }
+  }
+  main.overflow-y-auto,
+  [data-shell="admin"],
+  .js-user-sidebar ~ main {
+    --editor-toolbar-top: 0px;
+  }
+
   .quill-editor-container.ql-container {
+    height: auto !important;
     font-family: 'Inter', sans-serif !important;
     font-size: 16px !important;
     border: none !important;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
   }
   .ql-toolbar.ql-snow {
+    position: sticky !important;
+    top: var(--editor-toolbar-top, 0px) !important;
+    z-index: 25 !important;
     border: none !important;
     border-bottom: 1px solid #E5E7EB !important;
     background-color: #F8FAFC !important;
     padding: 8px 12px !important;
+    border-top-left-radius: 7px !important;
+    border-top-right-radius: 7px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  .ql-snow .ql-picker-options {
+    z-index: 100 !important;
+  }
+  .ql-snow .ql-tooltip {
+    z-index: 30 !important;
   }
   /* Ensure bulleted lists in Quill 2 show bullets and never numbers */
   .quill-editor-container .ql-editor li[data-list=bullet] > .ql-ui:before {
@@ -66,6 +98,7 @@
     content: none !important;
   }
   .quill-editor-container .ql-editor {
+    height: auto !important;
     min-height: 160px !important;
     font-family: 'Inter', sans-serif !important;
     font-size: 16px !important;
