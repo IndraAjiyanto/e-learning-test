@@ -35,7 +35,7 @@
     <div class="mt-4 space-y-3">
     {{#each course.weeks}}
     <div
-      class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
+      class="overflow-hidden rounded-xl border {{#if (lookup (lookup ../weekSummaries id) 'quizzesPassed')}}border-2 border-[#22C55E]{{else if (or weekProgresses.[0].quiz progres_minggu.[0].quiz)}}border-2 border-[#22C55E]{{else}}border-[#E5E5E5]{{/if}} bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"
       x-data="{
         openWeek: false,
         sessions: [],
