@@ -135,6 +135,9 @@ export class QuizController {
       }
     }
 
+    // Bersihkan sesi kuis usang jika ada saat user mengakses halaman ikhtisar
+    await this.quizService.resetQuizState(req.user!.id);
+
     const scores = await this.quizService.findUserScore(req.user!.id, quizId);
     const questions = await this.quizService.findQuestions(quizId);
 
@@ -198,6 +201,20 @@ export class QuizController {
             : '/learning',
         );
       }
+    }
+
+    // Jika nilai kuis sudah memenuhi batas minimum (passed), kuis tidak boleh dikerjakan lagi
+    const isPassed = await this.quizService.isQuizPassed(
+      req.user!.id,
+      quizId,
+    );
+    if (isPassed) {
+      flashToast(
+        req,
+        'Quiz Already Completed',
+        'You have already passed this quiz and cannot take it again.',
+      );
+      return res.redirect(`/quiz/form/${quizId}`);
     }
 
     const check = await this.quizService.checkStartQuestion(

@@ -104,7 +104,31 @@ export class QuizService {
     });
   }
 
-  async checkStartQuestion(userId: string, quizId: string) {
+  async resetQuizState(userId: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) return;
+    if (user.quizStart || user.countdownQuiz) {
+      user.quizStart = false;
+      user.countdownQuiz = null;
+      await this.userRepository.save(user);
+    }
+  }
+
+  async clearUserAnswers(userId: string, quizId: string): Promise<void> {
+    const questions = await this.questionRepository.find({
+      where: { quiz: { id: quizId } },
+      select: ['id'],
+    });
+    const ids = questions.map((q) => q.id);
+    if (ids.length > 0) {
+      await this.userAnswerRepository.delete({
+        user: { id: userId },
+        question: { id: In(ids) },
+      });
+    }
+  }
+
+  async checkStartQuestion(userId: string, quizId: string): Promise<boolean> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('user not found');
@@ -114,16 +138,29 @@ export class QuizService {
     if (!quiz) {
       throw new NotFoundException('quiz not found');
     }
-    if (user.countdownQuiz !== null) {
-      const startTime = user.countdownQuiz.getTime();
-      const duration = quiz.duration * 60000;
 
-      if (startTime + duration <= Date.now() && user.quizStart === true) {
-        return true;
-      } else {
+    if (user.countdownQuiz !== null && user.quizStart === true) {
+      const startTime = user.countdownQuiz.getTime();
+      const durationMs = (quiz.duration || 1) * 60000;
+      const now = Date.now();
+      const elapsed = now - startTime;
+
+      // Jika waktu sudah lewat jauh melebihi durasi kuis (misal kuis ditinggalkan berjam-jam/berhari-hari),
+      // ini adalah stale session (sesi kadaluwarsa yang ditinggalkan), BUKAN timeout saat kuis aktif.
+      // Reset state kuis otomatis agar pengguna tidak terjebak timeout palsu dan tidak otomatis ter-submit 0.
+      const gracePeriodMs = Math.max(durationMs, 5 * 60000);
+      if (elapsed > durationMs + gracePeriodMs) {
+        user.quizStart = false;
+        user.countdownQuiz = null;
+        await this.userRepository.save(user);
         return false;
       }
+
+      if (elapsed >= durationMs) {
+        return true;
+      }
     }
+    return false;
   }
 
   async findUserScore(userId: string, quziId: string) {
@@ -136,7 +173,15 @@ export class QuizService {
     });
   }
 
-  async getRemainingTime(userId: string, quizId: string) {
+  async isQuizPassed(userId: string, quizId: string): Promise<boolean> {
+    const quiz = await this.findOne(quizId);
+    if (!quiz) return false;
+    const scores = await this.findUserScore(userId, quizId);
+    const minScore = quiz.minScore ?? 0;
+    return scores.some((s) => s.score >= minScore);
+  }
+
+  async getRemainingTime(userId: string, quizId: string): Promise<number> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('user not found');
@@ -146,28 +191,31 @@ export class QuizService {
       throw new NotFoundException('quiz not found');
     }
 
-    if (user.quizStart) {
-      const now = Date.now();
-      const durationMs = quiz.duration * 60000;
+    const durationMs = (quiz.duration || 1) * 60000;
+    const now = Date.now();
 
-      let startTime = user.countdownQuiz?.getTime();
+    if (user.quizStart && user.countdownQuiz) {
+      let startTime = user.countdownQuiz.getTime();
 
-      if (!startTime || now - startTime > durationMs) {
+      // Jika waktu sudah lewat dari durasi kuis, reset menjadi sesi baru dengan waktu penuh
+      if (now - startTime > durationMs) {
         startTime = now;
         user.countdownQuiz = new Date(startTime);
         await this.userRepository.save(user);
+        await this.clearUserAnswers(userId, quizId);
+        return (quiz.duration || 1) * 60;
       }
 
       const remainingMs = durationMs - (now - startTime);
-      const remainingSecond = Math.ceil(remainingMs / 1000);
-      return remainingSecond;
+      return Math.max(0, Math.ceil(remainingMs / 1000));
     } else {
-      user.countdownQuiz = new Date();
+      user.countdownQuiz = new Date(now);
       user.quizStart = true;
 
       await this.userRepository.save(user);
+      await this.clearUserAnswers(userId, quizId);
 
-      return quiz.duration * 60;
+      return (quiz.duration || 1) * 60;
     }
   }
 

@@ -2272,10 +2272,11 @@ export class CoursesService {
       const isUnlocked = idx === 0 || previousPassed;
       const isPassed = quiz
         ? bestScore !== null && bestScore >= minScore
-        : true;
+        : false;
       const prevMinScore =
         idx > 0 ? (syllabuses[idx - 1].quiz?.[0]?.minScore ?? 80) : null;
-      previousPassed = isPassed;
+      const canUnlockNext = quiz ? isPassed : true;
+      previousPassed = canUnlockNext;
 
       return {
         id: s.id,
@@ -2288,6 +2289,7 @@ export class CoursesService {
         hasAttempt,
         isUnlocked,
         isPassed,
+        isCompleted: isPassed,
         prevMinScore,
       };
     });

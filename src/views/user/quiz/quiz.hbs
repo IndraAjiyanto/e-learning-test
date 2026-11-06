@@ -74,9 +74,7 @@
         </div>
       </div>
 
-      {{!-- Garis keadaan: hasil terbaik dan tombol utama. Sebelumnya tombol
-           Start Quiz berdiri sendiri di tengah halaman tanpa menyebutkan sama
-           sekali apakah kuisnya sudah pernah lulus. --}}
+      {{!-- Garis keadaan: hasil terbaik dan tombol utama. Jika sudah lulus (passed), kuis tidak dapat diulang lagi. --}}
       <div class="flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-[#E5E5E5] bg-[#FAFAFA] px-5 py-4 sm:px-6">
         {{#if attempts.length}}
           <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 font-inter text-xs font-medium leading-none {{#if passed}}border-[#BBF7D0] bg-[#F0FDF4] text-[#15803D]{{else}}border-[#FECACA] bg-[#FEF2F2] text-[#B42318]{{/if}}">
@@ -86,18 +84,33 @@
           <span class="min-w-0 flex-1 font-inter text-xs text-[#737373]">
             {{t 'test.quiz.bestScore'}} <span class="font-semibold text-[#171717]">{{best}}</span>
             &middot; {{t 'test.quiz.attempts'}} <span class="font-semibold text-[#171717]">{{attempts.length}}</span>
+            {{#if passed}}
+              &middot; <span class="font-medium text-[#15803D]">{{t 'test.quiz.passedCannotRetake'}}</span>
+            {{/if}}
           </span>
         {{else}}
           <span class="min-w-0 flex-1 font-inter text-xs text-[#737373]">{{t 'test.quiz.startYourFirstQuiz'}}</span>
         {{/if}}
 
-        <a
-          href="/quiz/start/{{quiz.id}}"
-          class="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white no-underline transition-colors hover:bg-[#00254a]"
-        >
-          <i class="fa-solid fa-play text-xs"></i>
-          {{#if attempts.length}}{{t 'test.quiz.retakeQuiz'}}{{else}}{{t 'test.quiz.startQuiz'}}{{/if}}
-        </a>
+        {{#if passed}}
+          <button
+            type="button"
+            disabled
+            class="inline-flex h-10 shrink-0 cursor-not-allowed items-center justify-center gap-2 rounded-[8px] border border-[#BBF7D0] bg-[#F0FDF4] px-4 font-inter text-sm font-semibold text-[#15803D] opacity-90 shadow-none"
+          >
+            <i class="fa-solid fa-circle-check text-xs"></i>
+            {{t 'test.quiz.completed'}}
+          </button>
+        {{else}}
+          <a
+            href="/quiz/start/{{quiz.id}}"
+            onclick="clearQuizStorage()"
+            class="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-4 font-inter text-sm font-semibold text-white no-underline transition-colors hover:bg-[#00254a]"
+          >
+            <i class="fa-solid fa-play text-xs"></i>
+            {{#if attempts.length}}{{t 'test.quiz.retakeQuiz'}}{{else}}{{t 'test.quiz.startQuiz'}}{{/if}}
+          </a>
+        {{/if}}
       </div>
     </div>
 
@@ -143,6 +156,16 @@
 
   </div>
 </div>
+
+<script>
+function clearQuizStorage() {
+  try {
+    Object.keys(localStorage)
+      .filter(function(key) { return key.startsWith("q-"); })
+      .forEach(function(key) { localStorage.removeItem(key); });
+  } catch (e) {}
+}
+</script>
 {{/user/shell_frame/index}}
 
 {{!-- Toast sukses sesudah kuis selesai dikumpulkan (redirect dari user_answers.controller) --}}

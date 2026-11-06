@@ -28,7 +28,7 @@
   <div class="space-y-3">
     {{#each course.weeks}}
       {{#if quiz.[0].id}}
-        <div class="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+        <div class="overflow-hidden rounded-xl border {{#if (lookup (lookup ../weekSummaries id) 'quizzesPassed')}}border-2 border-[#22C55E]{{else if (or weekProgresses.[0].quiz progres_minggu.[0].quiz)}}border-2 border-[#22C55E]{{else}}border-[#E5E5E5]{{/if}} bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
           <div class="flex flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4">
             <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] font-inter text-sm font-bold text-[#003060]">{{weekNumber}}</span>
 
