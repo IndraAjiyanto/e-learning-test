@@ -53,7 +53,7 @@
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Details</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Obstacle</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Documentation</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Course</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Program</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">User</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Action</th>
@@ -164,7 +164,7 @@ function logbookTable({ logbooks }) {
       const currentPageData = filtered.slice(start, end);
 
       const rows = [
-        ["No", "Activity", "Details", "Obstacle", "Documentation", "User", "Course", "Created At"]
+        ["No", "Activity", "Details", "Obstacle", "Documentation", "User", "Program", "Created At"]
       ];
 
       currentPageData.forEach((l, index) => {
