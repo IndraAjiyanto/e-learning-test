@@ -320,7 +320,9 @@ export class BulkDeleteService {
           (w.session || []).some(
             (s) =>
               (s.attendances || []).length > 0 ||
-              (s.sessionProgress || []).some((sp) => sp.logbook || sp.isAttended),
+              (s.sessionProgress || []).some(
+                (sp) => sp.logbook || sp.isAttended,
+              ),
           );
         if (isCompleted) {
           throw new BadRequestException(
@@ -776,7 +778,9 @@ export class BulkDeleteService {
           (w.session || []).some(
             (s) =>
               (s.attendances || []).length > 0 ||
-              (s.sessionProgress || []).some((sp) => sp.logbook || sp.isAttended),
+              (s.sessionProgress || []).some(
+                (sp) => sp.logbook || sp.isAttended,
+              ),
           ),
       );
       if (completed.length > 0) {

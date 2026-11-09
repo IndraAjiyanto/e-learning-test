@@ -12,15 +12,11 @@ export class BulkDeleteController {
   private extractIds(rawIds: any): string[] {
     if (Array.isArray(rawIds)) {
       const flattened = rawIds.flatMap((item) =>
-        typeof item === 'string' && item.includes(',')
-          ? item.split(',')
-          : item,
+        typeof item === 'string' && item.includes(',') ? item.split(',') : item,
       );
       return Array.from(
         new Set(
-          flattened
-            .map((s) => String(s).trim())
-            .filter((s) => s.length > 0),
+          flattened.map((s) => String(s).trim()).filter((s) => s.length > 0),
         ),
       );
     }

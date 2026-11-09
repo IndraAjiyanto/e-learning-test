@@ -204,10 +204,7 @@ export class QuizController {
     }
 
     // Jika nilai kuis sudah memenuhi batas minimum (passed), kuis tidak boleh dikerjakan lagi
-    const isPassed = await this.quizService.isQuizPassed(
-      req.user!.id,
-      quizId,
-    );
+    const isPassed = await this.quizService.isQuizPassed(req.user!.id, quizId);
     if (isPassed) {
       flashToast(
         req,

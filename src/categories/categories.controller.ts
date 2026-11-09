@@ -261,15 +261,11 @@ export class CategoriesController {
     let ids: string[] = [];
     if (Array.isArray(rawIds)) {
       const flattened = rawIds.flatMap((item) =>
-        typeof item === 'string' && item.includes(',')
-          ? item.split(',')
-          : item,
+        typeof item === 'string' && item.includes(',') ? item.split(',') : item,
       );
       ids = Array.from(
         new Set(
-          flattened
-            .map((s) => String(s).trim())
-            .filter((s) => s.length > 0),
+          flattened.map((s) => String(s).trim()).filter((s) => s.length > 0),
         ),
       );
     } else if (typeof rawIds === 'string' && rawIds.trim()) {
