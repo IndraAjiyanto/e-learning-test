@@ -235,7 +235,9 @@ export class CoursesController {
       return res.redirect(redirectUrl || req.header('Referer') || '/program');
     } catch (error: unknown) {
       const msg =
-        error instanceof Error ? error.message : 'Failed to delete all programs';
+        error instanceof Error
+          ? error.message
+          : 'Failed to delete all programs';
       if (wantsJson) {
         return res.status(400).json({
           success: false,
@@ -278,9 +280,16 @@ export class CoursesController {
       try {
         const parsed = JSON.parse(rawIds);
         if (Array.isArray(parsed)) ids = parsed.map(String).filter(Boolean);
-        else ids = rawIds.split(',').map((s) => s.trim()).filter(Boolean);
+        else
+          ids = rawIds
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean);
       } catch {
-        ids = rawIds.split(',').map((s) => s.trim()).filter(Boolean);
+        ids = rawIds
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
       }
     }
 
@@ -465,7 +474,6 @@ export class CoursesController {
     const technologies = await this.coursesService.findTechnologies();
     const mentorings = await this.coursesService.findMentoring();
 
-
     return res.render('admin/course/create', {
       user: req.user,
       category,
@@ -487,7 +495,6 @@ export class CoursesController {
     const courseType = await this.coursesService.findCourseTypes();
     const technologies = await this.coursesService.findTechnologies();
     const mentorings = await this.coursesService.findMentoring();
-
 
     return res.render('admin/course/formCreate', {
       user: req.user,
@@ -896,16 +903,12 @@ export class CoursesController {
     const technologies = await this.coursesService.findTechnologies();
     const mentorings = await this.coursesService.findMentoring();
 
-
-
     const structureLock =
       await this.coursesService.checkLearningStructureLock(courseId);
 
-
     return res.render('admin/course/edit', {
       learningStructureLocked: structureLock.isLocked,
-      learningStructureLockHint:
-        structureLock.hint || structureLock.reason,
+      learningStructureLockHint: structureLock.hint || structureLock.reason,
       user: req.user,
       course,
       category,
@@ -2096,9 +2099,16 @@ export class CoursesController {
       try {
         const parsed = JSON.parse(source);
         if (Array.isArray(parsed)) userIds = parsed.map(String).filter(Boolean);
-        else userIds = source.split(',').map((s) => s.trim()).filter(Boolean);
+        else
+          userIds = source
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean);
       } catch {
-        userIds = source.split(',').map((s) => s.trim()).filter(Boolean);
+        userIds = source
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
       }
     }
 

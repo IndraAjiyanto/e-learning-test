@@ -1366,7 +1366,9 @@ export class CoursesService {
               { status: 'unlaunch' },
             );
           } else {
-            query.andWhere('course.status = :status', { status: statusList[0] });
+            query.andWhere('course.status = :status', {
+              status: statusList[0],
+            });
           }
         } else if (statusList.length > 1) {
           if (statusList.includes('unlaunch')) {
@@ -1902,15 +1904,19 @@ export class CoursesService {
       throw new NotFoundException('Program not found');
     }
 
-    const [weeksCount, portfolioGuideCount, finalAssignmentCount, syllabusCount] =
-      await Promise.all([
-        this.weeksRepository.count({ where: { course: { id: courseId } } }),
-        this.portfolioGuideRepository.count({
-          where: { course: { id: courseId } },
-        }),
-        this.finalAssignmentRepository.count({ where: { courseId } }),
-        this.syllabusRepository.count({ where: { course: { id: courseId } } }),
-      ]);
+    const [
+      weeksCount,
+      portfolioGuideCount,
+      finalAssignmentCount,
+      syllabusCount,
+    ] = await Promise.all([
+      this.weeksRepository.count({ where: { course: { id: courseId } } }),
+      this.portfolioGuideRepository.count({
+        where: { course: { id: courseId } },
+      }),
+      this.finalAssignmentRepository.count({ where: { courseId } }),
+      this.syllabusRepository.count({ where: { course: { id: courseId } } }),
+    ]);
 
     const hasWeeks = weeksCount > 0;
     const hasPortfolioGuide = portfolioGuideCount > 0;
