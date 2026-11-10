@@ -1260,6 +1260,14 @@ export class PaymentsService {
     });
   }
 
+  // Get payment by ID
+  async getPaymentById(id: string): Promise<Payment | null> {
+    return this.paymentRepository.findOne({
+      where: { id },
+      relations: ['course', 'user', 'invoice', 'installment'],
+    });
+  }
+
   // Get installment payment by No (table installment_payments)
   async getInstallmentPaymentByNo(no: string) {
     return this.installmentPaymentService.findByNo(no);

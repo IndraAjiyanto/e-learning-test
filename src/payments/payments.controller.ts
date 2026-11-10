@@ -339,8 +339,15 @@ export class PaymentsController {
   ) {
     let uploadedFile: string | undefined;
     try {
+      const parent = await this.paymentsService.getPaymentById(paymentId);
+      const isParentManual =
+        parent &&
+        !parent.invoice?.xendit_invoice_id &&
+        !parent.invoice?.xendit_invoice_url &&
+        !parent.invoice?.xendit_payment_channel;
+
       const { manual_enabled } = await this.paymentSettingsService.effective();
-      if (!manual_enabled) {
+      if (!manual_enabled && !isParentManual) {
         flashToastError(
           req,
           'Method inactive',
@@ -509,8 +516,15 @@ export class PaymentsController {
     // atau bukti transfer lain untuk bulan yang sama.
     let uploadedFile: string | undefined;
     try {
+      const parent = await this.paymentsService.getPaymentById(paymentId);
+      const isParentManual =
+        parent &&
+        !parent.invoice?.xendit_invoice_id &&
+        !parent.invoice?.xendit_invoice_url &&
+        !parent.invoice?.xendit_payment_channel;
+
       const { manual_enabled } = await this.paymentSettingsService.effective();
-      if (!manual_enabled) {
+      if (!manual_enabled && !isParentManual) {
         flashToastError(
           req,
           'Method inactive',
