@@ -59,7 +59,7 @@ export class ApiPaymentController {
     @Res() res: Response,
   ) {
     const manualEnabled = body?.manualEnabled;
-    const gatewayEnabled = body?.gatewayEnabled;
+    const gatewayEnabled = body?.gatewayEnabled ?? body?.gateway_enabled;
 
     if (gatewayEnabled === true || body?.gateway_enabled === true) {
       return res.status(400).json({
@@ -77,6 +77,15 @@ export class ApiPaymentController {
         message: 'Tidak ada perubahan untuk disimpan.',
       });
     }
+
+    // Catatan untuk masa mendatang (bila Xendit diaktifkan kembali):
+    // if (gatewayEnabled === true && !process.env.XENDIT_SECRET_KEY) {
+    //   return res.status(400).json({
+    //     status: 'error',
+    //     message:
+    //       'XENDIT_SECRET_KEY belum dikonfigurasi — gateway tidak bisa diaktifkan.',
+    //   });
+    // }
 
     const patch: Partial<
       import('../entities/payment-settings.entity').PaymentSettings
@@ -222,11 +231,27 @@ export class ApiPaymentController {
           .json({ status: 'error', message: 'Data tidak lengkap' });
       }
 
+      const parent = await this.paymentsService.getPaymentById(paymentId);
+      const isXenditContract =
+        parent &&
+        Boolean(
+          parent.invoice?.xendit_invoice_id ||
+          parent.invoice?.xendit_invoice_url ||
+          parent.invoice?.xendit_payment_channel,
+        );
+
       const { gateway_enabled } = await this.paymentSettingsService.effective();
-      if (!gateway_enabled) {
+      if (!gateway_enabled && !isXenditContract) {
         return res.status(400).json({
           status: 'error',
           message: 'Metode pembayaran gateway sedang nonaktif.',
+        });
+      }
+
+      if (!process.env.XENDIT_SECRET_KEY) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Xendit Payment Gateway tidak dikonfigurasi.',
         });
       }
 

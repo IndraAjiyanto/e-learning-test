@@ -64,7 +64,7 @@ export class PaymentSettingsService {
   async update(patch: Partial<PaymentSettings>): Promise<PaymentSettings> {
     const settings = await this.get();
 
-    // Xendit/Gateway dinonaktifkan untuk sementara - selalu paksa ke manual
+    // Xendit/Gateway dinonaktifkan / di-hide untuk sementara - selalu paksa ke manual
     settings.gateway_enabled = false;
     if (patch.manual_enabled === false && patch.gateway_enabled !== true) {
       settings.manual_enabled = true;
@@ -91,8 +91,8 @@ export class PaymentSettingsService {
    */
   async effective() {
     const s = await this.get();
-    // Xendit/Gateway dinonaktifkan untuk sementara
-    // const gatewayAvailable = false;
+    // Xendit/Gateway dinonaktifkan / di-hide untuk sementara atas permintaan client
+    const gatewayAvailable = false;
     const gatewayHidden = true;
 
     const manualEnabled = true;

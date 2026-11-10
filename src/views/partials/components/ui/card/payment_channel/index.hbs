@@ -152,8 +152,9 @@
         </label>
 
         <button
-          type="submit"
-          class="w-full bg-[#16A34A] hover:bg-[#15803D] text-white rounded-lg py-3 font-inter font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+          type="button"
+          @click="promptConfirm($event)"
+          class="w-full bg-[#16A34A] hover:bg-[#15803D] text-white rounded-lg py-3 font-inter font-semibold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"
         >
           <i class="fa-solid fa-paper-plane text-xs"></i>
           {{t 'test.payment.channel.submit'}}
@@ -429,6 +430,9 @@
       closeConfirmModal() {
         if (this.submitting) return;
         this.showConfirmModal = false;
+        if (typeof window.resetRouteProgress === 'function') {
+          window.resetRouteProgress();
+        }
       },
 
       confirmAndSubmit() {
@@ -440,6 +444,9 @@
           const promoInput = form.querySelector('input[name="promoCode"]');
           if (promoInput) {
             promoInput.value = promo;
+          }
+          if (typeof window.startRouteProgress === 'function') {
+            window.startRouteProgress();
           }
           form.submit();
         }
