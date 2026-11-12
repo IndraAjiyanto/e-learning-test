@@ -9,28 +9,34 @@
   <!-- Container 1052px, Gap 28px -->
   <div class="mx-auto flex flex-col items-start gap-7 w-full max-w-[1052px]">
 
-    <!-- Title (Heading & Subheading) -->
-    <div class="flex flex-col items-start gap-1 w-full">
-      <h1 class="font-montserrat font-bold text-[34px] leading-9 tracking-[-1px] text-[#003060]">
-        Detail Payments
-      </h1>
-      <p class="font-montserrat font-medium text-base leading-5 text-[#718096]">
-        {{#if payment.user.fullname}}{{payment.user.fullname}}{{else}}{{payment.user.username}}{{/if}}
-        —
-        {{#if payment.course.title}}{{payment.course.title}}{{else}}{{payment.course.name}}{{/if}}
-        ({{#if payment.invoice.xendit_invoice_id}}{{payment.invoice.xendit_invoice_id}}{{else if payment.no}}{{payment.no}}{{else}}INV/{{payment.id}}{{/if}})
-      </p>
-      {{#if payment.file}}
-      <a
-        href="{{payment.file}}"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center gap-1.5 font-inter text-sm font-semibold leading-5 text-[#2563EB] hover:underline"
-      >
-        <i class="fa-solid fa-file-image text-xs"></i>
-        View Transfer Proof
-      </a>
-      {{/if}}
+    <!-- Header Section (Back Navigation + Title) -->
+    <div class="box-border w-full flex flex-col gap-3 items-start">
+      <!-- Back Navigation (Arrow) -->
+      <div>
+        <a
+          href="{{#if payment.course.id}}/program/detail/program/admin/{{payment.course.id}}{{else}}javascript:window.history.back(){{/if}}"
+          class="inline-flex w-fit items-center gap-1 font-inter text-base font-medium leading-5 text-[#718096] transition-colors hover:text-[#003060] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003060]/40"
+        >
+          {{!-- lucide: chevron-left --}}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-4 w-4">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </a>
+      </div>
+
+      <!-- Title (Heading & Subheading) -->
+      <div class="flex flex-col items-start gap-1 w-full">
+        <h1 class="font-montserrat font-bold text-[34px] leading-9 tracking-[-1px] text-[#003060]">
+          Detail Payments
+        </h1>
+        <p class="font-montserrat font-medium text-base leading-5 text-[#718096]">
+          {{#if payment.user.fullname}}{{payment.user.fullname}}{{else}}{{payment.user.username}}{{/if}}
+          —
+          {{#if payment.course.title}}{{payment.course.title}}{{else}}{{payment.course.name}}{{/if}}
+          ({{#if payment.invoice.xendit_invoice_id}}{{payment.invoice.xendit_invoice_id}}{{else if payment.no}}{{payment.no}}{{else}}INV/{{payment.id}}{{/if}})
+        </p>
+      </div>
     </div>
 
     <!-- Frame 2147229746: Cards Container, Gap 16px -->
@@ -73,14 +79,17 @@
                 >
                   <span x-text="payment.dpPaidAt || payment.process === 'acc' || payment.process === 'approved' ? 'DP Paid' : 'DP Pending'"></span>
                 </span>
-
-                <!-- Badge 2: Installment Duration & CaretDown -->
-                <span class="inline-flex items-center justify-center px-3 py-1 gap-1 rounded-2xl bg-[#E4F1F7] text-[#003060] font-inter font-medium text-sm leading-5">
-                  <span x-text="(payment.installment?.month || 3) + ' Months Installment'"></span>
-                  <svg class="w-4 h-4 text-[#003060]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                  </svg>
-                </span>
+                        {{#if payment.file}}
+        <a
+          href="{{payment.file}}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1.5 font-inter text-sm font-semibold leading-5 text-[#2563EB] hover:underline"
+        >
+          <i class="fa-solid fa-file-image text-xs"></i>
+          Proof
+        </a>
+        {{/if}}
               </div>
             </div>
 
@@ -187,18 +196,17 @@
         </div>
       </div>
 
-      <!-- Feature Card 2: Partnership (Bottom Action Card) -->
-      <div class="box-border flex flex-row justify-between items-center p-5 w-full h-[86px] bg-white border border-[#D9D9D9] rounded-xl shadow-xs">
-        <div class="flex items-center gap-3">
-          <span class="font-inter text-xs text-[#737373] hidden sm:inline">
-            Displaying participant installment term schedule details
-          </span>
-        </div>
+      <!-- Feature Card 2: Bottom Action Card (Accept / Reject) -->
+      <template x-if="(payment.process === 'proces' || payment.process === 'process' || payment.process === 'pending') && payment.file">
+        <div class="box-border flex flex-row justify-between items-center p-5 w-full h-[86px] bg-white border border-[#D9D9D9] rounded-xl shadow-xs">
+          <div class="flex items-center gap-3">
+            <span class="font-inter text-xs text-[#737373] hidden sm:inline">
+              Review and approve or reject this payment submission
+            </span>
+          </div>
 
-        <!-- Section D: Primary Actions -->
-        <div class="flex flex-row justify-end items-center gap-3">
-          <!-- Accept / Reject payment utama (DP/Full) -->
-          <template x-if="(payment.process === 'proces' || payment.process === 'process' || payment.process === 'pending') && payment.file">
+          <!-- Section D: Primary Actions -->
+          <div class="flex flex-row justify-end items-center gap-3">
             <div class="flex items-center gap-2">
               <button
                 type="button"
@@ -219,17 +227,9 @@
                 </span>
               </button>
             </div>
-          </template>
-          <a
-            href="{{#if payment.course.id}}/program/detail/program/admin/{{payment.course.id}}{{else}}javascript:window.history.back(){{/if}}"
-            class="box-border flex flex-row justify-center items-center px-[18px] py-2.5 gap-2 w-[177px] h-11 bg-[#003060] hover:bg-[#002244] border border-[#003060] rounded-lg shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-all cursor-pointer text-decoration-none"
-          >
-            <span class="font-inter font-semibold text-base leading-6 text-white text-center">
-              Back
-            </span>
-          </a>
+          </div>
         </div>
-      </div>
+      </template>
 
     </div>
   </div>
