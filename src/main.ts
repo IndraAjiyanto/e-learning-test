@@ -171,10 +171,10 @@ async function bootstrap() {
   });
 
   app.use((req: Request, res: Response, next: NextFunction) => {
-    // Default to 'id' so this matches nestjs-i18n's fallbackLanguage: a cookie-less
+    // Default to 'en' so this matches nestjs-i18n's fallbackLanguage: a cookie-less
     // visitor gets one consistent language across both t() and getByLang().
     const cookies = req.cookies as { lang?: string } | undefined;
-    const lang = cookies?.lang || 'id';
+    const lang = cookies?.lang || 'en';
     res.locals.currentLang = lang;
     res.locals.lang = lang;
     // Auth screens (login/register/forgot/reset/verify) render over a photo bg -

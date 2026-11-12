@@ -658,7 +658,7 @@ export class UsersController {
     ];
 
     const cookies = req.cookies as { lang?: string } | undefined;
-    const lang = cookies?.lang || (res.locals?.lang as string) || 'id';
+    const lang = cookies?.lang || (res.locals?.lang as string) || 'en';
 
     return res.render('partials/user/sidebar_user_profile/my_learning/index', {
       user: req.user,
