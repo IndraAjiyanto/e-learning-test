@@ -61,13 +61,6 @@ export class ApiPaymentController {
     const manualEnabled = body?.manualEnabled;
     const gatewayEnabled = body?.gatewayEnabled ?? body?.gateway_enabled;
 
-    if (gatewayEnabled === true || body?.gateway_enabled === true) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Penggunaan Xendit dinonaktifkan untuk sementara.',
-      });
-    }
-
     if (
       typeof manualEnabled !== 'boolean' &&
       typeof gatewayEnabled !== 'boolean'
@@ -78,14 +71,13 @@ export class ApiPaymentController {
       });
     }
 
-    // Catatan untuk masa mendatang (bila Xendit diaktifkan kembali):
-    // if (gatewayEnabled === true && !process.env.XENDIT_SECRET_KEY) {
-    //   return res.status(400).json({
-    //     status: 'error',
-    //     message:
-    //       'XENDIT_SECRET_KEY belum dikonfigurasi — gateway tidak bisa diaktifkan.',
-    //   });
-    // }
+    if (gatewayEnabled === true && !process.env.XENDIT_SECRET_KEY) {
+      return res.status(400).json({
+        status: 'error',
+        message:
+          'XENDIT_SECRET_KEY belum dikonfigurasi — gateway tidak bisa diaktifkan.',
+      });
+    }
 
     const patch: Partial<
       import('../entities/payment-settings.entity').PaymentSettings
