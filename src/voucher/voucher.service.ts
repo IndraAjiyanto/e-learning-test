@@ -102,6 +102,15 @@ export class VoucherService {
     });
   }
 
+  // Ambil user tertentu berdasarkan IDs (hanya id & username untuk efisiensi)
+  async findUsersByIds(ids: string[]): Promise<User[]> {
+    if (!ids || ids.length === 0) return [];
+    return this.userRepository.find({
+      select: ['id', 'username'],
+      where: { id: In(ids) },
+    });
+  }
+
   // Ambil daftar seluruh user untuk dropdown
   async findAllUsers(): Promise<User[]> {
     return this.userRepository.find({

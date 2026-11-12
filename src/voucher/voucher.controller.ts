@@ -44,15 +44,26 @@ export class VoucherController {
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
     const vouchersRaw = await this.voucherService.findAll();
-    const allUsers = await this.voucherService.findAllUsers();
+    const userIdsToFind = Array.from(
+      new Set(
+        vouchersRaw
+          .flatMap((v) => v.allowed_user_ids || [])
+          .filter(Boolean),
+      ),
+    );
+
+    const targetedUsers =
+      userIdsToFind.length > 0
+        ? await this.voucherService.findUsersByIds(userIdsToFind)
+        : [];
+    const userMap = new Map(targetedUsers.map((u) => [u.id, u.username]));
 
     const vouchers = vouchersRaw.map((v) => {
       let targetLabel = 'Public (All Users)';
       if (v.allowed_user_ids && v.allowed_user_ids.length > 0) {
-        const allowedNames = v.allowed_user_ids.map((id) => {
-          const u = allUsers.find((user) => user.id === id);
-          return u ? u.username : `ID:${id}`;
-        });
+        const allowedNames = v.allowed_user_ids.map(
+          (id) => userMap.get(id) || `ID:${id}`,
+        );
         targetLabel = allowedNames.join(', ');
       }
       return { ...v, target_users_label: targetLabel };

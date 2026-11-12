@@ -99,21 +99,41 @@ export class AttendanceService {
   async findAll() {
     const attendances = await this.attendanceRepository.find({
       relations: ['session', 'session.weeks', 'session.weeks.course', 'user'],
+      select: {
+        id: true,
+        status: true,
+        notes: true,
+        session: {
+          id: true,
+          sessionOrder: true,
+          weeks: {
+            id: true,
+            course: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        user: {
+          id: true,
+          username: true,
+        },
+      },
+      order: { createdAt: 'DESC' },
     });
 
     if (attendances.length === 0) {
       return [];
     }
 
-    const approvedLogbooks = await this.logBookRepository.find({
-      where: { process: 'approved' },
-      relations: ['user', 'session'],
-    });
+    const approvedLogbooks = await this.logBookRepository
+      .createQueryBuilder('lb')
+      .select(['lb.userId AS "userId"', 'lb.sessionId AS "sessionId"'])
+      .where('lb.process = :process', { process: 'approved' })
+      .getRawMany<{ userId: string; sessionId: string }>();
 
     const approvedUserSessionSet = new Set(
-      approvedLogbooks
-        .map((lb) => `${lb.user?.id}:${lb.session?.id}`)
-        .filter(Boolean),
+      approvedLogbooks.map((lb) => `${lb.userId}:${lb.sessionId}`),
     );
 
     return attendances.map((att) => ({

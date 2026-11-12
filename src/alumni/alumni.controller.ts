@@ -254,8 +254,14 @@ export class AlumniController {
           : undefined;
       const search =
         typeof req.query.search === 'string' ? req.query.search : undefined;
-      const page = req.query.page ? Number(req.query.page) : 1;
-      const limit = req.query.limit ? Number(req.query.limit) : 6;
+      const page = Math.max(
+        1,
+        parseInt((req.query.page as string) || '1', 10) || 1,
+      );
+      const limit = Math.min(
+        50,
+        Math.max(1, parseInt((req.query.limit as string) || '6', 10) || 6),
+      );
 
       const result = await this.alumniService.filterAlumni(
         kategoriId,

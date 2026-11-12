@@ -57,8 +57,8 @@ export class CourseTypesController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    const currentPage = parseInt(page || '1', 10);
-    const itemsPerPage = parseInt(limit || '10', 10);
+    const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
+    const itemsPerPage = Math.min(100, Math.max(1, parseInt(limit || '10', 10) || 10));
 
     const result = await this.courseTypeService.findAllPaginated({
       search: search || undefined,

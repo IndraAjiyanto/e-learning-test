@@ -1039,6 +1039,38 @@ export class PaymentsService {
     return await this.paymentRepository.find({
       where: { installment: IsNull() },
       relations: ['user', 'course', 'course.category', 'invoice'],
+      select: {
+        id: true,
+        file: true,
+        no: true,
+        referalSource: true,
+        process: true,
+        current_status: true,
+        user_fullname: true,
+        user_email: true,
+        user_no: true,
+        dpPaidAt: true,
+        createdAt: true,
+        user: {
+          id: true,
+          username: true,
+          email: true,
+        },
+        course: {
+          id: true,
+          name: true,
+          category: {
+            id: true,
+            name: true,
+          },
+        },
+        invoice: {
+          id: true,
+          xendit_invoice_id: true,
+          xendit_invoice_url: true,
+        },
+      },
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -1051,7 +1083,53 @@ export class PaymentsService {
         'course.category',
         'installment',
         'invoice',
+        'installmentPayments',
       ],
+      select: {
+        id: true,
+        file: true,
+        no: true,
+        referalSource: true,
+        process: true,
+        current_status: true,
+        user_fullname: true,
+        user_email: true,
+        user_no: true,
+        dpPaidAt: true,
+        createdAt: true,
+        user: {
+          id: true,
+          username: true,
+          email: true,
+        },
+        course: {
+          id: true,
+          name: true,
+          category: {
+            id: true,
+            name: true,
+          },
+        },
+        installment: {
+          id: true,
+          month: true,
+          price: true,
+          dueDates: true,
+        },
+        installmentPayments: {
+          id: true,
+          month: true,
+          status: true,
+          file: true,
+          xendit_invoice_id: true,
+        },
+        invoice: {
+          id: true,
+          xendit_invoice_id: true,
+          xendit_invoice_url: true,
+        },
+      },
+      order: { createdAt: 'DESC' },
     });
   }
 

@@ -106,10 +106,10 @@ export class AnswerTasksController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const assignments =
-      await this.answerTasksService.findAssignment(assignmentId);
-    const taskAnswers =
-      await this.answerTasksService.findAllAssignmentAnswers(assignmentId);
+    const [assignments, taskAnswers] = await Promise.all([
+      this.answerTasksService.findAssignment(assignmentId),
+      this.answerTasksService.findAllAssignmentAnswers(assignmentId),
+    ]);
     res.render('admin/answers-assignments/index', {
       user: req.user,
       assignment_answer: taskAnswers,

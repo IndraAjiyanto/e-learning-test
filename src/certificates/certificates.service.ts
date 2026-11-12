@@ -35,14 +35,30 @@ export class CertificatesService {
   ) {}
 
   private async nextCertificateNumber(): Promise<string> {
-    const certificates = await this.certificatesRepository.find({
-      select: { noCertificate: true },
-    });
-    const highestNumber = certificates.reduce((highest, certificate) => {
-      const match = certificate.noCertificate?.match(/(\d+)$/);
-      return Math.max(highest, match ? Number(match[1]) : 0);
-    }, 0);
-    return `KSA-KC-${String(highestNumber + 1).padStart(4, '0')}`;
+    try {
+      const raw = await this.certificatesRepository
+        .createQueryBuilder('c')
+        .select(
+          `MAX(NULLIF(SUBSTRING("c"."no_certificate" FROM '(\\d+)$'), '')::int)`,
+          'maxNumber',
+        )
+        .getRawOne<{ maxNumber: number | string | null }>();
+
+      const highestNumber = raw?.maxNumber ? Number(raw.maxNumber) : 0;
+      return `KSA-KC-${String(highestNumber + 1).padStart(4, '0')}`;
+    } catch {
+      // Fallback aman jika syntax regex tidak didukung
+      const certificates = await this.certificatesRepository.find({
+        select: { noCertificate: true },
+        take: 100,
+        order: { createdAt: 'DESC' },
+      });
+      const highestNumber = certificates.reduce((highest, certificate) => {
+        const match = certificate.noCertificate?.match(/(\d+)$/);
+        return Math.max(highest, match ? Number(match[1]) : 0);
+      }, 0);
+      return `KSA-KC-${String(highestNumber + 1).padStart(4, '0')}`;
+    }
   }
 
   private escapeHtml(value?: string | null): string {
@@ -322,9 +338,10 @@ export class CertificatesService {
       console.log(
         '[CertificatesService] Attempting to auto-install Playwright Chromium...',
       );
-      const { execSync } = await import('child_process');
-      execSync('npx playwright install chromium', {
-        stdio: 'ignore',
+      const { exec } = await import('child_process');
+      const { promisify } = await import('util');
+      const execAsync = promisify(exec);
+      await execAsync('npx playwright install chromium', {
         timeout: 120000,
       });
       return await playwrightChromium.launch({

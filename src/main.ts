@@ -15,7 +15,6 @@ import cookieParser from 'cookie-parser';
 import { json, urlencoded, NextFunction, Request, Response } from 'express';
 import { engine } from 'express-handlebars';
 import connectPgSimple from 'connect-pg-simple';
-import { FooterService } from './footer/footer.service';
 import { hbsHelpers } from './common/helpers';
 import {
   readFlashToast,
@@ -81,7 +80,7 @@ async function bootstrap() {
 
   app.setBaseViewsDir(join(process.cwd(), 'src', 'views'));
   app.setViewEngine('hbs');
-  app.set('view cache', false);
+  app.set('view cache', process.env.NODE_ENV === 'production');
 
   const PgSession = connectPgSimple(session);
 
@@ -168,26 +167,6 @@ async function bootstrap() {
             ).isAuthenticated?.(),
           )
         : Boolean(req.user);
-    next();
-  });
-
-  const footerService = app.get(FooterService);
-  app.use(async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const user = req.user as { role?: string } | undefined;
-      const role = user?.role;
-      if (role !== 'admin' && role !== 'super_admin') {
-        const [footerData, footerCategories] = await Promise.all([
-          footerService.getFooterData(),
-          footerService.getCategories(),
-        ]);
-        res.locals.footerData = footerData;
-        res.locals.footerCategories = footerCategories;
-        res.locals.social = footerData ? [footerData] : [];
-      }
-    } catch (error) {
-      console.error('Footer middleware error:', error);
-    }
     next();
   });
 

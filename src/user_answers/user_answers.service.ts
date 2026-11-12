@@ -43,29 +43,58 @@ export class UserAnswersService {
   private readonly sessionRepository: Repository<Session>;
 
   async create(createUserAnswerDto: CreateUserAnswerDto) {
+    const items = createUserAnswerDto.answerUser || [];
+    if (items.length === 0) return [];
+
+    const questionIds = Array.from(
+      new Set(items.map((i) => i.questionsId).filter(Boolean)),
+    );
+    const userIds = Array.from(
+      new Set(items.map((i) => i.userId).filter(Boolean)),
+    );
+    const answerIds = Array.from(
+      new Set(
+        items
+          .map((i) => i.answersId)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    );
+
+    const [questions, users, answers] = await Promise.all([
+      questionIds.length > 0
+        ? this.questionRepository.findBy({ id: In(questionIds) })
+        : Promise.resolve([]),
+      userIds.length > 0
+        ? this.userRepository.findBy({ id: In(userIds) })
+        : Promise.resolve([]),
+      answerIds.length > 0
+        ? this.answerRepository.findBy({ id: In(answerIds) })
+        : Promise.resolve([]),
+    ]);
+
+    const questionMap = new Map(questions.map((q) => [q.id, q]));
+    const userMap = new Map(users.map((u) => [u.id, u]));
+    const answerMap = new Map(answers.map((a) => [a.id, a]));
+
     const answersToInsert: UserAnswer[] = [];
-
-    for (const j of createUserAnswerDto.answerUser) {
-      const questions = await this.questionRepository.findOne({
-        where: { id: j.questionsId },
-      });
-
-      const user = await this.userRepository.findOne({
-        where: { id: j.userId },
-      });
-
-      if (!questions)
+    for (const j of items) {
+      const question = questionMap.get(j.questionsId);
+      if (!question) {
         throw new NotFoundException(`Question id ${j.questionsId} not found`);
+      }
 
-      if (!user) throw new NotFoundException(`User id ${j.userId} not found`);
+      const user = userMap.get(j.userId);
+      if (!user) {
+        throw new NotFoundException(`User id ${j.userId} not found`);
+      }
 
-      const answers = j.answersId
-        ? await this.answerRepository.findOne({ where: { id: j.answersId } })
+      const answer = j.answersId
+        ? (answerMap.get(j.answersId) ?? null)
         : null;
 
       const userAnswer = this.userAnswerRepository.create({
-        question: questions,
-        answer: answers,
+        question,
+        answer,
         user,
       });
 
