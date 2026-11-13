@@ -108,6 +108,9 @@ export class DashboardService {
     page: number;
     limit: number;
   }) {
+    const page = Math.max(1, Number(params.page) || 1);
+    const limit = Math.min(50, Math.max(1, Number(params.limit) || 6));
+
     const query = this.courseRepository
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.category', 'category')
@@ -165,8 +168,8 @@ export class DashboardService {
 
     query
       .orderBy('course.createdAt', 'DESC')
-      .skip((params.page - 1) * params.limit)
-      .take(params.limit);
+      .skip((page - 1) * limit)
+      .take(limit);
 
     const [data, total] = await query.getManyAndCount();
 
@@ -262,8 +265,8 @@ export class DashboardService {
     page?: number;
     limit?: number;
   }) {
-    const page = options?.page || 1;
-    const limit = options?.limit || 6;
+    const page = Math.max(1, Number(options?.page) || 1);
+    const limit = Math.min(50, Math.max(1, Number(options?.limit) || 6));
     const skip = (page - 1) * limit;
 
     const qb = this.portfolioRepository
@@ -272,7 +275,8 @@ export class DashboardService {
       .leftJoinAndSelect('course.category', 'category')
       .leftJoinAndSelect('course.courseType', 'courseType')
       .leftJoinAndSelect('course.technologies', 'technologies')
-      .leftJoinAndSelect('portfolio.user', 'user')
+      .leftJoin('portfolio.user', 'user')
+      .addSelect(['user.id', 'user.username', 'user.profile'])
       .orderBy('portfolio.createdAt', 'DESC')
       .skip(skip)
       .take(limit);
@@ -312,8 +316,8 @@ export class DashboardService {
     page?: number;
     limit?: number;
   }) {
-    const page = options?.page || 1;
-    const limit = options?.limit || 6;
+    const page = Math.max(1, Number(options?.page) || 1);
+    const limit = Math.min(50, Math.max(1, Number(options?.limit) || 6));
     const skip = (page - 1) * limit;
 
     const qb = this.alumniRepository

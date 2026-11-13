@@ -443,8 +443,8 @@ export class CoursesController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    const currentPage = parseInt(page || '1', 10);
-    const itemsPerPage = parseInt(limit || '5', 10);
+    const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
+    const itemsPerPage = Math.min(100, Math.max(1, parseInt(limit || '5', 10) || 5));
 
     const result = await this.coursesService.findPaginatedCourses({
       search: search || undefined,
@@ -1663,18 +1663,29 @@ export class CoursesController {
     let isUserInKelas = false;
     if (!req.user) {
       const course = await this.coursesService.findOneUserCourse(id);
-      const courseQuestions = await this.coursesService.findCourseQuestions(id);
+      const [
+        courseQuestions,
+        course_benefits,
+        technologies,
+        installments,
+        studentList,
+        mentors,
+        course_flows,
+      ] = await Promise.all([
+        this.coursesService.findCourseQuestions(id),
+        this.coursesService.findProgramBenefit(id),
+        this.coursesService.findCourseTechnologies(id),
+        this.coursesService.findCourseInstallments(id),
+        this.coursesService.sumStudent(course.id),
+        this.coursesService.findCourseMentors(course.id),
+        this.coursesService.findCourseFlows(id),
+      ]);
+
       const faqs = courseQuestions.map((cq) => ({
         question: cq.questions,
         answer: cq.answers,
       }));
-      const course_benefits = await this.coursesService.findProgramBenefit(id);
-      const technologies = await this.coursesService.findCourseTechnologies(id);
-      const installments = await this.coursesService.findCourseInstallments(id);
-      const userCourses = await this.coursesService.findCourseUsers(id);
-      const kelass = await this.coursesService.allClassExcept(course.id);
-      const studentList = await this.coursesService.sumStudent(course.id);
-      const mentors = await this.coursesService.findCourseMentors(course.id);
+
       const statusOptions = [
         'University Student',
         'Fresh Graduate',
@@ -1688,28 +1699,23 @@ export class CoursesController {
 
       if (course.checkPaid === false) {
         course.programBenefits = course_benefits;
-        const course_flows = await this.coursesService.findCourseFlows(id);
         res.render('detail_program/free_program/index', {
           course,
           course_flows,
           course_benefits,
-          kelass,
           studentList,
           technologies,
           installments,
           mentors,
-          userCourses,
           faqs,
           currentStatusOptions: statusOptions,
           referalSourceOptions,
         });
       } else {
-        const course_flows = await this.coursesService.findCourseFlows(id);
         res.render('detail_program/paid_program/index', {
           course,
           userActivePayment: null,
           category: course.category,
-          kelass,
           studentList,
           courseQuestions,
           faqs,
@@ -1719,7 +1725,6 @@ export class CoursesController {
           technologies,
           installments,
           mentors,
-          userCourses,
         });
       }
     } else {
@@ -1742,23 +1747,34 @@ export class CoursesController {
         );
       } else {
         const course = await this.coursesService.findOneUserCourse(id);
-        const courseQuestions =
-          await this.coursesService.findCourseQuestions(id);
+        const [
+          courseQuestions,
+          course_benefits,
+          technologies,
+          installments,
+          studentList,
+          mentors,
+          course_flows,
+          userActivePayment,
+        ] = await Promise.all([
+          this.coursesService.findCourseQuestions(id),
+          this.coursesService.findProgramBenefit(id),
+          this.coursesService.findCourseTechnologies(id),
+          this.coursesService.findCourseInstallments(id),
+          this.coursesService.sumStudent(course.id),
+          this.coursesService.findCourseMentors(course.id),
+          this.coursesService.findCourseFlows(id),
+          req.user
+            ? this.coursesService.findUserActivePayment(req.user.id, id)
+            : Promise.resolve(null),
+        ]);
+
         const faqs = courseQuestions.map((cq) => ({
           question: cq.questions,
           answer: cq.answers,
         }));
-        const course_benefits =
-          await this.coursesService.findProgramBenefit(id);
         course.programBenefits = course_benefits;
-        const technologies =
-          await this.coursesService.findCourseTechnologies(id);
-        const installments =
-          await this.coursesService.findCourseInstallments(id);
-        const userCourses = await this.coursesService.findCourseUsers(id);
-        const kelass = await this.coursesService.allClassExcept(course.id);
-        const studentList = await this.coursesService.sumStudent(course.id);
-        const mentors = await this.coursesService.findCourseMentors(course.id);
+
         const statusOptions = [
           'University Student',
           'Fresh Graduate',
@@ -1771,16 +1787,13 @@ export class CoursesController {
         const referalSourceOptions = REFERAL_SOURCES;
 
         if (course.checkPaid === false) {
-          const course_flows = await this.coursesService.findCourseFlows(id);
           res.render('detail_program/free_program/index', {
             user: req.user,
             course,
             course_flows,
             course_benefits,
-            kelass,
             studentList,
             technologies,
-            userCourses,
             installments,
             mentors,
             faqs,
@@ -1788,15 +1801,11 @@ export class CoursesController {
             referalSourceOptions,
           });
         } else {
-          const course_flows = await this.coursesService.findCourseFlows(id);
           res.render('detail_program/paid_program/index', {
-            userActivePayment: req.user
-              ? await this.coursesService.findUserActivePayment(req.user.id, id)
-              : null,
+            userActivePayment,
             user: req.user,
             course,
             category: course.category,
-            kelass,
             studentList,
             courseQuestions,
             faqs,
@@ -1804,7 +1813,6 @@ export class CoursesController {
             course_benefits,
             benefit_category: course.category?.benefit_category || [],
             technologies,
-            userCourses,
             installments,
             mentors,
           });

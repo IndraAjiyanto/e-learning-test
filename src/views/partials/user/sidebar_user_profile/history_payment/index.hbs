@@ -140,6 +140,7 @@
             >
               <option value="">{{t "test.historyPayment.allMethods"}}</option>
               <option value="manual">Manual</option>
+              <option value="xendit">Xendit</option>
             </select>
             <div class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#718096]">
               <svg class="w-2.5 h-2.5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -396,7 +397,7 @@
         return [
           { value: '', label: '{{t "test.historyPayment.allMethods"}}' },
           { value: 'manual', label: 'Manual' },
-          {{!-- { value: 'xendit', label: 'Xendit' }, --}}
+          { value: 'xendit', label: 'Xendit' },
         ];
       },
 

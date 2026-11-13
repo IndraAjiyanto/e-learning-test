@@ -461,13 +461,13 @@ export class UsersController {
       programSections.includes(initialSection) || Boolean(requestedCourseId);
 
     if (isProgramSec) {
-      const userWithCourses = await this.usersService.findWithCourses(
-        req.user.id,
-      );
-      const logbooks = await this.usersService.findAllLogbooks(req.user.id);
-      const portfolio = await this.usersService.findPortfolio(req.user.id);
-      const certificateCourseIds =
-        await this.usersService.findCertificateCourseIds(req.user.id);
+      const [userWithCourses, logbooks, portfolio, certificateCourseIds] =
+        await Promise.all([
+          this.usersService.findWithCourses(req.user.id),
+          this.usersService.findAllLogbooks(req.user.id),
+          this.usersService.findPortfolio(req.user.id),
+          this.usersService.findCertificateCourseIds(req.user.id),
+        ]);
       const portfolioCourseIds = portfolio
         .map((item) => item.course?.id)
         .filter((courseId): courseId is string => Boolean(courseId));
@@ -658,7 +658,7 @@ export class UsersController {
     ];
 
     const cookies = req.cookies as { lang?: string } | undefined;
-    const lang = cookies?.lang || (res.locals?.lang as string) || 'id';
+    const lang = cookies?.lang || (res.locals?.lang as string) || 'en';
 
     return res.render('partials/user/sidebar_user_profile/my_learning/index', {
       user: req.user,
@@ -735,8 +735,8 @@ export class UsersController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    const currentPage = parseInt(page || '1', 10);
-    const itemsPerPage = parseInt(limit || '5', 10);
+    const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
+    const itemsPerPage = Math.min(100, Math.max(1, parseInt(limit || '5', 10) || 5));
 
     const result = await this.usersService.findAllPaginated({
       search: search || undefined,

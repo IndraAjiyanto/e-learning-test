@@ -1,7 +1,7 @@
 import Handlebars from 'handlebars';
 
-// Satu sumber fallback untuk semua helper multibahasa: bahasa diminta → Indonesia
-// ('id') → Inggris ('en'). `asText` membatasi nilai menjadi string, jadi kolom
+// Satu sumber fallback untuk semua helper multibahasa: bahasa diminta → Inggris
+// ('en') → Indonesia ('id'). `asText` membatasi nilai menjadi string, jadi kolom
 // nullable seperti Category.name_en (null) atau tipe aneh lain lolos ke tahap
 // berikutnya alih-alih menampilkan 'null'.
 const asText = (value: unknown): string =>
@@ -11,7 +11,7 @@ const pickLang = (
   obj: Record<string, unknown> | null | undefined,
   lang: string,
 ): string =>
-  asText(obj?.[lang]) || asText(obj?.['id']) || asText(obj?.['en']) || '';
+  asText(obj?.[lang]) || asText(obj?.['en']) || asText(obj?.['id']) || '';
 
 export const stringHelpers = {
   substring: (str: string, start: number, end: number) => {

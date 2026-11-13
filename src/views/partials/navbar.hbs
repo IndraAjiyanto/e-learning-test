@@ -45,7 +45,7 @@
     },
     getByLang(obj, lang) {
       if (!obj || typeof obj !== 'object') return '';
-      return obj[lang] || obj['id'] || '';
+      return obj[lang] || obj['en'] || obj['id'] || '';
     },
     // Nama kategori per bahasa: kolom name_en/name_ja nullable, kosong jatuh ke
     // `name` (Indonesia). Hanya label; href tetap memakai `name` sebagai slug URL.

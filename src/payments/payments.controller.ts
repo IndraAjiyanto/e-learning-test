@@ -804,13 +804,13 @@ export class PaymentsController {
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const payment = await this.paymentsService.findAll();
-    const registration = await this.paymentsService.findAllRegistrations();
-    const installments = await this.paymentsService.findAllInstallments();
+    const [payment, installments] = await Promise.all([
+      this.paymentsService.findAll(),
+      this.paymentsService.findAllInstallments(),
+    ]);
     res.render('super_admin/payments/index', {
       user: req.user,
       payment,
-      registration,
       installments,
     });
   }

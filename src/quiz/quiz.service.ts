@@ -86,14 +86,26 @@ export class QuizService {
     }
   }
 
+  async countScores(quizId: string): Promise<number> {
+    return await this.scoreRepository.count({
+      where: { quiz: { id: quizId } },
+    });
+  }
+
   async findScore(quizId: string) {
-    const quiz = await this.findOne(quizId);
-    if (!quiz) {
-      throw new NotFoundException('quiz not found');
-    }
     return await this.scoreRepository.find({
       where: { quiz: { id: quizId } },
       relations: ['user'],
+      select: {
+        id: true,
+        score: true,
+        createdAt: true,
+        user: {
+          id: true,
+          username: true,
+          email: true,
+        },
+      },
     });
   }
 

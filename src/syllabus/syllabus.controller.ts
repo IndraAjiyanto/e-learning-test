@@ -513,20 +513,17 @@ export class SyllabusController {
     @Res() res: Response,
   ) {
     try {
-      const syllabus = await this.syllabusService.findOne(syllabusId);
       await this.syllabusService.update(syllabusId, updateSyllabusDto);
       flashToast(
         req,
         'Changes Saved',
         'The syllabus information has been updated.',
       );
-      res.redirect(
-        `/program/detail/program/admin/${syllabus?.course?.id || ''}`,
-      );
+      res.redirect(`/syllabus/${syllabusId}`);
     } catch (error: unknown) {
       const err = error as Error;
       req.flash('error', err.message || 'Syllabus failed to update');
-      res.redirect('/program');
+      res.redirect(`/syllabus/${syllabusId}`);
     }
   }
 

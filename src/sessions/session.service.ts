@@ -200,6 +200,23 @@ export class SessionService {
         absent: { session: { id: sessionId } },
       },
       relations: ['absent', 'biodata'],
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        profile: true,
+        role: true,
+        biodata: {
+          id: true,
+          fullName: true,
+        },
+        absent: {
+          id: true,
+          status: true,
+          notes: true,
+          createdAt: true,
+        },
+      },
     });
 
     if (users.length === 0) {
@@ -212,6 +229,12 @@ export class SessionService {
         process: 'approved',
       },
       relations: ['user'],
+      select: {
+        id: true,
+        user: {
+          id: true,
+        },
+      },
     });
 
     const approvedUserIds = new Set(
@@ -258,6 +281,38 @@ export class SessionService {
         'session.weeks',
         'session.weeks.course',
       ],
+      select: {
+        id: true,
+        activity: true,
+        activityDetails: true,
+        obstacles: true,
+        documentation: true,
+        process: true,
+        createdAt: true,
+        user: {
+          id: true,
+          username: true,
+          email: true,
+          profile: true,
+          biodata: {
+            id: true,
+            fullName: true,
+          },
+        },
+        session: {
+          id: true,
+          sessionOrder: true,
+          weeks: {
+            id: true,
+            weekNumber: true,
+            course: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+      order: { createdAt: 'DESC' },
     });
 
     if (logbooks.length === 0) {

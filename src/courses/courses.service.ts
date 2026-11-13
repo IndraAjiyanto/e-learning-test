@@ -312,14 +312,15 @@ export class CoursesService {
     }
 
     if (course.checkPaid === true) {
-      const daftar = await this.paymentRepository.find({
-        where: { course: { id: courseId }, process: 'process' },
-      });
-
-      const gabung = await this.userRepository.find({
-        where: { userCourses: { course: { id: courseId } } },
-      });
-      const totalUsers = daftar.length + gabung.length;
+      const [daftarCount, gabungCount] = await Promise.all([
+        this.paymentRepository.count({
+          where: { course: { id: courseId }, process: 'process' },
+        }),
+        this.userCourseRepository.count({
+          where: { course: { id: courseId } },
+        }),
+      ]);
+      const totalUsers = daftarCount + gabungCount;
 
       if (totalUsers >= course.quota) {
         throw new BadRequestException('The program is currently full');
@@ -409,14 +410,15 @@ export class CoursesService {
         }
       }
     } else {
-      const daftar = await this.registrationRepository.find({
-        where: { course: { id: courseId }, process: 'process' },
-      });
-
-      const gabung = await this.userRepository.find({
-        where: { userCourses: { course: { id: courseId } } },
-      });
-      const totalUsers = daftar.length + gabung.length;
+      const [daftarCount, gabungCount] = await Promise.all([
+        this.registrationRepository.count({
+          where: { course: { id: courseId }, process: 'process' },
+        }),
+        this.userCourseRepository.count({
+          where: { course: { id: courseId } },
+        }),
+      ]);
+      const totalUsers = daftarCount + gabungCount;
 
       if (totalUsers >= course.quota) {
         throw new BadRequestException('The program is currently full');
@@ -508,25 +510,32 @@ export class CoursesService {
   }
 
   async sumStudent(courseId: string) {
-    const course = await this.findOne(courseId);
+    const course = await this.courseRepository.findOne({
+      select: ['id', 'checkPaid'],
+      where: { id: courseId },
+    });
+    if (!course) return 0;
+
     if (course.checkPaid === true) {
-      const daftar = await this.paymentRepository.find({
-        where: { course: { id: courseId }, process: 'process' },
-      });
-      const gabung = await this.userCourseRepository.find({
-        where: { course: { id: courseId } },
-      });
-      const totalUsers = daftar.length + gabung.length;
-      return totalUsers;
+      const [daftarCount, gabungCount] = await Promise.all([
+        this.paymentRepository.count({
+          where: { course: { id: courseId }, process: 'process' },
+        }),
+        this.userCourseRepository.count({
+          where: { course: { id: courseId } },
+        }),
+      ]);
+      return daftarCount + gabungCount;
     } else {
-      const daftar = await this.registrationRepository.find({
-        where: { course: { id: courseId }, process: 'process' },
-      });
-      const gabung = await this.userCourseRepository.find({
-        where: { course: { id: courseId } },
-      });
-      const totalUsers = daftar.length + gabung.length;
-      return totalUsers;
+      const [daftarCount, gabungCount] = await Promise.all([
+        this.registrationRepository.count({
+          where: { course: { id: courseId }, process: 'process' },
+        }),
+        this.userCourseRepository.count({
+          where: { course: { id: courseId } },
+        }),
+      ]);
+      return daftarCount + gabungCount;
     }
   }
 
@@ -1281,12 +1290,16 @@ export class CoursesService {
     limit: number;
     userId?: string; // kalau ada = admin, kalau tidak = super_admin
   }) {
+    const page = Math.max(1, Number(params.page) || 1);
+    const limit = Math.min(100, Math.max(1, Number(params.limit) || 10));
+
     const query = this.courseRepository
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.category', 'category')
       .leftJoinAndSelect('course.userCourses', 'userCourses')
       .leftJoinAndSelect('course.mentorings', 'mentorings')
-      .leftJoinAndSelect('mentorings.user', 'mentorUser')
+      .leftJoin('mentorings.user', 'mentorUser')
+      .addSelect(['mentorUser.id', 'mentorUser.username', 'mentorUser.profile'])
       .orderBy('course.createdAt', 'DESC');
 
     // Filter by mentor (admin only)
@@ -1391,7 +1404,7 @@ export class CoursesService {
       );
     }
 
-    query.skip((params.page - 1) * params.limit).take(params.limit);
+    query.skip((page - 1) * limit).take(limit);
 
     const [data, total] = await query.getManyAndCount();
     return { data, total };
@@ -1677,10 +1690,38 @@ export class CoursesService {
       relations: [
         'user',
         'course',
-        'course.category',
         'payment',
         'payment.invoice',
       ],
+      select: {
+        id: true,
+        user_fullname: true,
+        user_email: true,
+        user_no: true,
+        attend_program: true,
+        current_status: true,
+        referal_source: true,
+        process: true,
+        createdAt: true,
+        user: {
+          id: true,
+          username: true,
+          email: true,
+          profile: true,
+        },
+        course: {
+          id: true,
+          name: true,
+        },
+        payment: {
+          id: true,
+          process: true,
+          invoice: {
+            id: true,
+            invoice_number: true,
+          },
+        },
+      },
       order: { createdAt: 'DESC' },
     });
   }
@@ -1691,11 +1732,41 @@ export class CoursesService {
       relations: [
         'user',
         'course',
-        'course.category',
         'installment',
         'invoice',
         'installmentPayments',
       ],
+      select: {
+        id: true,
+        user_no: true,
+        process: true,
+        createdAt: true,
+        user: {
+          id: true,
+          username: true,
+          email: true,
+          profile: true,
+        },
+        course: {
+          id: true,
+          name: true,
+        },
+        installment: {
+          id: true,
+          month: true,
+          dueDates: true,
+        },
+        invoice: {
+          id: true,
+          invoice_number: true,
+        },
+        installmentPayments: {
+          id: true,
+          amount: true,
+          status: true,
+          paidAt: true,
+        },
+      },
       order: { createdAt: 'DESC' },
     });
   }
