@@ -25,10 +25,15 @@ function parseFloat(val: unknown): number | null {
   return isNaN(n) ? null : n;
 }
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 function parseIds(val: unknown): string[] {
   if (val === undefined || val === null) return [];
   const arr = Array.isArray(val) ? val : [val];
-  return arr.map((item) => String(item)).filter((s: string) => s.length > 0);
+  return arr
+    .map((item) => String(item).trim())
+    .filter((s: string) => s.length > 0 && UUID_REGEX.test(s));
 }
 
 @Injectable()
@@ -78,7 +83,6 @@ export class VoucherService {
       type: dto.type,
       percent: dto.type === 'discount' ? parseFloat(dto.percent) : null,
       active: parseBool(dto.active),
-      allowed_user_ids: parseIds(dto.allowed_user_ids),
     });
 
     // Jika ada courseIds, cari Course-nya lalu assign ke relasi
@@ -91,13 +95,23 @@ export class VoucherService {
       voucher.courses = [];
     }
 
+    // Jika ada allowed_user_ids, cari User-nya lalu assign ke relasi many-to-many
+    const userIds = parseIds(dto.allowed_user_ids);
+    if (userIds.length > 0) {
+      voucher.allowed_users = await this.userRepository.findBy({
+        id: In(userIds),
+      });
+    } else {
+      voucher.allowed_users = [];
+    }
+
     return this.voucherRepository.save(voucher);
   }
 
-  // Ambil semua voucher + jumlah program (courses) per voucher
+  // Ambil semua voucher + relasi courses dan allowed_users
   async findAll(): Promise<Voucher[]> {
     return this.voucherRepository.find({
-      relations: ['courses'],
+      relations: ['courses', 'allowed_users'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -105,9 +119,14 @@ export class VoucherService {
   // Ambil user tertentu berdasarkan IDs (hanya id & username untuk efisiensi)
   async findUsersByIds(ids: string[]): Promise<User[]> {
     if (!ids || ids.length === 0) return [];
+    const validIds = ids.filter(
+      (id) => typeof id === 'string' && UUID_REGEX.test(id),
+    );
+    if (validIds.length === 0) return [];
+
     return this.userRepository.find({
       select: ['id', 'username'],
-      where: { id: In(ids) },
+      where: { id: In(validIds) },
     });
   }
 
@@ -119,17 +138,17 @@ export class VoucherService {
     });
   }
 
-  // Ambil satu voucher + daftar program lengkap (untuk halaman edit)
+  // Ambil satu voucher + relasi courses dan allowed_users (untuk halaman edit)
   async findOne(id: string): Promise<Voucher> {
     const voucher = await this.voucherRepository.findOne({
       where: { id },
-      relations: ['courses'],
+      relations: ['courses', 'allowed_users'],
     });
     if (!voucher) throw new NotFoundException('Voucher tidak ditemukan');
     return voucher;
   }
 
-  // Update voucher + sinkronisasi daftar program
+  // Update voucher + sinkronisasi daftar program & user
   async update(id: string, dto: UpdateVoucherDto): Promise<Voucher> {
     const voucher = await this.findOne(id);
 
@@ -142,8 +161,6 @@ export class VoucherService {
     }
     if (dto.type !== undefined) voucher.type = dto.type;
     if (dto.active !== undefined) voucher.active = parseBool(dto.active);
-    if (dto.allowed_user_ids !== undefined)
-      voucher.allowed_user_ids = parseIds(dto.allowed_user_ids);
 
     // percent hanya disimpan jika type = 'discount'
     if (dto.type === 'discount') {
@@ -152,13 +169,21 @@ export class VoucherService {
       voucher.percent = null;
     }
 
-    // Sinkronisasi relasi many-to-many:
-    // Timpa seluruh daftar courses dengan yang baru dari form
+    // Sinkronisasi relasi many-to-many courses
     if (dto.courseIds !== undefined) {
       const ids = parseIds(dto.courseIds);
       voucher.courses =
         ids.length > 0
           ? await this.courseRepository.findBy({ id: In(ids) })
+          : [];
+    }
+
+    // Sinkronisasi relasi many-to-many allowed_users
+    if (dto.allowed_user_ids !== undefined) {
+      const userIds = parseIds(dto.allowed_user_ids);
+      voucher.allowed_users =
+        userIds.length > 0
+          ? await this.userRepository.findBy({ id: In(userIds) })
           : [];
     }
 
@@ -188,7 +213,7 @@ export class VoucherService {
   ): Promise<{ discountAmount: number; finalTotal: number; voucher: Voucher }> {
     const voucher = await this.voucherRepository.findOne({
       where: { code_voucher: ILike(code), active: true },
-      relations: ['courses'],
+      relations: ['courses', 'allowed_users'],
     });
 
     if (!voucher) {
@@ -197,7 +222,9 @@ export class VoucherService {
 
     // Jika courses ada isinya, pastikan courseId pembeli ada di daftar tersebut
     if (voucher.courses && voucher.courses.length > 0) {
-      const isCourseValid = voucher.courses.some((c) => c.id == courseId);
+      const isCourseValid = voucher.courses.some(
+        (c) => String(c.id) === String(courseId),
+      );
       if (!isCourseValid) {
         throw new Error('Voucher tidak berlaku untuk program ini.');
       }
@@ -205,8 +232,11 @@ export class VoucherService {
 
     if (userId) {
       // 1. Pengecekan Targeted Voucher (Hanya user tertentu yang boleh pakai)
-      if (voucher.allowed_user_ids && voucher.allowed_user_ids.length > 0) {
-        if (!voucher.allowed_user_ids.includes(userId)) {
+      if (voucher.allowed_users && voucher.allowed_users.length > 0) {
+        const isUserAllowed = voucher.allowed_users.some(
+          (u) => String(u.id) === String(userId),
+        );
+        if (!isUserAllowed) {
           throw new Error(
             'Anda tidak memiliki hak akses untuk menggunakan kode voucher ini.',
           );

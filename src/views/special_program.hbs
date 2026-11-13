@@ -12,7 +12,7 @@
   {{> components/ui/sections/japan_hero/index category=category lang=lang isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
 
   {{!-- Layer 3: Program Selection --}}
-  {{> components/ui/sections/special_program/index category=category courses=courses lang=lang isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
+  {{> components/ui/sections/special_program/index category=category courses=courses courseTypes=courseTypes lang=lang isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}
 
   {{!-- Layer 4: Why Choose ("Why Choose Our Program?") --}}
   {{> components/ui/sections/special_benefit/index category=category benefit_category=benefit_category lang=lang isJapan=(or isJapan (includes category.name 'japan') (eq category.name 'LPK'))}}

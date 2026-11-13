@@ -7,6 +7,7 @@
 
   Props:
   - courses      : array (data course dari backend)
+  - courseTypes  : array (data course types dari backend table course_type)
   - lang         : string (bahasa aktif)
   - showPayment  : boolean (default: true; set false untuk free_program)
   - loadMoreText : string (opsional override teks load more)
@@ -19,15 +20,41 @@
     return {
       search: '',
       selectedMethod: '',
-      selectedStructure: '',
+      selectedCourseType: '',
+      searchCourseType: '',
       selectedPayment: '',
       activeDropdown: null,
       showPayment: {{#if (eq showPayment false)}}false{{else}}true{{/if}},
       limit: 12,
       initialLimit: 12,
+      courseTypes: [
+        {{#if courseTypes}}
+          {{#each courseTypes}}
+          {
+            id: '{{this.id}}',
+            name: {{{json (default (getByLang this.nameClassesType ../lang) (default this.nameClassesType ''))}}}
+          }{{#unless @last}},{{/unless}}
+          {{/each}}
+        {{else if category.courseTypes}}
+          {{#each category.courseTypes}}
+          {
+            id: '{{this.id}}',
+            name: {{{json (default (getByLang this.nameClassesType ../lang) (default this.nameClassesType ''))}}}
+          }{{#unless @last}},{{/unless}}
+          {{/each}}
+        {{/if}}
+      ],
       init() {
         var self = this;
-        ['search', 'selectedMethod', 'selectedStructure', 'selectedPayment'].forEach(function(prop) {
+        var existingIds = new Set(this.courseTypes.map(function(t) { return String(t.id); }));
+        this.items.forEach(function(item) {
+          if (item.courseTypeId && item.courseTypeName && !existingIds.has(String(item.courseTypeId))) {
+            existingIds.add(String(item.courseTypeId));
+            self.courseTypes.push({ id: item.courseTypeId, name: item.courseTypeName });
+          }
+        });
+
+        ['search', 'selectedMethod', 'selectedCourseType', 'selectedPayment'].forEach(function(prop) {
           self.$watch(prop, function() {
             self.limit = self.initialLimit;
           });
@@ -48,19 +75,20 @@
           id: '{{this.id}}',
           name: {{#if this.name}}{{{json (default (getByLang this.name ../lang) (default this.name ''))}}}{{else}}''{{/if}},
           method: '{{default this.method 'online'}}'.toLowerCase(),
-          courseType: {{#if this.courseType}}{{{json (default (getByLang this.courseType.nameClassesType ../lang) (default this.courseType.nameClassesType ''))}}}{{else}}''{{/if}},
-          structure: '{{default this.programType 'bootcamp'}}'.toLowerCase(),
+          courseTypeId: '{{default this.courseType.id ''}}',
+          courseTypeName: {{#if this.courseType}}{{{json (default (getByLang this.courseType.nameClassesType ../lang) (default this.courseType.nameClassesType ''))}}}{{else}}''{{/if}},
           isPaid: {{#if (eq this.checkPaid false)}}false{{else}}true{{/if}}
         }{{#unless @last}},{{/unless}}
         {{/each}}
       ],
       get hasActiveFilters() {
-        return Boolean(this.search || this.selectedMethod || this.selectedStructure || (this.showPayment && this.selectedPayment));
+        return Boolean(this.search || this.selectedMethod || this.selectedCourseType || (this.showPayment && this.selectedPayment));
       },
       resetFilters() {
         this.search = '';
         this.selectedMethod = '';
-        this.selectedStructure = '';
+        this.selectedCourseType = '';
+        this.searchCourseType = '';
         this.selectedPayment = '';
         this.activeDropdown = null;
         this.limit = this.initialLimit;
@@ -71,10 +99,22 @@
         if (this.selectedMethod === 'hybird' || this.selectedMethod === 'hybrid') return "{{default (t 'test.home.programSection.hybrid') (default (t 'test.home.programSection.hybird') 'Hybrid')}}";
         return "{{default (t 'test.home.programSection.allMethod') 'Semua Metode'}}";
       },
-      getStructureLabel() {
-        if (this.selectedStructure === 'week') return "{{default (t 'test.home.programSection.week') 'Week'}}";
-        if (this.selectedStructure === 'silabus') return "{{default (t 'test.home.programSection.silabus') 'Silabus'}}";
-        return "{{default (t 'test.home.programSection.allStructures') 'Semua Struktur'}}";
+      getCourseTypeLabel() {
+        if (!this.selectedCourseType) {
+          return "{{default (t 'test.home.programSection.allCourseTypes') 'All Program Types'}}";
+        }
+        var self = this;
+        var found = this.courseTypes.find(function(t) {
+          return String(t.id) === String(self.selectedCourseType);
+        });
+        return found ? found.name : "{{default (t 'test.home.programSection.allCourseTypes') 'All Program Types'}}";
+      },
+      get filteredCourseTypes() {
+        var q = (this.searchCourseType || '').toLowerCase().trim();
+        if (!q) return this.courseTypes;
+        return this.courseTypes.filter(function(t) {
+          return (t.name || '').toLowerCase().includes(q);
+        });
       },
       getPaymentLabel() {
         if (this.selectedPayment === 'paid') return "{{default (t 'test.home.programSection.paid') 'Paid'}}";
@@ -95,8 +135,9 @@
               return false;
             }
           }
-          if (self.selectedStructure === 'week' && !(item.structure === 'bootcamp' || item.structure === 'lpk' || item.structure === 'week')) return false;
-          if (self.selectedStructure === 'silabus' && !(item.structure === 'non_bootcamp' || item.structure === 'silabus' || item.structure === 'syllabus')) return false;
+          if (self.selectedCourseType && String(item.courseTypeId) !== String(self.selectedCourseType)) {
+            return false;
+          }
           if (self.showPayment && self.selectedPayment === 'paid' && !item.isPaid) return false;
           if (self.showPayment && self.selectedPayment === 'non_paid' && item.isPaid) return false;
           return true;
@@ -112,7 +153,7 @@
 <div
   class="w-full max-w-[1568px] flex flex-col items-center gap-8 lg:gap-10"
   x-data="courseCatalogFilter_{{default filterId 'main'}}()"
-  @keydown.escape.window="activeDropdown = null"
+  @keydown.escape.window="activeDropdown = null; searchCourseType = ''"
 >
   {{!-- Filter Bar Container --}}
   <div class="w-full bg-[#FFFFFF] rounded-2xl border border-[#E5E7EB] p-4 sm:p-5 shadow-sm flex flex-col gap-3.5">
@@ -127,7 +168,7 @@
         <div class="relative">
           <input
             type="text"
-            x-model="search"
+            x-model.debounce.150ms="search"
             placeholder="{{default (t 'test.home.programSection.searchProgramPlaceholder') (default (t 'test.home.programSection.placeholderSearch') 'Cari nama program...')}}"
             class="w-full h-11 pl-9 pr-8 rounded-xl border border-[#E5E7EB] bg-white font-inter text-xs sm:text-sm text-[#0B1F3B] placeholder-[#9CA3AF] transition focus:border-[#003060] focus:ring-1 focus:ring-[#003060] focus:outline-none"
           />
@@ -209,58 +250,86 @@
         </div>
       </div>
 
-      {{!-- 3. Learning Structure Dropdown --}}
+      {{!-- 3. Program Type Dropdown with Search List --}}
       <div
         class="relative w-full"
-        @click.outside="if (activeDropdown === 'structure') activeDropdown = null"
+        @click.outside="if (activeDropdown === 'courseType') { activeDropdown = null; searchCourseType = ''; }"
       >
         <label class="block font-inter font-semibold text-xs text-[#003060] mb-1.5">
-          <i class="fas fa-graduation-cap text-[#6EB6E5] mr-1"></i>
-          {{default (t 'test.home.programSection.learningStructure') 'Struktur Belajar'}}
+          <i class="fas fa-layer-group text-[#6EB6E5] mr-1"></i>
+          {{default (t 'test.home.programSection.courseType') 'Program Type'}}
         </label>
         <button
           type="button"
-          @click="activeDropdown = activeDropdown === 'structure' ? null : 'structure'"
+          @click="activeDropdown = activeDropdown === 'courseType' ? null : 'courseType'; if (activeDropdown === 'courseType') $nextTick(() => $refs.courseTypeSearchInput?.focus())"
           class="w-full h-11 flex items-center justify-between px-3.5 bg-white text-xs sm:text-sm font-medium text-[#0B1F3B] rounded-xl border border-[#E5E7EB] transition-all cursor-pointer outline-none hover:border-[#003060] focus:border-[#003060] focus:ring-1 focus:ring-[#003060]"
-          :class="activeDropdown === 'structure' && 'border-[#003060] ring-1 ring-[#003060]'"
+          :class="activeDropdown === 'courseType' && 'border-[#003060] ring-1 ring-[#003060]'"
         >
-          <span class="truncate text-left" x-text="getStructureLabel()"></span>
-          <i class="fas fa-chevron-down text-xs text-[#9CA3AF] transition-transform duration-200 shrink-0 ml-2" :class="activeDropdown === 'structure' && 'rotate-180'"></i>
+          <span class="truncate text-left" x-text="getCourseTypeLabel()"></span>
+          <i class="fas fa-chevron-down text-xs text-[#9CA3AF] transition-transform duration-200 shrink-0 ml-2" :class="activeDropdown === 'courseType' && 'rotate-180'"></i>
         </button>
 
         <div
           x-cloak
-          x-show="activeDropdown === 'structure'"
+          x-show="activeDropdown === 'courseType'"
           x-transition.opacity.duration.150ms
-          class="absolute left-0 z-50 mt-1.5 w-full min-w-[180px] max-h-60 overflow-y-auto rounded-xl border border-[#E5E7EB] bg-white p-1.5 shadow-lg space-y-0.5"
+          class="absolute left-0 z-50 mt-1.5 w-full min-w-[220px] max-h-64 overflow-hidden flex flex-col rounded-xl border border-[#E5E7EB] bg-white shadow-lg"
         >
-          <button
-            type="button"
-            @click="selectedStructure = ''; activeDropdown = null"
-            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
-            :class="!selectedStructure ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
-          >
-            <span>{{default (t 'test.home.programSection.allStructures') 'Semua Struktur'}}</span>
-            <i class="fas fa-check text-xs" x-show="!selectedStructure"></i>
-          </button>
-          <button
-            type="button"
-            @click="selectedStructure = 'week'; activeDropdown = null"
-            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
-            :class="selectedStructure === 'week' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
-          >
-            <span>{{default (t 'test.home.programSection.week') 'Week'}}</span>
-            <i class="fas fa-check text-xs" x-show="selectedStructure === 'week'"></i>
-          </button>
-          <button
-            type="button"
-            @click="selectedStructure = 'silabus'; activeDropdown = null"
-            class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition"
-            :class="selectedStructure === 'silabus' ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
-          >
-            <span>{{default (t 'test.home.programSection.silabus') 'Silabus'}}</span>
-            <i class="fas fa-check text-xs" x-show="selectedStructure === 'silabus'"></i>
-          </button>
+          {{!-- Search Input inside the dropdown (List Search) --}}
+          <div class="p-2 border-b border-[#F3F4F6] sticky top-0 bg-white z-10">
+            <div class="relative flex items-center">
+              <i class="fas fa-magnifying-glass absolute left-2.5 text-xs text-[#9CA3AF]"></i>
+              <input
+                type="text"
+                x-ref="courseTypeSearchInput"
+                x-model.debounce.150ms="searchCourseType"
+                @click.stop
+                placeholder="{{default (t 'test.home.programSection.searchTypePlaceholder') 'Search program type...'}}"
+                class="w-full pl-7 pr-7 py-1.5 text-xs font-inter border border-[#E5E7EB] rounded-lg focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] text-[#0B1F3B] placeholder-[#9CA3AF]"
+              />
+              <button
+                type="button"
+                x-show="searchCourseType"
+                x-cloak
+                @click.stop="searchCourseType = ''; $refs.courseTypeSearchInput?.focus()"
+                class="absolute right-2 text-xs text-[#9CA3AF] hover:text-[#0B1F3B]"
+                aria-label="{{default (t 'test.home.programSection.clearTypeSearch') 'Clear program type search'}}"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+
+          {{!-- Options List --}}
+          <div class="overflow-y-auto p-1.5 max-h-48 space-y-0.5">
+            <button
+              type="button"
+              x-show="!searchCourseType || '{{default (t 'test.home.programSection.allCourseTypes') 'All Program Types'}}'.toLowerCase().includes(searchCourseType.toLowerCase().trim())"
+              @click="selectedCourseType = ''; activeDropdown = null; searchCourseType = ''"
+              class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition cursor-pointer"
+              :class="!selectedCourseType ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+            >
+              <span>{{default (t 'test.home.programSection.allCourseTypes') 'All Program Types'}}</span>
+              <i class="fas fa-check text-xs" x-show="!selectedCourseType"></i>
+            </button>
+            <template x-for="type in filteredCourseTypes" :key="type.id">
+              <button
+                type="button"
+                @click="selectedCourseType = type.id; activeDropdown = null; searchCourseType = ''"
+                class="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left font-inter text-xs sm:text-sm transition cursor-pointer"
+                :class="String(selectedCourseType) === String(type.id) ? 'bg-[#003060] text-white font-medium' : 'text-[#374151] hover:bg-slate-50'"
+              >
+                <span class="truncate" x-text="type.name"></span>
+                <i class="fas fa-check text-xs" x-show="String(selectedCourseType) === String(type.id)"></i>
+              </button>
+            </template>
+            <div
+              x-show="filteredCourseTypes.length === 0 && (!searchCourseType || !'{{default (t 'test.home.programSection.allCourseTypes') 'All Program Types'}}'.toLowerCase().includes(searchCourseType.toLowerCase().trim()))"
+              class="py-3 px-2 text-center text-xs text-[#9CA3AF] font-inter"
+            >
+              {{default (t 'test.home.programSection.noTypesFound') 'No program types found'}}
+            </div>
+          </div>
         </div>
       </div>
 

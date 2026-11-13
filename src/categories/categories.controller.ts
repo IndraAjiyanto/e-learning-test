@@ -145,19 +145,27 @@ export class CategoriesController {
   ) {
     const category = await this.categoriesService.findOneCategory(categoryName);
     category.contact = category.contact?.replace(/^0/, '62');
-    const benefit_category = await this.categoriesService.findBenefitByCategory(
-      category.id,
-    );
-    const gallery = await this.categoriesService.findGalleryByCategory(
-      category.id,
-    );
-    const faqs = await this.categoriesService.findFaqByCategory(category.id);
-    const alumni = await this.categoriesService.findAlumniByCategory(
-      category.id,
-    );
-    const courses = await this.categoriesService.findCourseByCategory(
-      category.id,
-    );
+
+    const [
+      benefit_category,
+      gallery,
+      faqs,
+      alumni,
+      courses,
+      courseTypes,
+      portfolio,
+    ] = await Promise.all([
+      this.categoriesService.findBenefitByCategory(category.id),
+      this.categoriesService.findGalleryByCategory(category.id),
+      this.categoriesService.findFaqByCategory(category.id),
+      this.categoriesService.findAlumniByCategory(category.id),
+      this.categoriesService.findCourseByCategory(category.id),
+      this.categoriesService.findCourseTypes(),
+      category?.type === 'Paid Program'
+        ? this.categoriesService.findPortfolioByCategory(category.id)
+        : Promise.resolve(null),
+    ]);
+
     if (category?.type === 'Special Program') {
       const isJapan = Boolean(
         category.name &&
@@ -168,6 +176,7 @@ export class CategoriesController {
         category,
         user: req.user,
         courses,
+        courseTypes,
         alumni,
         benefit_category,
         faqs,
@@ -175,13 +184,11 @@ export class CategoriesController {
         isJapan,
       });
     } else if (category?.type === 'Paid Program') {
-      const portfolio = await this.categoriesService.findPortfolioByCategory(
-        category.id,
-      );
       res.render('paid_program', {
         category,
         user: req.user,
         courses,
+        courseTypes,
         alumni,
         portfolio,
         benefit_category,
@@ -193,6 +200,7 @@ export class CategoriesController {
         category,
         user: req.user,
         courses,
+        courseTypes,
         benefit_category,
         alumni,
         gallery,

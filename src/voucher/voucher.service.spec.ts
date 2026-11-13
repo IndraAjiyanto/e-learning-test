@@ -22,6 +22,7 @@ describe('VoucherService', () => {
   };
   let userRepo: {
     find: jest.Mock;
+    findBy: jest.Mock;
   };
 
   beforeEach(async () => {
@@ -39,6 +40,7 @@ describe('VoucherService', () => {
     };
     userRepo = {
       find: jest.fn(),
+      findBy: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -204,6 +206,107 @@ describe('VoucherService', () => {
 
       expect(result.code_voucher).toBe('NEWCODE');
       expect(voucherRepo.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('validateVoucher', () => {
+    const mockCourse = { id: 'c1', name: 'Course 1' } as Course;
+    const mockUser1 = { id: 'u1', username: 'user1' } as User;
+    const mockUser2 = { id: 'u2', username: 'user2' } as User;
+
+    it('allows redemption for public voucher with no target users', async () => {
+      voucherRepo.findOne.mockResolvedValue({
+        id: 'v1',
+        code_voucher: 'PUBLIC10',
+        active: true,
+        type: 'discount',
+        percent: 10,
+        courses: [],
+        allowed_users: [],
+      });
+
+      const result = await service.validateVoucher(
+        'PUBLIC10',
+        'c1',
+        100000,
+        'u1',
+      );
+
+      expect(result.discountAmount).toBe(10000);
+      expect(result.finalTotal).toBe(90000);
+    });
+
+    it('allows redemption when user is included in allowed_users', async () => {
+      voucherRepo.findOne.mockResolvedValue({
+        id: 'v1',
+        code_voucher: 'VIP50',
+        active: true,
+        type: 'discount',
+        percent: 50,
+        courses: [mockCourse],
+        allowed_users: [mockUser1],
+      });
+
+      const result = await service.validateVoucher('VIP50', 'c1', 200000, 'u1');
+
+      expect(result.discountAmount).toBe(100000);
+      expect(result.finalTotal).toBe(100000);
+    });
+
+    it('rejects redemption when user is not in allowed_users', async () => {
+      voucherRepo.findOne.mockResolvedValue({
+        id: 'v1',
+        code_voucher: 'VIP50',
+        active: true,
+        type: 'discount',
+        percent: 50,
+        courses: [mockCourse],
+        allowed_users: [mockUser1],
+      });
+
+      await expect(
+        service.validateVoucher('VIP50', 'c1', 200000, 'u2'),
+      ).rejects.toThrow(
+        'Anda tidak memiliki hak akses untuk menggunakan kode voucher ini.',
+      );
+    });
+
+    it('rejects redemption when course does not match voucher courses', async () => {
+      voucherRepo.findOne.mockResolvedValue({
+        id: 'v1',
+        code_voucher: 'REACT10',
+        active: true,
+        type: 'discount',
+        percent: 10,
+        courses: [{ id: 'course-react' } as Course],
+        allowed_users: [],
+      });
+
+      await expect(
+        service.validateVoucher('REACT10', 'course-nodejs', 100000, 'u1'),
+      ).rejects.toThrow('Voucher tidak berlaku untuk program ini.');
+    });
+
+    it('allows 100% discount for free voucher', async () => {
+      voucherRepo.findOne.mockResolvedValue({
+        id: 'v1',
+        code_voucher: 'FREE100',
+        active: true,
+        type: 'free',
+        percent: null,
+        courses: [],
+        allowed_users: [],
+      });
+
+      const result = await service.validateVoucher(
+        'FREE100',
+        'c1',
+        150000,
+        'u1',
+      );
+
+      expect(result.discountAmount).toBe(150000);
+      expect(result.finalTotal).toBe(0);
     });
   });
 });

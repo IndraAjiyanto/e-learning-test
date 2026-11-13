@@ -43,37 +43,36 @@ export class VoucherController {
 
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const vouchersRaw = await this.voucherService.findAll();
-    const userIdsToFind = Array.from(
-      new Set(
-        vouchersRaw
-          .flatMap((v) => v.allowed_user_ids || [])
-          .filter(Boolean),
-      ),
-    );
+    try {
+      const vouchersRaw = await this.voucherService.findAll();
 
-    const targetedUsers =
-      userIdsToFind.length > 0
-        ? await this.voucherService.findUsersByIds(userIdsToFind)
-        : [];
-    const userMap = new Map(targetedUsers.map((u) => [u.id, u.username]));
+      const vouchers = vouchersRaw.map((v) => {
+        let targetLabel = 'Public (All Users)';
+        if (v.allowed_users && v.allowed_users.length > 0) {
+          const allowedNames = v.allowed_users.map(
+            (u) => u.username || u.email || `ID:${u.id}`,
+          );
+          targetLabel = allowedNames.join(', ');
+        }
+        return { ...v, target_users_label: targetLabel };
+      });
 
-    const vouchers = vouchersRaw.map((v) => {
-      let targetLabel = 'Public (All Users)';
-      if (v.allowed_user_ids && v.allowed_user_ids.length > 0) {
-        const allowedNames = v.allowed_user_ids.map(
-          (id) => userMap.get(id) || `ID:${id}`,
-        );
-        targetLabel = allowedNames.join(', ');
-      }
-      return { ...v, target_users_label: targetLabel };
-    });
-
-    res.render('super_admin/voucher/index', {
-      user: req.user,
-      vouchers,
-      error: req.flash('error')[0],
-    });
+      res.render('super_admin/voucher/index', {
+        user: req.user,
+        vouchers,
+        error: req.flash('error')[0],
+      });
+    } catch (error: unknown) {
+      const err = error as Error;
+      console.error('[VoucherController.findAll] Error loading vouchers:', err);
+      res.render('super_admin/voucher/index', {
+        user: req.user,
+        vouchers: [],
+        error:
+          req.flash('error')[0] ||
+          'Gagal memuat data voucher. Silakan periksa kembali data voucher atau hubungi administrator.',
+      });
+    }
   }
 
   // ─── FORM CREATE ──────────────────────────────────────────────────────────
