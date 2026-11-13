@@ -89,6 +89,7 @@
             <div>
               <span class='font-inter text-sm font-medium text-[#737373]'>Total {{questions.length}} Question(s)</span>
             </div>
+            {{#unless isAttempted}}
             <div>
               <button
                 type='button'
@@ -114,8 +115,10 @@
                 </template>
               </button>
             </div>
+            {{/unless}}
           </div>
 
+          {{#unless isAttempted}}
           {{!-- Bulk Action Bar --}}
           <div
             x-show='selectMode'
@@ -184,6 +187,7 @@
               </button>
             </div>
           </div>
+          {{/unless}}
         </div>
 
         <div class='flex flex-col gap-[10px] w-full mb-[10px]'>
@@ -195,6 +199,7 @@
 
             {{!-- Question Header --}}
             <div class='w-full flex flex-row items-center justify-between py-[6px] gap-2'>
+              {{#unless ../isAttempted}}
               {{!-- Checkbox in Select Mode --}}
               <div x-show='selectMode' x-cloak class='shrink-0 mr-1' style='display: none;'>
                 <input
@@ -207,6 +212,7 @@
                   class='h-4 w-4 rounded border-[#d4d4d4] text-[#003060] focus:ring-[#003060] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed'
                 />
               </div>
+              {{/unless}}
 
               <button @click="open = !open" type='button' class='flex-1 min-w-0 flex flex-row justify-between items-center text-left cursor-pointer'>
                 <span class='text-[14px]/[normal] text-[#003060] font-inter font-semibold text-left flex-1 min-w-0'>{{this.questionText}}</span>
