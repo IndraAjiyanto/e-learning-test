@@ -34,8 +34,8 @@
         </div>
 
         {{!-- Actions --}}
-        {{#unless portfolioGuideLocked}}
         <div class='flex flex-row flex-wrap gap-[12px] shrink-0 justify-start items-center'>
+          {{#unless portfolioGuideLocked}}
           <form action='/program/portfolio-guide/{{course.id}}?_method=DELETE' method='POST'>
             <button type='button'
               onclick='openDeleteModal(this)'
@@ -44,19 +44,19 @@
               <span class='text-[16px]/[normal] text-[#EF4444] font-inter font-semibold whitespace-nowrap'>Delete</span>
             </button>
           </form>
+          {{/unless}}
           <a href='/program/portfolio-guide/{{course.id}}'
             class='box-border h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#003060] rounded-[8px] [outline:1px_solid_#003060] [outline-offset:-0.5px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] hover:bg-[#00254a] transition-colors'
             title='Edit Portfolio Guide' aria-label='Edit Portfolio Guide'>
             <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Edit Guide</span>
           </a>
         </div>
-        {{/unless}}
       </div>
 
       {{#if portfolioGuideLocked}}
         {{> components/ui/admin/locked-notice/index
           title='Portfolio guide is locked'
-          message='This portfolio guide cannot be edited or deleted because participants have already uploaded their portfolios.' }}
+          message='This portfolio guide can be edited, but it cannot be deleted because participants have already uploaded their portfolios.' }}
       {{/if}}
 
     </div>

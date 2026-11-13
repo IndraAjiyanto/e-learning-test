@@ -552,16 +552,6 @@ export class CoursesController {
   ) {
     const course = await this.coursesService.findOne(courseId);
     const guide = await this.portfoliosService.getPortfolioGuide(courseId);
-    const locked =
-      !!guide && (await this.portfoliosService.hasPortfolioForCourse(courseId));
-    if (locked) {
-      flashToastError(
-        req,
-        'Cannot Edit Portfolio Guide',
-        'Portfolio guide cannot be edited because participants have already uploaded their portfolios.',
-      );
-      return res.redirect(`/program/portfolio-guide/detail/${courseId}`);
-    }
     return res.render('admin/course/portfolio_guide', {
       user: req.user,
       course,
@@ -604,14 +594,6 @@ export class CoursesController {
     @Res() res: Response,
   ) {
     try {
-      if (await this.portfoliosService.hasPortfolioForCourse(courseId)) {
-        flashToastError(
-          req,
-          'Cannot Edit Portfolio Guide',
-          'Portfolio guide cannot be edited because participants have already uploaded their portfolios.',
-        );
-        return res.redirect(`/program/portfolio-guide/detail/${courseId}`);
-      }
       await this.coursesService.updatePortfolioGuide(courseId, content);
       flashToast(
         req,
