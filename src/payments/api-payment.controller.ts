@@ -58,8 +58,15 @@ export class ApiPaymentController {
     },
     @Res() res: Response,
   ) {
-    const manualEnabled = body?.manualEnabled;
+    const manualEnabled = body?.manualEnabled ?? (body as any)?.manual_enabled;
     const gatewayEnabled = body?.gatewayEnabled ?? body?.gateway_enabled;
+
+    if (manualEnabled === true || (body as any)?.manual_enabled === true) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Metode pembayaran manual sedang dinonaktifkan sementara.',
+      });
+    }
 
     if (
       typeof manualEnabled !== 'boolean' &&
@@ -82,12 +89,8 @@ export class ApiPaymentController {
     const patch: Partial<
       import('../entities/payment-settings.entity').PaymentSettings
     > = {};
-    if (typeof manualEnabled === 'boolean') {
-      patch.manual_enabled = manualEnabled;
-    }
-    if (typeof gatewayEnabled === 'boolean') {
-      patch.gateway_enabled = gatewayEnabled;
-    }
+    patch.manual_enabled = false;
+    patch.gateway_enabled = true;
 
     await this.paymentSettingsService.update(patch);
     const data = await this.paymentSettingsService.effective();
