@@ -150,6 +150,7 @@
           </span>
           <div class='flex items-center gap-3'>
             {{#if (and questions questions.length)}}
+            {{#unless isAttempted}}
             <button
               type='button'
               @click='toggleSelectMode()'
@@ -173,6 +174,7 @@
                 </div>
               </template>
             </button>
+            {{/unless}}
             {{/if}}
 
             {{#unless isAttempted}}
@@ -189,6 +191,7 @@
           </div>
         </div>
 
+        {{#unless isAttempted}}
         {{!-- Bulk Action Bar --}}
         <div
           x-show='selectMode'
@@ -257,6 +260,7 @@
             </button>
           </div>
         </div>
+        {{/unless}}
       </div>
 
       {{!-- Frame 2147229624: List Questions --}}
@@ -273,6 +277,7 @@
                 class='w-full min-h-[53px] px-[14px] py-[16px] flex flex-row items-center justify-between gap-[16px] text-left transition-colors'
                 :class="openQuestionId === '{{this.id}}' ? 'bg-[#FAFAFA] border-b border-[#D9D9D9]' : 'bg-[#FFFFFF]'">
                 
+                {{#unless ../isAttempted}}
                 {{!-- Checkbox in Select Mode --}}
                 <div x-show='selectMode' x-cloak class='shrink-0' style='display: none;'>
                   <input
@@ -285,6 +290,7 @@
                     class='h-4 w-4 rounded border-[#d4d4d4] text-[#003060] focus:ring-[#003060] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed'
                   />
                 </div>
+                {{/unless}}
 
                 <button
                   type='button'
