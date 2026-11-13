@@ -21,7 +21,7 @@
     {{> components/ui/sections/program_section_header/index category=category lang=lang}}
 
     {{#if courses.length}}
-      {{#> components/ui/filter/course_catalog_filter/index courses=courses lang=lang showPayment=true}}
+      {{#> components/ui/filter/course_catalog_filter/index courses=courses courseTypes=(default courseTypes category.courseTypes) lang=lang showPayment=true}}
         <div
           x-show="visibleIds.length > 0"
           class="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-stretch justify-items-center max-w-[1568px]"

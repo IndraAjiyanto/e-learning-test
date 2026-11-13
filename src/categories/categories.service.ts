@@ -223,7 +223,10 @@ export class CategoriesService {
   }
 
   async findCourseTypes() {
-    return await this.courseTypeRepository.find();
+    return await this.courseTypeRepository.find({
+      select: ['id', 'nameClassesType', 'icon'],
+      order: { nameClassesType: 'ASC' },
+    });
   }
 
   async findAll() {
@@ -260,12 +263,12 @@ export class CategoriesService {
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.courseType', 'courseType')
       .leftJoinAndSelect('course.category', 'category')
-      .leftJoinAndSelect('course.userCourses', 'userCourses')
       .where('category.id = :categoryId', { categoryId })
       .andWhere('(course.launch = :launch OR course.status = :status)', {
         launch: true,
         status: 'launch',
       })
+      .orderBy('course.createdAt', 'DESC')
       .getMany();
   }
 
