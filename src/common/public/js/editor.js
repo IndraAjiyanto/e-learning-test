@@ -282,25 +282,56 @@ export function createQuillEditor(holder, options = {}) {
           try {
             const res = await fetch(options.uploadUrl, {
               method: 'POST',
+              headers: {
+                Accept: 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+              },
               body: formData,
             });
-            const result = await res.json();
+            const result = await res.json().catch(() => null);
             const url =
               result?.file?.url ||
               result?.url ||
               (result?.uploadedImageUrls && result.uploadedImageUrls[0]);
 
-            if (url) {
+            if (res.ok && url) {
               const range = quill.getSelection(true) || { index: quill.getLength() };
               quill.insertEmbed(range.index, 'image', url);
               quill.setSelection(range.index + 1);
             } else {
-              console.error('Upload failed:', result);
-              alert(result?.message || 'Upload gagal');
+              const errorMsg =
+                result?.message ||
+                (res.status === 401 || res.status === 403
+                  ? 'Sesi login telah berakhir. Silakan login kembali.'
+                  : 'Gagal mengunggah gambar. Pastikan format JPG/PNG/WEBP/GIF dan ukuran file di bawah 10MB.');
+              console.error('Upload failed:', result || res.statusText);
+              if (typeof window.showErrorToast === 'function') {
+                window.showErrorToast('Gagal Mengunggah Gambar', errorMsg);
+              } else if (typeof window.dispatchEvent === 'function') {
+                window.dispatchEvent(
+                  new CustomEvent('toast:error', {
+                    detail: { title: 'Gagal Mengunggah Gambar', description: errorMsg },
+                  }),
+                );
+              } else {
+                alert(errorMsg);
+              }
             }
           } catch (err) {
             console.error('Upload error:', err);
-            alert('Gagal mengunggah gambar');
+            const fallbackMsg =
+              'Terjadi kesalahan koneksi saat mengunggah gambar. Silakan periksa koneksi atau coba lagi.';
+            if (typeof window.showErrorToast === 'function') {
+              window.showErrorToast('Gagal Mengunggah Gambar', fallbackMsg);
+            } else if (typeof window.dispatchEvent === 'function') {
+              window.dispatchEvent(
+                new CustomEvent('toast:error', {
+                  detail: { title: 'Gagal Mengunggah Gambar', description: fallbackMsg },
+                }),
+              );
+            } else {
+              alert(fallbackMsg);
+            }
           }
         };
         input.click();

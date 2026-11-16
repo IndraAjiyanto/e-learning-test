@@ -159,7 +159,11 @@ function editSyllabusForm() {
 
     async handleSubmit(e) {
       if (!this.title.trim()) {
-        alert('Title is required');
+        if (typeof window.showErrorToast === 'function') {
+          window.showErrorToast('Title is required', 'Silakan masukkan judul silabus.');
+        } else {
+          alert('Title is required');
+        }
         return;
       }
       let contentHtml = '';

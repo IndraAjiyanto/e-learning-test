@@ -30,6 +30,18 @@ export class MulterErrorInterceptor implements NestInterceptor {
             errMsg.includes('upload') ||
             error.storageErrors)
         ) {
+          const isAjax =
+            request.xhr ||
+            (request.headers.accept &&
+              request.headers.accept.includes('application/json')) ||
+            request.path?.includes('upload-image') ||
+            request.path?.includes('fetch-image');
+
+          if (isAjax) {
+            response.status(400).json({ success: 0, message: error.message });
+            return of(null);
+          }
+
           (
             request as unknown as { flash: (type: string, msg: string) => void }
           ).flash('error', error.message);
