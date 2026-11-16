@@ -129,7 +129,7 @@
               type='button'
               @click='resetToDefaultStatuses()'
               class='text-[#2563EB] hover:text-[#1D4ED8] font-medium hover:underline cursor-pointer'
-              title='Reset to Unpublished, Published, Learning in progress'
+              title='Reset to Unpublished, Published, Learning'
             >
               Default (3)
             </button>
@@ -543,7 +543,7 @@
     state.statusOptions = [
       { value: 'unlaunch', label: 'Unpublished' },
       { value: 'launch', label: 'Published' },
-      { value: 'learning', label: 'Learning in progress' },
+      { value: 'learning', label: 'Learning' },
       { value: 'done', label: 'Completed' },
     ];
 
@@ -615,7 +615,7 @@
       const s = status || 'unlaunch';
       switch (s) {
         case 'launch': return 'Published';
-        case 'learning': return 'Learning in progress';
+        case 'learning': return 'Learning';
         case 'done': return 'Completed';
         default: return 'Unpublished';
       }
