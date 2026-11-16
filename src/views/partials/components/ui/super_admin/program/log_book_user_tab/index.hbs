@@ -168,7 +168,10 @@
       </template>
 
       {{#> components/ui/super_admin/table/message_row show='loading' colspan='16'}}
-        Loading log books…
+        <div class='flex flex-col items-center justify-center gap-2'>
+          <i class='fas fa-spinner fa-spin text-xl text-[#003060]'></i>
+          <span>Loading log books…</span>
+        </div>
       {{/components/ui/super_admin/table/message_row}}
 
       {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='16'}}
