@@ -242,8 +242,14 @@
     </button>
   </div>
 
+  {{!-- Loading State --}}
+  <div x-show='loading' class='w-full py-16 flex flex-col items-center justify-center gap-2 text-center'>
+    <i class='fas fa-spinner fa-spin text-2xl text-[#003060]'></i>
+    <span class='font-inter text-sm leading-5 text-[#737373]'>Loading programs…</span>
+  </div>
+
   {{!-- Program Cards Grid --}}
-  <div x-show='rows.length > 0' class='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
+  <div x-show='!loading && rows.length > 0' class='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
     <template x-for='kelasItem in rows' :key='kelasItem.id'>
       <div
         class='relative flex min-h-[260px] flex-col justify-between gap-5 rounded-xl border border-[#d9d9d9] bg-white p-5 hover:border-[#b0b0b0] transition-colors shadow-[0px_1px_3px_0px_rgba(0,0,0,0.04)]'
@@ -477,7 +483,7 @@
   </div>
 
   {{!-- Empty State --}}
-  <div x-show='rows.length === 0' class='rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 py-12 text-center'>
+  <div x-show='!loading && rows.length === 0' class='rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 py-12 text-center'>
     <svg class='mx-auto h-12 w-12 text-gray-400' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
       <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
     </svg>
@@ -495,7 +501,9 @@
   </div>
 
   {{!-- Pagination --}}
-  {{> components/ui/super_admin/table/pagination }}
+  <div x-show='!loading'>
+    {{> components/ui/super_admin/table/pagination }}
+  </div>
 </div>
 
 <script>
@@ -508,6 +516,7 @@
       entityName: 'programs',
       deleteEntity: 'course',
     });
+    state.loading = true;
 
     state.isCourseDisabled = function (item) {
       return Boolean(item && item.userCourses && item.userCourses.length > 0);
@@ -821,6 +830,7 @@
     };
 
     state.fetchKelas = async function () {
+      this.loading = true;
       try {
         const res = await fetch(`/category/admin/program/${categoryId}`);
         if (!res.ok) throw new Error('Failed fetch program');
@@ -855,8 +865,10 @@
       } catch (error) {
         console.error('Error fetching data:', error);
         this.items = [];
+      } finally {
+        this.loading = false;
+        this.applyFilter();
       }
-      this.applyFilter();
     };
 
     state.detailUrl = (item) => `/program/detail/program/admin/${item.id}?categoryId=${categoryId}`;

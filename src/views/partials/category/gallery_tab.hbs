@@ -26,7 +26,13 @@
     fullWidth=true
   }}
 
-  <div x-show='rows.length > 0' class='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
+  {{!-- Loading State --}}
+  <div x-show='loading' class='w-full py-16 flex flex-col items-center justify-center gap-2 text-center'>
+    <i class='fas fa-spinner fa-spin text-2xl text-[#003060]'></i>
+    <span class='font-inter text-sm leading-5 text-[#737373]'>Loading gallery…</span>
+  </div>
+
+  <div x-show='!loading && rows.length > 0' class='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
     <template x-for='gallery in rows' :key='gallery.id'>
       <div
         class='relative flex flex-col justify-between gap-5 rounded-xl border border-[#d9d9d9] bg-white p-5 hover:border-[#b0b0b0] transition-colors shadow-[0px_1px_3px_0px_rgba(0,0,0,0.04)]'
@@ -71,12 +77,12 @@
     </template>
   </div>
 
-  <div x-show='rows.length === 0' class='rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 py-12 text-center'>
+  <div x-show='!loading && rows.length === 0' class='rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 py-12 text-center'>
     <h3 class='text-sm font-medium text-gray-900' x-text="searchInput ? 'No gallery found' : 'No gallery'"></h3>
     <p class='mt-1 text-sm text-gray-500' x-text="searchInput ? 'Try adjusting your search terms' : 'Get started by adding a new gallery.'"></p>
   </div>
 
-  <div x-show='totalPages > 1' class='border-t border-gray-200'>
+  <div x-show='!loading && totalPages > 1' class='border-t border-gray-200'>
     {{> components/ui/super_admin/table/pagination }}
   </div>
 </div>
@@ -94,6 +100,7 @@
     });
 
     state.fetchGallery = async function () {
+      this.loading = true;
       try {
         const res = await fetch(`/gallery/category/${categoryId}`);
         if (!res.ok) throw new Error('Failed fetch gallery');
@@ -101,8 +108,11 @@
       } catch (error) {
         console.error('Error fetching gallery:', error);
         this.items = [];
+      } finally {
+        this.loading = false;
+        this.currentPage = 1;
+        this.applySearch(this.searchInput);
       }
-      this.applySearch(this.searchInput);
     };
 
     return state;

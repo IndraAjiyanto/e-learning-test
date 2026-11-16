@@ -116,7 +116,10 @@
         </template>
 
         {{#> components/ui/super_admin/table/message_row show='loading' colspan='5'}}
-          Loading FAQs…
+          <div class='flex flex-col items-center justify-center gap-2'>
+            <i class='fas fa-spinner fa-spin text-xl text-[#003060]'></i>
+            <span>Loading FAQs…</span>
+          </div>
         {{/components/ui/super_admin/table/message_row}}
 
         {{#> components/ui/super_admin/table/message_row show='!loading && rows.length === 0' colspan='5'}}
