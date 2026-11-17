@@ -113,6 +113,9 @@ export class RegistrationsController {
         return res.redirect(`/users/profile?tab=dashboard`);
       }
     } catch (error: unknown) {
+      if (createRegistrationDto.file) {
+        await this.registrationsService.deleteFile(createRegistrationDto.file);
+      }
       const err = error as Error;
       console.error('🔴 [Registration] Error:', error);
       const isJson =
@@ -167,6 +170,22 @@ export class RegistrationsController {
       const courseId = registration['course']?.['id'];
 
       if (processStatus === 'approved' || processStatus === 'acc') {
+        const course = registration['course'];
+        if (courseId && course?.quota && course.quota > 0) {
+          const enrolledCount =
+            await this.registrationsService.countEnrolledStudents(courseId);
+          if (enrolledCount >= course.quota) {
+            const msg = `Program sudah mencapai kapasitas maksimal (${course.quota} siswa). Pendaftaran tidak dapat disetujui.`;
+            if (isJson) {
+              return res.status(400).json({ success: false, message: msg });
+            }
+            req.flash('error', msg);
+            return res.redirect(
+              `/program/detail/program/admin/${courseId || ''}`,
+            );
+          }
+        }
+
         updateRegistrationDto.file = registration['file'];
         if (userId) updateRegistrationDto.userId = userId;
         if (courseId) updateRegistrationDto.courseId = courseId;

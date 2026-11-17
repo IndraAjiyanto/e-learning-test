@@ -57,6 +57,9 @@ export class RegistrationsService {
       return false;
     }
 
+    // Pengecekan kapasitas / kuota program
+    await this.checkQuota(createRegistrationDto.courseId, course);
+
     // 1. Generate nomor faktur resmi format WSA-KA.xxx/KW/{Bulan}/{Tahun}
     const invoiceNumber = await this.invoiceService.generateInvoiceNumber();
 
@@ -121,6 +124,43 @@ export class RegistrationsService {
     }
   }
 
+  async checkQuota(courseId: string, existingCourse?: Course): Promise<void> {
+    const course =
+      existingCourse ||
+      (await this.courseRepository.findOne({
+        where: { id: courseId },
+      }));
+    if (!course) return;
+
+    if (
+      course.quota !== null &&
+      course.quota !== undefined &&
+      course.quota > 0
+    ) {
+      const [pendingCount, enrolledCount] = await Promise.all([
+        course.checkPaid
+          ? this.paymentRepository.count({
+              where: { course: { id: courseId }, process: 'process' },
+            })
+          : this.registrationRepository.count({
+              where: { course: { id: courseId }, process: 'process' },
+            }),
+        this.userCourseRepository.count({
+          where: { course: { id: courseId } },
+        }),
+      ]);
+      if (pendingCount + enrolledCount >= course.quota) {
+        throw new BadRequestException('Kuota peserta untuk program ini sudah penuh');
+      }
+    }
+  }
+
+  async countEnrolledStudents(courseId: string): Promise<number> {
+    return await this.userCourseRepository.count({
+      where: { course: { id: courseId } },
+    });
+  }
+
   async deleteFile(url: string) {
     if (!url) return;
 
@@ -180,6 +220,19 @@ export class RegistrationsService {
     });
     if (alreadyJoined) {
       throw new BadRequestException('User already joined the program');
+    }
+
+    if (
+      course.quota !== null &&
+      course.quota !== undefined &&
+      course.quota > 0
+    ) {
+      const enrolledCount = await this.userCourseRepository.count({
+        where: { course: { id: courseId } },
+      });
+      if (enrolledCount >= course.quota) {
+        throw new BadRequestException('Kuota peserta untuk program ini sudah penuh');
+      }
     }
 
     const userCourses = this.userCourseRepository.create({

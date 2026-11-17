@@ -11,6 +11,7 @@ describe('RegistrationsController', () => {
     findAll: jest.fn(),
     findRegistration: jest.fn(),
     findOne: jest.fn(),
+    countEnrolledStudents: jest.fn(),
     addUserToCourse: jest.fn(),
     removeCourseUser: jest.fn(),
     update: jest.fn(),
