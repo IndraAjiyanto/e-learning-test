@@ -25,6 +25,7 @@
   - installments      : array (opsional list cicilan)
   - contactWhatsapp   : string
   - userActivePayment : object (status transaksi aktif: approved | process)
+  - studentList       : number (total pendaftar saat ini)
   - user              : object
   - lang              : string
 --}}
@@ -254,6 +255,25 @@
         {{/if}}
       </span>
     </div>
+
+    {{!-- Kuota Peserta --}}
+    <div 
+      class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-3 border-t border-[#E5E7EB] pt-2.5"
+    >
+      <span class="font-bold text-[#374151] shrink-0">{{default (t 'test.paidProgram.pricing.quota') 'Kuota Peserta'}}</span>
+      <div class="flex items-center gap-1.5 sm:text-right">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{#if (and course.quota (gte (coalesce studentList 0) course.quota))}}bg-red-100 text-red-700{{else}}bg-amber-100 text-amber-800{{/if}}">
+          {{#if (and course.quota (gte (coalesce studentList 0) course.quota))}}
+            {{course.quota}} / {{course.quota}} ({{default (t 'test.paidProgram.pricing.full') 'Penuh'}})
+          {{else}}
+            {{coalesce studentList 0}}{{#if course.quota}} / {{course.quota}}{{/if}} {{default (t 'test.paidProgram.pricing.enrolledStatus') 'Siswa Terdaftar'}}
+            {{#if course.quota}}
+              <span class="ml-1 opacity-85 font-normal">({{subtract course.quota (coalesce studentList 0)}} {{default (t 'test.paidProgram.pricing.slotsLeft') 'sisa'}})</span>
+            {{/if}}
+          {{/if}}
+        </span>
+      </div>
+    </div>
   </div>
 
   {{!-- CTA Section (Shared across both tabs) --}}
@@ -274,6 +294,15 @@
         <i class="fa-solid fa-clock mr-2"></i>
         {{default (t 'test.paidProgram.pricing.btnPending') 'Cek Status Pembayaran'}}
       </a>
+    {{else if (and course.quota (gte (coalesce studentList 0) course.quota))}}
+      <button
+        type="button"
+        disabled
+        aria-disabled="true"
+        class="flex w-full h-[45px] items-center justify-center rounded-[10px] bg-[#94A3B8] font-inter text-sm font-bold text-white shadow-xs cursor-not-allowed opacity-60 select-none text-center"
+      >
+        {{default (t 'test.paidProgram.pricing.programIsFull') (default (t 'test.detailProgram.programIsFull') 'Program Penuh')}}
+      </button>
     {{else}}
       <a
         {{#if (or (and installments installments.length) (and course.installments course.installments.length))}}

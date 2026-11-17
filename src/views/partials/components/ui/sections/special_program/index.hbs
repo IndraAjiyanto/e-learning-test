@@ -31,6 +31,8 @@
                   tag1=(ternary this.method this.method (ternary ../isJapan (default (t 'test.special_program.program.language') "Language") (default (t 'test.special_program.program.practical') "Practical")))
                   tag2=(ternary (or (eq this.checkPaid false) this.day) (concat (default this.day 1) " " (default (t 'test.special_program.program.day') "Day")) (concat (default this.month 1) " " (default (t 'test.special_program.program.month') "Month")))
                   tag3=(ternary this.quota (concat this.quota " " (default (t 'test.special_program.program.quota') "Quota")) (default (t 'test.special_program.program.career') "Career"))
+                  quota=this.quota
+                  enrolledCount=this.enrolledCount
                   href=(concat '/program/' this.id)
                   lang=../lang
               }}

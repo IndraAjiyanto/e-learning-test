@@ -2,6 +2,8 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { CreateCategoriesDto } from './dto/create-categories.dto';
 import { UpdateCategoriesDto } from './dto/update-categories.dto';
@@ -15,6 +17,7 @@ import { CategoryFaq } from 'src/entities/faqs.entity';
 import { BenefitCategory } from 'src/entities/benefit_category.entity';
 import { Gallery } from 'src/entities/gallery.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
+import { CoursesService } from 'src/courses/courses.service';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { imageSize } from 'image-size';
@@ -38,6 +41,8 @@ export class CategoriesService {
     private readonly galleryRepository: Repository<Gallery>,
     @InjectRepository(Portofolios)
     private readonly portfolioRepository: Repository<Portofolios>,
+    @Inject(forwardRef(() => CoursesService))
+    private readonly coursesService: CoursesService,
   ) {}
 
   private parseCourseType(val: unknown, required: boolean): string[] {
@@ -259,7 +264,7 @@ export class CategoriesService {
    * kosong, section program dirender sebagai Coming Soon.
    */
   async findCourseByCategory(categoryId: string) {
-    return await this.courseRepository
+    const courses = await this.courseRepository
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.courseType', 'courseType')
       .leftJoinAndSelect('course.category', 'category')
@@ -270,6 +275,19 @@ export class CategoriesService {
       })
       .orderBy('course.createdAt', 'DESC')
       .getMany();
+
+    await Promise.all(
+      courses.map(async (course) => {
+        try {
+          const count = await this.coursesService.sumStudent(course.id);
+          course.enrolledCount = count;
+        } catch {
+          course.enrolledCount = 0;
+        }
+      }),
+    );
+
+    return courses;
   }
 
   async findCourseByCategoryAll(categoryId: string) {

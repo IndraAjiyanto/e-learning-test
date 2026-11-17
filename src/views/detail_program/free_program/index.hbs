@@ -117,7 +117,9 @@
 {{> components/ui/sections/paid_detail_hero/index
   course=course
   category=course.category
-  regisClick="openRegistrationModal()"
+  studentList=studentList
+  targetId="schedule-fees"
+  regisHref="#schedule-fees"
   lang=lang
 }}
 
@@ -155,6 +157,7 @@
 
 {{> components/ui/sections/free_detail_schedule_fee/index
   course=course
+  studentList=studentList
   badgeTitle=(t 'test.freeProgram.badge.schedule')
   title=(t 'test.freeProgram.schedule.title')
   description=(t 'test.freeProgram.schedule.description')

@@ -13,17 +13,19 @@
   - Bottom row: Full-width button with label from i18n ("Lihat kelas") + arrow icon
 
   Props:
-  - id          : string (ID program)
-  - image       : string (URL gambar)
-  - icon        : string (FontAwesome class atau icon name)
-  - title       : string (Nama program)
-  - tag1        : string (Tag pertama)
-  - tag2        : string (Tag kedua)
-  - tag3        : string (Tag ketiga)
-  - tag4        : string (Tag keempat)
-  - tags        : array of strings
-  - description : string (Deskripsi program)
-  - href        : string (URL tujuan)
+  - id            : string (ID program)
+  - image         : string (URL gambar)
+  - icon          : string (FontAwesome class atau icon name)
+  - title         : string (Nama program)
+  - tag1          : string (Tag pertama)
+  - tag2          : string (Tag kedua)
+  - tag3          : string (Tag ketiga)
+  - tag4          : string (Tag keempat)
+  - tags          : array of strings
+  - quota         : number (Kapasitas kuota program)
+  - enrolledCount : number (Jumlah peserta yang sudah terdaftar)
+  - description   : string (Deskripsi program)
+  - href          : string (URL tujuan)
 --}}
 
 <div class="box-border flex w-full flex-col justify-between overflow-hidden rounded-[16px] border border-[#E5E7EB] bg-[#FFFFFF] shadow-[0px_6px_18px_-6px_rgba(0,0,0,0.0509804)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0px_16px_36px_-6px_rgba(11,31,59,0.12)]">
@@ -38,6 +40,11 @@
         onerror="this.src='/public/image/specialProgram/bgJapan.png'"
       />
       <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+      {{#if (and quota (gte (coalesce enrolledCount 0) quota))}}
+        <div class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-red-600/90 text-white font-inter text-[11px] font-bold tracking-wide uppercase shadow-sm backdrop-blur-xs select-none">
+          {{default (t 'test.paidProgram.hero.quickStats.full') 'Penuh'}}
+        </div>
+      {{/if}}
     </div>
   </div>
 
@@ -86,7 +93,16 @@
               {{tag2}}
             </span>
           {{/if}}
-          {{#if tag3}}
+          {{#if quota}}
+            <span class="font-inter text-[12px] text-[#9CA3AF] select-none">·</span>
+            <span class="box-border inline-flex items-center rounded-full border px-2.5 py-1 font-inter text-[12px] font-semibold leading-[15px] {{#if (gte (coalesce enrolledCount 0) quota)}}border-red-200 bg-red-50 text-red-700{{else}}border-[#E5E7EB] bg-white text-[#0B1F3B]{{/if}}">
+              {{#if (gte (coalesce enrolledCount 0) quota)}}
+                {{quota}} / {{quota}} ({{default (t 'test.paidProgram.hero.quickStats.full') 'Penuh'}})
+              {{else}}
+                {{coalesce enrolledCount 0}} / {{quota}} {{default (t 'test.paidProgram.hero.quickStats.students') 'Siswa'}}
+              {{/if}}
+            </span>
+          {{else if tag3}}
             <span class="font-inter text-[12px] text-[#9CA3AF] select-none">·</span>
             <span class="box-border inline-flex items-center rounded-full border border-[#E5E7EB] bg-white px-2.5 py-1 font-inter text-[12px] font-semibold leading-[15px] text-[#0B1F3B]">
               {{tag3}}
