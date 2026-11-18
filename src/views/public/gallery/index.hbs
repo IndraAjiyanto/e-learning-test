@@ -46,49 +46,66 @@
 
       <div class="flex w-full flex-col">
 
-        {{!-- masonry: explicit columns (round-robin distribution) + checkerboard tall/short --}}
-        <div x-show="amount > 0" class="flex flex-col gap-6 sm:flex-row sm:items-start">
-          <template x-for="(col, ci) in masonryColumns" :key="ci">
-            <div class="flex flex-1 flex-col gap-6">
-              <template x-for="(item, ri) in col" :key="item.id">
-                <a
-                  :href="item.filePath"
-                  target="_blank"
-                  rel="noopener"
-                  class="group block overflow-hidden rounded-[20px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.10)]"
-                >
-                  <div class="relative w-full" :class="((ci + ri) % 2 === 0) ? 'aspect-[11/10]' : 'aspect-[16/10]'">
-                    <img
-                      :src="item.filePath"
-                      :alt="getByLang(item.title, lang)"
-                      onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
-                      class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    {{!-- flat 40% black wash + caption top-left --}}
-                    <div class="absolute inset-0 bg-black/40 transition group-hover:bg-black/50"></div>
-                    <div class="absolute inset-x-0 top-0 flex flex-col gap-1.5 p-4">
-                      <h3 class="font-inter text-base font-bold leading-snug text-white" x-text="getByLang(item.title, lang)"></h3>
-                      <p x-show="item.description" class="font-inter text-[13px] leading-relaxed text-white/90" x-text="item.description"></p>
-                    </div>
-                  </div>
-                </a>
-              </template>
-            </div>
+        {{!-- Galeri aktivitas: Bento grid 5 cards per block matching Figma layout --}}
+        <div
+          x-show="amount > 0"
+          class="gallery-bento-grid w-full"
+        >
+          <template x-for="(item, index) in displayedGallery" :key="item.id">
+            <a
+              :href="item.filePath"
+              target="_blank"
+              rel="noopener"
+              class="group relative block h-full w-full overflow-hidden rounded-[20px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0px_12px_28px_rgba(11,31,59,0.15)]"
+              :class="getItemColClass(index, displayedGallery.length)"
+            >
+              {{!-- Photo Image --}}
+              <img
+                :src="item.filePath"
+                :alt="getByLang(item.title, lang)"
+                onerror="this.onerror=null;this.src='/public/image/dashboard/bgHeroSection.png'"
+                class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+
+              {{!-- Dark gradient overlay at bottom for crystal-clear readability --}}
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent transition-opacity duration-300 group-hover:from-black/90 group-hover:via-black/50"></div>
+
+              {{!-- Text caption at bottom-left --}}
+              <div
+                class="relative z-10 flex h-full w-full flex-col justify-end"
+                :class="isLargeCard(index, displayedGallery.length) ? 'p-6 sm:p-8 lg:p-10' : 'p-4 sm:p-5 lg:p-6'"
+              >
+                <h3
+                  class="font-inter font-bold text-white tracking-tight"
+                  :class="isLargeCard(index, displayedGallery.length) ? 'text-xl sm:text-2xl lg:text-3xl leading-tight' : 'text-base sm:text-lg lg:text-xl leading-snug'"
+                  x-text="getByLang(item.title, lang)"
+                ></h3>
+                <p
+                  x-show="item.description"
+                  class="font-inter text-white/90"
+                  :class="isLargeCard(index, displayedGallery.length) ? 'mt-2 sm:mt-3 text-sm sm:text-base leading-relaxed max-w-xl' : 'mt-1 text-xs sm:text-sm leading-normal line-clamp-2'"
+                  x-text="getByLang(item.description, lang) || item.description"
+                ></p>
+              </div>
+            </a>
           </template>
         </div>
 
-        {{!-- "View All Activities": menampilkan data gallery selanjutnya --}}
+        {{!-- "Lihat Semua Aktivitas": button to view more activities --}}
         <button
           type="button"
           x-show="!isExpanded && amount > initialLimit"
           @click="viewAllActivities()"
-          class="mt-8 self-center font-inter text-base font-semibold text-[#003060] underline decoration-1 underline-offset-4 transition hover:text-[#00244a] cursor-pointer focus:outline-none"
+          class="mt-10 self-center inline-flex items-center gap-3 rounded-xl bg-[#003060] px-8 py-3.5 font-inter text-base font-semibold text-white shadow-sm transition hover:bg-[#00244a] cursor-pointer focus:outline-none"
         >
-          {{t 'test.gallery.viewAllActivities'}}
+          <span>{{t 'test.gallery.viewAllActivities'}}</span>
+          <svg class="size-4 shrink-0" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.33334 8H12.6667M12.6667 8L8.66668 4M12.6667 8L8.66668 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </button>
 
         {{!-- Pagination jika data kelebihan untuk ditampilkan di satu halaman --}}
-        <div x-show="isExpanded && totalPages > 1" class="w-full">
+        <div x-show="isExpanded && totalPages > 1" class="mt-10 w-full">
           {{> components/ui/pagination/index
             currentPage="currentPage"
             totalPages="totalPages"
@@ -120,11 +137,10 @@ function galleryTable(data) {
 
     search: "",
     selectedProgram: null,
-    colCount: 3,
 
-    initialLimit: 6,
-    maxSinglePage: 9,
-    pageSize: 9,
+    initialLimit: 5,
+    maxSinglePage: 10,
+    pageSize: 10,
 
     isExpanded: false,
     currentPage: 1,
@@ -132,12 +148,6 @@ function galleryTable(data) {
     lang: '{{lang}}' || 'id',
 
     init() {
-      const sync = () => {
-        this.colCount = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1;
-      };
-      sync();
-      window.addEventListener('resize', sync);
-
       if (this.$watch) {
         this.$watch('search', () => {
           this.isExpanded = false;
@@ -193,10 +203,16 @@ function galleryTable(data) {
       return this.filteredGalleryFull.slice(start, start + this.pageSize);
     },
 
-    get masonryColumns() {
-      const cols = Array.from({ length: this.colCount }, () => []);
-      this.displayedGallery.forEach((item, i) => cols[i % this.colCount].push(item));
-      return cols;
+    isLargeCard(index, count) {
+      if (count <= 2) return true;
+      return index % 5 === 0;
+    },
+
+    getItemColClass(index, count) {
+      if (count === 1) return 'gallery-item-full col-span-1 md:col-span-2 lg:col-span-4 lg:row-span-2';
+      if (count === 2) return 'gallery-item-large col-span-1 md:col-span-1 lg:col-span-2 lg:row-span-2';
+      if (index % 5 === 0) return 'gallery-item-large col-span-1 md:col-span-2 lg:col-span-2 lg:row-span-2';
+      return 'gallery-item-small col-span-1 md:col-span-1 lg:col-span-1 lg:row-span-1';
     },
 
     viewAllActivities() {
@@ -228,3 +244,72 @@ function galleryTable(data) {
   };
 }
 </script>
+
+<style>
+  .gallery-bento-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.25rem;
+    grid-auto-rows: 250px;
+  }
+  @media (min-width: 640px) {
+    .gallery-bento-grid {
+      grid-auto-rows: 270px;
+    }
+  }
+  @media (min-width: 768px) {
+    .gallery-bento-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: 270px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .gallery-bento-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.5rem;
+      grid-auto-rows: 270px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .gallery-bento-grid {
+      grid-auto-rows: 290px;
+    }
+  }
+  @media (min-width: 1536px) {
+    .gallery-bento-grid {
+      grid-auto-rows: 310px;
+    }
+  }
+
+  .gallery-item-large {
+    grid-column: span 1 / span 1;
+    grid-row: span 1 / span 1;
+  }
+  @media (min-width: 768px) {
+    .gallery-item-large {
+      grid-column: span 2 / span 2;
+      grid-row: span 1 / span 1;
+    }
+  }
+  @media (min-width: 1024px) {
+    .gallery-item-large {
+      grid-column: span 2 / span 2;
+      grid-row: span 2 / span 2;
+    }
+  }
+
+  .gallery-item-small {
+    grid-column: span 1 / span 1;
+    grid-row: span 1 / span 1;
+  }
+
+  .gallery-item-full {
+    grid-column: 1 / -1;
+    grid-row: span 1 / span 1;
+  }
+  @media (min-width: 1024px) {
+    .gallery-item-full {
+      grid-row: span 2 / span 2;
+    }
+  }
+</style>
