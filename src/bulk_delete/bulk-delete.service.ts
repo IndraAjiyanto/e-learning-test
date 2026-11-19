@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, EntityTarget, In, ObjectLiteral } from 'typeorm';
+import { DataSource, EntityManager, EntityTarget, In, ObjectLiteral } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -203,372 +203,389 @@ export class BulkDeleteService {
       throw new BadRequestException(`Entity '${entityKey}' is not recognized.`);
     }
 
-    const repo = this.dataSource.getRepository(entityTarget);
+    const filesToClean: (string | null | undefined)[] = [];
 
-    // 1. Safety check khusus User
-    if (key === 'user' || key === 'users') {
-      const users = (await repo.findBy({ id: In(ids) })) as User[];
-      const safeUsers = users.filter(
-        (u) => u.role !== 'super_admin' && u.id !== currentUser?.id,
-      );
-      if (safeUsers.length === 0) {
-        throw new BadRequestException(
-          'Cannot delete the selected user(s). Super Admin accounts and your own account are protected.',
+    const result = await this.dataSource.transaction(async (manager) => {
+      const repo = manager.getRepository(entityTarget);
+
+      // 1. Safety check khusus User
+      if (key === 'user' || key === 'users') {
+        const users = (await repo.findBy({ id: In(ids) })) as User[];
+        const safeUsers = users.filter(
+          (u) => u.role !== 'super_admin' && u.id !== currentUser?.id,
         );
-      }
-      await this.deletePhysicalFiles(safeUsers.map((u) => u.profile));
-      await repo.remove(safeUsers);
-      return {
-        success: true,
-        count: safeUsers.length,
-        message: `Successfully deleted ${safeUsers.length} selected user(s).`,
-      };
-    }
-
-    // 2. Safety check khusus Category
-    if (key === 'category' || key === 'categories') {
-      const categories = (await repo.find({
-        where: { id: In(ids) },
-        relations: ['courses'],
-      })) as Category[];
-      const withCourses = categories.filter(
-        (c) => (c.courses || []).length > 0,
-      );
-      if (withCourses.length > 0) {
-        if (withCourses.length === 1) {
+        if (safeUsers.length === 0) {
           throw new BadRequestException(
-            `Category "${withCourses[0].name}" cannot be deleted because it still contains ${withCourses[0].courses.length} program(s). Please delete or reassign the programs first.`,
-          );
-        } else {
-          const names = withCourses.map((c) => `"${c.name}"`).join(', ');
-          throw new BadRequestException(
-            `Categories ${names} cannot be deleted because they still contain related programs. Please delete or reassign the programs first.`,
+            'Cannot delete the selected user(s). Super Admin accounts and your own account are protected.',
           );
         }
+        filesToClean.push(...safeUsers.map((u) => u.profile));
+        await repo.remove(safeUsers);
+        return {
+          success: true,
+          count: safeUsers.length,
+          message: `Successfully deleted ${safeUsers.length} selected user(s).`,
+        };
       }
-      await this.deletePhysicalFiles(categories.map((c) => c.icon));
-      await repo.remove(categories);
-      return {
-        success: true,
-        count: categories.length,
-        message: `Successfully deleted ${categories.length} selected category(ies).`,
-      };
-    }
 
-    // 3. Safety check khusus Course / Program
-    if (
-      key === 'course' ||
-      key === 'courses' ||
-      key === 'program' ||
-      key === 'programs'
-    ) {
-      const courses = (await repo.find({
-        where: { id: In(ids) },
-        relations: ['userCourses'],
-      })) as Course[];
-      const withParticipants = courses.filter(
-        (c) => (c.userCourses || []).length > 0,
-      );
-      if (withParticipants.length > 0) {
-        if (withParticipants.length === 1) {
-          throw new BadRequestException(
-            `Program "${withParticipants[0].name}" cannot be deleted because it already has ${withParticipants[0].userCourses.length} enrolled participant(s).`,
-          );
-        } else {
-          const names = withParticipants.map((c) => `"${c.name}"`).join(', ');
-          throw new BadRequestException(
-            `Programs ${names} cannot be deleted because they already have enrolled participants.`,
-          );
-        }
-      }
-    }
-
-    // Safety check khusus Installment
-    if (key === 'installment' || key === 'installments') {
-      const installments = (await repo.find({
-        where: { id: In(ids) },
-        relations: ['payment'],
-      })) as Installment[];
-      const withPayments = installments.filter(
-        (inst) => (inst.payment || []).length > 0,
-      );
-      if (withPayments.length > 0) {
-        const months = withPayments
-          .map((i) => `(${i.month} Months)`)
-          .join(', ');
-        throw new BadRequestException(
-          `Installment scheme ${months} cannot be deleted because participants have already made payments using this scheme.`,
+      // 2. Safety check khusus Category
+      if (key === 'category' || key === 'categories') {
+        const categories = (await repo.find({
+          where: { id: In(ids) },
+          relations: ['courses'],
+        })) as Category[];
+        const withCourses = categories.filter(
+          (c) => (c.courses || []).length > 0,
         );
-      }
-    }
-
-    // Safety check khusus Week
-    if (key === 'week' || key === 'weeks') {
-      const weeksList = (await repo.find({
-        where: { id: In(ids) },
-        relations: [
-          'course',
-          'weekProgresses',
-          'session',
-          'session.attendances',
-          'session.sessionProgress',
-        ],
-      })) as Weeks[];
-      for (const w of weeksList) {
-        const isCompleted =
-          (w.weekProgresses || []).some((wp) => wp.quiz || wp.process) ||
-          (w.session || []).some(
-            (s) =>
-              (s.attendances || []).length > 0 ||
-              (s.sessionProgress || []).some(
-                (sp) => sp.logbook || sp.isAttended,
-              ),
-          );
-        if (isCompleted) {
-          throw new BadRequestException(
-            `Week "${w.description || `Week ${w.weekNumber}`}" cannot be deleted because it has already been completed by user.`,
-          );
-        }
-      }
-    }
-
-    // Safety check khusus Syllabus
-    if (key === 'syllabus' || key === 'syllabi') {
-      const syllabusList = (await repo.find({
-        where: { id: In(ids) },
-        relations: ['course', 'syllabusProgresses'],
-      })) as Syllabus[];
-      for (const s of syllabusList) {
-        const isCompleted = (s.syllabusProgresses || []).some(
-          (sp) => sp.quiz || sp.process,
-        );
-        if (isCompleted) {
-          throw new BadRequestException(
-            `Syllabus "${s.title}" cannot be deleted because it has already been completed by a user.`,
-          );
-        }
-      }
-    }
-
-    // Safety check khusus Session
-    if (key === 'session' || key === 'sessions') {
-      const sessions = (await repo.find({
-        where: { id: In(ids) },
-        relations: ['weeks'],
-      })) as Session[];
-      const logbookRepo = this.dataSource.getRepository(Logbook);
-      for (const s of sessions) {
-        const approvedCount = await logbookRepo.count({
-          where: { session: { id: s.id }, process: 'approved' },
-        });
-        if (approvedCount > 0) {
-          throw new BadRequestException(
-            `Session "${s.topic || s.id}" cannot be deleted because it has already been completed by user.`,
-          );
-        }
-      }
-    }
-
-    // Safety check khusus Question
-    if (key === 'question' || key === 'questions') {
-      const questions = (await repo.find({
-        where: { id: In(ids) },
-        relations: ['quiz'],
-      })) as Question[];
-      const scoreRepo = this.dataSource.getRepository(Score);
-      const quizIds = Array.from(
-        new Set(
-          questions
-            .map((q) => q.quiz?.id)
-            .filter((id): id is string => Boolean(id)),
-        ),
-      );
-      for (const qId of quizIds) {
-        const scoreCount = await scoreRepo.count({
-          where: { quiz: { id: qId } },
-        });
-        if (scoreCount > 0) {
-          throw new BadRequestException(
-            'Questions cannot be deleted because participants have already attempted this quiz.',
-          );
-        }
-      }
-      const answerRepo = this.dataSource.getRepository(Answer);
-      const answers = await answerRepo.find({
-        where: { question: { id: In(ids) } },
-      });
-      if (answers.length > 0) {
-        await answerRepo.remove(answers);
-      }
-      await this.deletePhysicalFiles(questions.map((q) => q.image));
-    }
-
-    // Safety check khusus Assignment / Task
-    if (
-      key === 'assignment' ||
-      key === 'assignments' ||
-      key === 'task' ||
-      key === 'tasks'
-    ) {
-      const answerTaskRepo = this.dataSource.getRepository(AnswerTask);
-      const assignments = (await repo.find({
-        where: { id: In(ids) },
-      })) as Assignment[];
-      for (const a of assignments) {
-        const approvedCount = await answerTaskRepo.count({
-          where: { task: { id: a.id }, process: 'approved' },
-        });
-        if (approvedCount > 0) {
-          throw new BadRequestException(
-            `Assignment "${a.title}" cannot be deleted because it has already been completed by user.`,
-          );
-        }
-      }
-      await this.deletePhysicalFiles(assignments.map((a) => a.file));
-    }
-
-    // Safety check khusus Attendance
-    if (key === 'attendance' || key === 'attendances') {
-      const attendances = (await repo.find({
-        where: { id: In(ids) },
-        relations: ['user', 'session'],
-      })) as Attendance[];
-      const logbookRepo = this.dataSource.getRepository(Logbook);
-      const sessionProgressRepo =
-        this.dataSource.getRepository(SessionProgress);
-      for (const att of attendances) {
-        if (att.user && att.session) {
-          const approvedLogbook = await logbookRepo.findOne({
-            where: {
-              user: { id: att.user.id },
-              session: { id: att.session.id },
-              process: 'approved',
-            },
-          });
-          if (approvedLogbook) {
+        if (withCourses.length > 0) {
+          if (withCourses.length === 1) {
             throw new BadRequestException(
-              `Attendance for user "${att.user.username || att.user.email}" cannot be deleted because the user has an approved logbook for this session.`,
+              `Category "${withCourses[0].name}" cannot be deleted because it still contains ${withCourses[0].courses.length} program(s). Please delete or reassign the programs first.`,
+            );
+          } else {
+            const names = withCourses.map((c) => `"${c.name}"`).join(', ');
+            throw new BadRequestException(
+              `Categories ${names} cannot be deleted because they still contain related programs. Please delete or reassign the programs first.`,
             );
           }
-          const sessionProgress = await sessionProgressRepo.findOne({
-            where: {
-              user: { id: att.user.id },
-              session: { id: att.session.id },
-            },
-          });
-          if (sessionProgress) {
-            await sessionProgressRepo.remove(sessionProgress);
+        }
+        filesToClean.push(...categories.map((c) => c.icon));
+        await repo.remove(categories);
+        return {
+          success: true,
+          count: categories.length,
+          message: `Successfully deleted ${categories.length} selected category(ies).`,
+        };
+      }
+
+      // 3. Safety check khusus Course / Program
+      if (
+        key === 'course' ||
+        key === 'courses' ||
+        key === 'program' ||
+        key === 'programs'
+      ) {
+        const courses = (await repo.find({
+          where: { id: In(ids) },
+          relations: ['userCourses'],
+        })) as Course[];
+        const withParticipants = courses.filter(
+          (c) => (c.userCourses || []).length > 0,
+        );
+        if (withParticipants.length > 0) {
+          if (withParticipants.length === 1) {
+            throw new BadRequestException(
+              `Program "${withParticipants[0].name}" cannot be deleted because it already has ${withParticipants[0].userCourses.length} enrolled participant(s).`,
+            );
+          } else {
+            const names = withParticipants.map((c) => `"${c.name}"`).join(', ');
+            throw new BadRequestException(
+              `Programs ${names} cannot be deleted because they already have enrolled participants.`,
+            );
           }
         }
       }
-    }
 
-    // Safety check khusus Material
-    if (
-      key === 'material' ||
-      key === 'materials' ||
-      key === 'learning_material' ||
-      key === 'learningmaterial' ||
-      key === 'learning_materials'
-    ) {
-      const materials = (await repo.find({
-        where: { id: In(ids) },
-        relations: ['syllabus'],
-      })) as Material[];
-      for (const m of materials) {
-        if (m.syllabus) {
-          const syllabusWithProgress = await this.dataSource
-            .getRepository(Syllabus)
-            .findOne({
-              where: { id: m.syllabus.id },
-              relations: ['syllabusProgresses'],
+      // Safety check khusus Installment
+      if (key === 'installment' || key === 'installments') {
+        const installments = (await repo.find({
+          where: { id: In(ids) },
+          relations: ['payment'],
+        })) as Installment[];
+        const withPayments = installments.filter(
+          (inst) => (inst.payment || []).length > 0,
+        );
+        if (withPayments.length > 0) {
+          const months = withPayments
+            .map((i) => `(${i.month} Months)`)
+            .join(', ');
+          throw new BadRequestException(
+            `Installment scheme ${months} cannot be deleted because participants have already made payments using this scheme.`,
+          );
+        }
+      }
+
+      // Safety check khusus Week
+      if (key === 'week' || key === 'weeks') {
+        const weeksList = (await repo.find({
+          where: { id: In(ids) },
+          relations: [
+            'course',
+            'weekProgresses',
+            'session',
+            'session.attendances',
+            'session.sessionProgress',
+          ],
+        })) as Weeks[];
+        for (const w of weeksList) {
+          const isCompleted =
+            (w.weekProgresses || []).some((wp) => wp.quiz || wp.process) ||
+            (w.session || []).some(
+              (s) =>
+                (s.attendances || []).length > 0 ||
+                (s.sessionProgress || []).some(
+                  (sp) => sp.logbook || sp.isAttended,
+                ),
+            );
+          if (isCompleted) {
+            throw new BadRequestException(
+              `Week "${w.description || `Week ${w.weekNumber}`}" cannot be deleted because it has already been completed by user.`,
+            );
+          }
+        }
+      }
+
+      // Safety check khusus Syllabus
+      if (key === 'syllabus' || key === 'syllabi') {
+        const syllabusList = (await repo.find({
+          where: { id: In(ids) },
+          relations: ['course', 'syllabusProgresses'],
+        })) as Syllabus[];
+        for (const s of syllabusList) {
+          const isCompleted = (s.syllabusProgresses || []).some(
+            (sp) => sp.quiz || sp.process,
+          );
+          if (isCompleted) {
+            throw new BadRequestException(
+              `Syllabus "${s.title}" cannot be deleted because it has already been completed by a user.`,
+            );
+          }
+        }
+      }
+
+      // Safety check khusus Session
+      if (key === 'session' || key === 'sessions') {
+        const sessions = (await repo.find({
+          where: { id: In(ids) },
+          relations: ['weeks'],
+        })) as Session[];
+        const logbookRepo = manager.getRepository(Logbook);
+        for (const s of sessions) {
+          const approvedCount = await logbookRepo.count({
+            where: { session: { id: s.id }, process: 'approved' },
+          });
+          if (approvedCount > 0) {
+            throw new BadRequestException(
+              `Session "${s.topic || s.id}" cannot be deleted because it has already been completed by user.`,
+            );
+          }
+        }
+      }
+
+      // Safety check khusus Question
+      if (key === 'question' || key === 'questions') {
+        const questions = (await repo.find({
+          where: { id: In(ids) },
+          relations: ['quiz'],
+        })) as Question[];
+        const scoreRepo = manager.getRepository(Score);
+        const quizIds = Array.from(
+          new Set(
+            questions
+              .map((q) => q.quiz?.id)
+              .filter((id): id is string => Boolean(id)),
+          ),
+        );
+        for (const qId of quizIds) {
+          const scoreCount = await scoreRepo.count({
+            where: { quiz: { id: qId } },
+          });
+          if (scoreCount > 0) {
+            throw new BadRequestException(
+              'Questions cannot be deleted because participants have already attempted this quiz.',
+            );
+          }
+        }
+        const answerRepo = manager.getRepository(Answer);
+        const answers = await answerRepo.find({
+          where: { question: { id: In(ids) } },
+        });
+        if (answers.length > 0) {
+          await answerRepo.remove(answers);
+        }
+        filesToClean.push(...questions.map((q) => q.image));
+      }
+
+      // Safety check khusus Assignment / Task
+      if (
+        key === 'assignment' ||
+        key === 'assignments' ||
+        key === 'task' ||
+        key === 'tasks'
+      ) {
+        const answerTaskRepo = manager.getRepository(AnswerTask);
+        const assignments = (await repo.find({
+          where: { id: In(ids) },
+        })) as Assignment[];
+        for (const a of assignments) {
+          const approvedCount = await answerTaskRepo.count({
+            where: { task: { id: a.id }, process: 'approved' },
+          });
+          if (approvedCount > 0) {
+            throw new BadRequestException(
+              `Assignment "${a.title}" cannot be deleted because it has already been completed by user.`,
+            );
+          }
+        }
+        filesToClean.push(...assignments.map((a) => a.file));
+      }
+
+      // Safety check khusus Attendance
+      if (key === 'attendance' || key === 'attendances') {
+        const attendances = (await repo.find({
+          where: { id: In(ids) },
+          relations: ['user', 'session'],
+        })) as Attendance[];
+        const logbookRepo = manager.getRepository(Logbook);
+        const sessionProgressRepo = manager.getRepository(SessionProgress);
+        for (const att of attendances) {
+          if (att.user && att.session) {
+            const approvedLogbook = await logbookRepo.findOne({
+              where: {
+                user: { id: att.user.id },
+                session: { id: att.session.id },
+                process: 'approved',
+              },
             });
-          if (
-            syllabusWithProgress &&
-            (syllabusWithProgress.syllabusProgresses || []).some(
-              (sp) => sp.quiz || sp.process,
-            )
-          ) {
-            throw new BadRequestException(
-              `Material "${m.title}" cannot be deleted because the syllabus has already been completed by a user.`,
-            );
+            if (approvedLogbook) {
+              throw new BadRequestException(
+                `Attendance for user "${att.user.username || att.user.email}" cannot be deleted because the user has an approved logbook for this session.`,
+              );
+            }
+            const sessionProgress = await sessionProgressRepo.findOne({
+              where: {
+                user: { id: att.user.id },
+                session: { id: att.session.id },
+              },
+            });
+            if (sessionProgress) {
+              await sessionProgressRepo.remove(sessionProgress);
+            }
           }
         }
       }
-      await this.deletePhysicalFiles(materials.map((m) => m.file));
-    }
 
-    // Safety check khusus Voucher: bersihkan relasi junction table voucher_programs
-    if (key === 'voucher' || key === 'vouchers') {
-      const vouchers = (await repo.find({
-        where: { id: In(ids) },
-        relations: ['courses'],
-      })) as Voucher[];
-      if (!vouchers || vouchers.length === 0) {
-        throw new NotFoundException('Selected voucher(s) not found.');
+      // Safety check khusus Material
+      if (
+        key === 'material' ||
+        key === 'materials' ||
+        key === 'learning_material' ||
+        key === 'learningmaterial' ||
+        key === 'learning_materials'
+      ) {
+        const materials = (await repo.find({
+          where: { id: In(ids) },
+          relations: ['syllabus'],
+        })) as Material[];
+        for (const m of materials) {
+          if (m.syllabus) {
+            const syllabusWithProgress = await manager
+              .getRepository(Syllabus)
+              .findOne({
+                where: { id: m.syllabus.id },
+                relations: ['syllabusProgresses'],
+              });
+            if (
+              syllabusWithProgress &&
+              (syllabusWithProgress.syllabusProgresses || []).some(
+                (sp) => sp.quiz || sp.process,
+              )
+            ) {
+              throw new BadRequestException(
+                `Material "${m.title}" cannot be deleted because the syllabus has already been completed by a user.`,
+              );
+            }
+          }
+        }
+        filesToClean.push(...materials.map((m) => m.file));
       }
-      try {
-        await this.dataSource
-          .createQueryBuilder()
-          .delete()
-          .from('voucher_programs')
-          .where('"voucherId" IN (:...ids)', { ids })
-          .execute();
-      } catch {}
-      await repo.remove(vouchers);
+
+      // Safety check khusus Voucher: bersihkan relasi junction table voucher_programs
+      if (key === 'voucher' || key === 'vouchers') {
+        const vouchers = (await repo.find({
+          where: { id: In(ids) },
+          relations: ['courses'],
+        })) as Voucher[];
+        if (!vouchers || vouchers.length === 0) {
+          throw new NotFoundException('Selected voucher(s) not found.');
+        }
+        try {
+          await manager
+            .createQueryBuilder()
+            .delete()
+            .from('voucher_programs')
+            .where('"voucherId" IN (:...ids)', { ids })
+            .execute();
+        } catch {}
+        await repo.remove(vouchers);
+        return {
+          success: true,
+          count: vouchers.length,
+          message: `Successfully deleted ${vouchers.length} selected voucher(s).`,
+        };
+      }
+
+      const items = await repo.findBy({ id: In(ids) });
+      if (!items || items.length === 0) {
+        throw new NotFoundException('Selected items were not found.');
+      }
+
+      // Cleanup file gambar/media jika ada
+      const fileKeys = [
+        'image',
+        'icon',
+        'logo',
+        'file',
+        'profile',
+        'banner',
+        'video',
+        'filePath',
+      ];
+      for (const item of items) {
+        for (const field of fileKeys) {
+          const val = (item as Record<string, unknown>)[field];
+          if (typeof val === 'string') {
+            filesToClean.push(val);
+          } else if (Array.isArray(val)) {
+            for (const sub of val) {
+              if (typeof sub === 'string') filesToClean.push(sub);
+            }
+          }
+        }
+      }
+
+      await repo.remove(items);
+      await this.postDeleteCleanup(key, items, manager);
       return {
         success: true,
-        count: vouchers.length,
-        message: `Successfully deleted ${vouchers.length} selected voucher(s).`,
+        count: items.length,
+        message: `Successfully deleted ${items.length} selected item(s).`,
       };
+    });
+
+    // Transaksi database berhasil commit -> bersihkan berkas fisik di disk secara aman
+    if (filesToClean.length > 0) {
+      await this.deletePhysicalFiles(filesToClean);
     }
 
-    const items = await repo.findBy({ id: In(ids) });
-    if (!items || items.length === 0) {
-      throw new NotFoundException('Selected items were not found.');
-    }
-
-    // Cleanup file gambar/media jika ada
-    const fileKeys = [
-      'image',
-      'icon',
-      'logo',
-      'file',
-      'profile',
-      'banner',
-      'video',
-      'filePath',
-    ];
-    const filesToClean: string[] = [];
-    for (const item of items) {
-      for (const field of fileKeys) {
-        const val = (item as Record<string, unknown>)[field];
-        if (typeof val === 'string') {
-          filesToClean.push(val);
-        } else if (Array.isArray(val)) {
-          for (const sub of val) {
-            if (typeof sub === 'string') filesToClean.push(sub);
-          }
-        }
-      }
-    }
-    await this.deletePhysicalFiles(filesToClean);
-
-    await repo.remove(items);
-    await this.postDeleteCleanup(key, items);
-    return {
-      success: true,
-      count: items.length,
-      message: `Successfully deleted ${items.length} selected item(s).`,
-    };
+    return result;
   }
 
-  private async postDeleteCleanup(key: string, items: ObjectLiteral[]) {
+  private async postDeleteCleanup(
+    key: string,
+    items: ObjectLiteral[],
+    manager?: EntityManager,
+  ) {
     if (!items || items.length === 0) return;
+
+    const getRepo = <T extends ObjectLiteral>(target: EntityTarget<T>) =>
+      manager
+        ? manager.getRepository(target)
+        : this.dataSource.getRepository(target);
 
     // Re-index remaining weeks
     if (key === 'week' || key === 'weeks') {
-      const repo = this.dataSource.getRepository(Weeks);
+      const repo = getRepo(Weeks);
       const courseIds = Array.from(
         new Set(
           (items as Weeks[])
@@ -590,7 +607,7 @@ export class BulkDeleteService {
 
     // Re-index remaining syllabus
     if (key === 'syllabus' || key === 'syllabi') {
-      const repo = this.dataSource.getRepository(Syllabus);
+      const repo = getRepo(Syllabus);
       const courseIds = Array.from(
         new Set(
           (items as Syllabus[])
@@ -612,7 +629,7 @@ export class BulkDeleteService {
 
     // Re-index remaining sessions
     if (key === 'session' || key === 'sessions') {
-      const repo = this.dataSource.getRepository(Session);
+      const repo = getRepo(Session);
       const weekIds = Array.from(
         new Set(
           (items as Session[])
@@ -640,7 +657,7 @@ export class BulkDeleteService {
       key === 'flowprogram' ||
       key === 'flow-program'
     ) {
-      const repo = this.dataSource.getRepository(CourseFlow);
+      const repo = getRepo(CourseFlow);
       const courseIds = Array.from(
         new Set(
           (items as CourseFlow[])
@@ -671,254 +688,267 @@ export class BulkDeleteService {
       throw new BadRequestException(`Entity '${entityKey}' is not recognized.`);
     }
 
-    const repo = this.dataSource.getRepository(entityTarget);
+    const filesToClean: (string | null | undefined)[] = [];
 
-    // 1. Safety check khusus User
-    if (key === 'user' || key === 'users') {
-      const users = (await repo.find()) as User[];
-      const safeUsers = users.filter(
-        (u) => u.role !== 'super_admin' && u.id !== currentUser?.id,
-      );
-      if (safeUsers.length === 0) {
+    const result = await this.dataSource.transaction(async (manager) => {
+      const repo = manager.getRepository(entityTarget);
+
+      // 1. Safety check khusus User
+      if (key === 'user' || key === 'users') {
+        const users = (await repo.find()) as User[];
+        const safeUsers = users.filter(
+          (u) => u.role !== 'super_admin' && u.id !== currentUser?.id,
+        );
+        if (safeUsers.length === 0) {
+          return {
+            success: true,
+            count: 0,
+            message:
+              'No non-admin users to delete. Super Admin accounts are protected.',
+          };
+        }
+        filesToClean.push(...safeUsers.map((u) => u.profile));
+        await repo.remove(safeUsers);
         return {
           success: true,
-          count: 0,
-          message:
-            'No non-admin users to delete. Super Admin accounts are protected.',
+          count: safeUsers.length,
+          message: `Successfully deleted all user data (${safeUsers.length} users). Super Admin accounts remain secure.`,
         };
       }
-      await this.deletePhysicalFiles(safeUsers.map((u) => u.profile));
-      await repo.remove(safeUsers);
-      return {
-        success: true,
-        count: safeUsers.length,
-        message: `Successfully deleted all user data (${safeUsers.length} users). Super Admin accounts remain secure.`,
-      };
-    }
 
-    // 2. Safety check khusus Category
-    if (key === 'category' || key === 'categories') {
-      const categories = (await repo.find({
-        relations: ['courses'],
-      })) as Category[];
-      const withCourses = categories.filter(
-        (c) => (c.courses || []).length > 0,
-      );
-      if (withCourses.length > 0) {
-        const names = withCourses.map((c) => `"${c.name}"`).join(', ');
-        throw new BadRequestException(
-          `Cannot delete all categories because the following category(ies) still contain related programs: ${names}.`,
+      // 2. Safety check khusus Category
+      if (key === 'category' || key === 'categories') {
+        const categories = (await repo.find({
+          relations: ['courses'],
+        })) as Category[];
+        const withCourses = categories.filter(
+          (c) => (c.courses || []).length > 0,
         );
-      }
-      await this.deletePhysicalFiles(categories.map((c) => c.icon));
-      await repo.remove(categories);
-      return {
-        success: true,
-        count: categories.length,
-        message: `Successfully deleted all categories (${categories.length} data).`,
-      };
-    }
-
-    // 3. Safety check khusus Course / Program
-    if (
-      key === 'course' ||
-      key === 'courses' ||
-      key === 'program' ||
-      key === 'programs'
-    ) {
-      const courses = (await repo.find({
-        relations: ['userCourses'],
-      })) as Course[];
-      const withParticipants = courses.filter(
-        (c) => (c.userCourses || []).length > 0,
-      );
-      if (withParticipants.length > 0) {
-        if (withParticipants.length === 1) {
+        if (withCourses.length > 0) {
+          const names = withCourses.map((c) => `"${c.name}"`).join(', ');
           throw new BadRequestException(
-            `Program "${withParticipants[0].name}" cannot be deleted because it already has ${withParticipants[0].userCourses.length} enrolled participant(s).`,
+            `Cannot delete all categories because the following category(ies) still contain related programs: ${names}.`,
           );
-        } else {
-          const names = withParticipants.map((c) => `"${c.name}"`).join(', ');
+        }
+        filesToClean.push(...categories.map((c) => c.icon));
+        await repo.remove(categories);
+        return {
+          success: true,
+          count: categories.length,
+          message: `Successfully deleted all categories (${categories.length} data).`,
+        };
+      }
+
+      // 3. Safety check khusus Course / Program
+      if (
+        key === 'course' ||
+        key === 'courses' ||
+        key === 'program' ||
+        key === 'programs'
+      ) {
+        const courses = (await repo.find({
+          relations: ['userCourses'],
+        })) as Course[];
+        const withParticipants = courses.filter(
+          (c) => (c.userCourses || []).length > 0,
+        );
+        if (withParticipants.length > 0) {
+          if (withParticipants.length === 1) {
+            throw new BadRequestException(
+              `Program "${withParticipants[0].name}" cannot be deleted because it already has ${withParticipants[0].userCourses.length} enrolled participant(s).`,
+            );
+          } else {
+            const names = withParticipants.map((c) => `"${c.name}"`).join(', ');
+            throw new BadRequestException(
+              `Programs ${names} cannot be deleted because they already have enrolled participants.`,
+            );
+          }
+        }
+      }
+
+      // 4. Entity umum
+      // Safety check khusus Installment
+      if (key === 'installment' || key === 'installments') {
+        const installments = (await repo.find({
+          relations: ['payment'],
+        })) as Installment[];
+        const withPayments = installments.filter(
+          (inst) => (inst.payment || []).length > 0,
+        );
+        if (withPayments.length > 0) {
           throw new BadRequestException(
-            `Programs ${names} cannot be deleted because they already have enrolled participants.`,
+            'Cannot delete all installments because some schemes already have payment records.',
           );
         }
       }
-    }
 
-    // 4. Entity umum
-    // Safety check khusus Installment
-    if (key === 'installment' || key === 'installments') {
-      const installments = (await repo.find({
-        relations: ['payment'],
-      })) as Installment[];
-      const withPayments = installments.filter(
-        (inst) => (inst.payment || []).length > 0,
-      );
-      if (withPayments.length > 0) {
-        throw new BadRequestException(
-          'Cannot delete all installments because some schemes already have payment records.',
+      // Safety check khusus Week
+      if (key === 'week' || key === 'weeks') {
+        const weeksList = (await repo.find({
+          relations: [
+            'weekProgresses',
+            'session',
+            'session.attendances',
+            'session.sessionProgress',
+          ],
+        })) as Weeks[];
+        const completed = weeksList.filter(
+          (w) =>
+            (w.weekProgresses || []).some((wp) => wp.quiz || wp.process) ||
+            (w.session || []).some(
+              (s) =>
+                (s.attendances || []).length > 0 ||
+                (s.sessionProgress || []).some(
+                  (sp) => sp.logbook || sp.isAttended,
+                ),
+            ),
         );
+        if (completed.length > 0) {
+          throw new BadRequestException(
+            'Cannot delete all weeks because some weeks have already been completed by user.',
+          );
+        }
       }
-    }
 
-    // Safety check khusus Week
-    if (key === 'week' || key === 'weeks') {
-      const weeksList = (await repo.find({
-        relations: [
-          'weekProgresses',
-          'session',
-          'session.attendances',
-          'session.sessionProgress',
-        ],
-      })) as Weeks[];
-      const completed = weeksList.filter(
-        (w) =>
-          (w.weekProgresses || []).some((wp) => wp.quiz || wp.process) ||
-          (w.session || []).some(
-            (s) =>
-              (s.attendances || []).length > 0 ||
-              (s.sessionProgress || []).some(
-                (sp) => sp.logbook || sp.isAttended,
-              ),
-          ),
-      );
-      if (completed.length > 0) {
-        throw new BadRequestException(
-          'Cannot delete all weeks because some weeks have already been completed by user.',
+      // Safety check khusus Syllabus
+      if (key === 'syllabus' || key === 'syllabi') {
+        const syllabusList = (await repo.find({
+          relations: ['syllabusProgresses'],
+        })) as Syllabus[];
+        const completed = syllabusList.filter((s) =>
+          (s.syllabusProgresses || []).some((sp) => sp.quiz || sp.process),
         );
+        if (completed.length > 0) {
+          throw new BadRequestException(
+            'Cannot delete all syllabus because some items have already been completed by user.',
+          );
+        }
       }
-    }
 
-    // Safety check khusus Syllabus
-    if (key === 'syllabus' || key === 'syllabi') {
-      const syllabusList = (await repo.find({
-        relations: ['syllabusProgresses'],
-      })) as Syllabus[];
-      const completed = syllabusList.filter((s) =>
-        (s.syllabusProgresses || []).some((sp) => sp.quiz || sp.process),
-      );
-      if (completed.length > 0) {
-        throw new BadRequestException(
-          'Cannot delete all syllabus because some items have already been completed by user.',
-        );
+      // Safety check khusus Session
+      if (key === 'session' || key === 'sessions') {
+        const sessions = (await repo.find()) as Session[];
+        const logbookRepo = manager.getRepository(Logbook);
+        for (const s of sessions) {
+          const approvedCount = await logbookRepo.count({
+            where: { session: { id: s.id }, process: 'approved' },
+          });
+          if (approvedCount > 0) {
+            throw new BadRequestException(
+              'Cannot delete all sessions because some sessions have already been completed by user.',
+            );
+          }
+        }
       }
-    }
 
-    // Safety check khusus Session
-    if (key === 'session' || key === 'sessions') {
-      const sessions = (await repo.find()) as Session[];
-      const logbookRepo = this.dataSource.getRepository(Logbook);
-      for (const s of sessions) {
-        const approvedCount = await logbookRepo.count({
-          where: { session: { id: s.id }, process: 'approved' },
+      // Safety check khusus Question
+      if (key === 'question' || key === 'questions') {
+        const scoreRepo = manager.getRepository(Score);
+        const scoreCount = await scoreRepo.count();
+        if (scoreCount > 0) {
+          throw new BadRequestException(
+            'Cannot delete all questions because participants have already attempted quizzes.',
+          );
+        }
+        await manager
+          .createQueryBuilder()
+          .delete()
+          .from(Answer)
+          .execute()
+          .catch(() => undefined);
+      }
+
+      // Safety check khusus Assignment / Task
+      if (
+        key === 'assignment' ||
+        key === 'assignments' ||
+        key === 'task' ||
+        key === 'tasks'
+      ) {
+        const answerTaskRepo = manager.getRepository(AnswerTask);
+        const approvedCount = await answerTaskRepo.count({
+          where: { process: 'approved' },
         });
         if (approvedCount > 0) {
           throw new BadRequestException(
-            'Cannot delete all sessions because some sessions have already been completed by user.',
+            'Cannot delete all assignments because some have already been completed by user.',
           );
         }
       }
-    }
 
-    // Safety check khusus Question
-    if (key === 'question' || key === 'questions') {
-      const scoreRepo = this.dataSource.getRepository(Score);
-      const scoreCount = await scoreRepo.count();
-      if (scoreCount > 0) {
-        throw new BadRequestException(
-          'Cannot delete all questions because participants have already attempted quizzes.',
-        );
+      // Safety check khusus Voucher: bersihkan relasi junction table voucher_programs
+      if (key === 'voucher' || key === 'vouchers') {
+        const vouchers = (await repo.find({
+          relations: ['courses'],
+        })) as Voucher[];
+        if (!vouchers || vouchers.length === 0) {
+          return {
+            success: true,
+            count: 0,
+            message: 'No data to delete.',
+          };
+        }
+        try {
+          await manager
+            .createQueryBuilder()
+            .delete()
+            .from('voucher_programs')
+            .execute();
+        } catch {}
+        await repo.remove(vouchers);
+        return {
+          success: true,
+          count: vouchers.length,
+          message: `Successfully deleted all vouchers (${vouchers.length} items).`,
+        };
       }
-      const answerRepo = this.dataSource.getRepository(Answer);
-      await answerRepo.clear().catch(() => undefined);
-    }
 
-    // Safety check khusus Assignment / Task
-    if (
-      key === 'assignment' ||
-      key === 'assignments' ||
-      key === 'task' ||
-      key === 'tasks'
-    ) {
-      const answerTaskRepo = this.dataSource.getRepository(AnswerTask);
-      const approvedCount = await answerTaskRepo.count({
-        where: { process: 'approved' },
-      });
-      if (approvedCount > 0) {
-        throw new BadRequestException(
-          'Cannot delete all assignments because some have already been completed by user.',
-        );
-      }
-    }
-
-    // Safety check khusus Voucher: bersihkan relasi junction table voucher_programs
-    if (key === 'voucher' || key === 'vouchers') {
-      const vouchers = (await repo.find({
-        relations: ['courses'],
-      })) as Voucher[];
-      if (!vouchers || vouchers.length === 0) {
+      const items = await repo.find();
+      if (!items || items.length === 0) {
         return {
           success: true,
           count: 0,
           message: 'No data to delete.',
         };
       }
-      try {
-        await this.dataSource
-          .createQueryBuilder()
-          .delete()
-          .from('voucher_programs')
-          .execute();
-      } catch {}
-      await repo.remove(vouchers);
-      return {
-        success: true,
-        count: vouchers.length,
-        message: `Successfully deleted all vouchers (${vouchers.length} items).`,
-      };
-    }
 
-    const items = await repo.find();
-    if (!items || items.length === 0) {
-      return {
-        success: true,
-        count: 0,
-        message: 'No data to delete.',
-      };
-    }
-
-    const fileKeys = [
-      'image',
-      'icon',
-      'logo',
-      'file',
-      'profile',
-      'banner',
-      'video',
-      'filePath',
-    ];
-    const filesToClean: string[] = [];
-    for (const item of items) {
-      for (const field of fileKeys) {
-        const val = (item as Record<string, unknown>)[field];
-        if (typeof val === 'string') {
-          filesToClean.push(val);
-        } else if (Array.isArray(val)) {
-          for (const sub of val) {
-            if (typeof sub === 'string') filesToClean.push(sub);
+      const fileKeys = [
+        'image',
+        'icon',
+        'logo',
+        'file',
+        'profile',
+        'banner',
+        'video',
+        'filePath',
+      ];
+      for (const item of items) {
+        for (const field of fileKeys) {
+          const val = (item as Record<string, unknown>)[field];
+          if (typeof val === 'string') {
+            filesToClean.push(val);
+          } else if (Array.isArray(val)) {
+            for (const sub of val) {
+              if (typeof sub === 'string') filesToClean.push(sub);
+            }
           }
         }
       }
-    }
-    await this.deletePhysicalFiles(filesToClean);
 
-    await repo.remove(items);
-    await this.postDeleteCleanup(key, items);
-    return {
-      success: true,
-      count: items.length,
-      message: `Successfully deleted all data (${items.length} items).`,
-    };
+      await repo.remove(items);
+      await this.postDeleteCleanup(key, items, manager);
+      return {
+        success: true,
+        count: items.length,
+        message: `Successfully deleted all data (${items.length} items).`,
+      };
+    });
+
+    // Transaksi database berhasil commit -> bersihkan berkas fisik di disk secara aman
+    if (filesToClean.length > 0) {
+      await this.deletePhysicalFiles(filesToClean);
+    }
+
+    return result;
   }
 }

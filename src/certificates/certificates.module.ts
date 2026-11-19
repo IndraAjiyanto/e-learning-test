@@ -7,6 +7,7 @@ import { Course } from 'src/entities/course.entity';
 import { Certificates } from 'src/entities/certificate.entity';
 import { Biodata } from 'src/entities/biodata.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
+import { UserCourse } from 'src/entities/user_course.entity';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { Portofolios } from 'src/entities/portofolios.entity';
       Certificates,
       Biodata,
       Portofolios,
+      UserCourse,
     ]),
   ],
   controllers: [CertificatesController],

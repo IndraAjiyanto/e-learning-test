@@ -106,6 +106,64 @@ async function bootstrap() {
     }),
   );
 
+  // Proteksi CSRF (Cross-Site Request Forgery): Verifikasi Origin/Referer untuk request mutasi (POST, PUT, DELETE, PATCH)
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const safeMethods = ['GET', 'HEAD', 'OPTIONS'];
+    if (safeMethods.includes(req.method)) {
+      return next();
+    }
+
+    // Kecualikan webhook pembayaran pihak ketiga yang divalidasi token tersendiri
+    if (
+      req.path.startsWith('/invoice/webhook') ||
+      req.path.startsWith('/webhook')
+    ) {
+      return next();
+    }
+
+    const host = req.headers.host;
+    const origin = req.headers.origin;
+    const referer = req.headers.referer;
+
+    if (origin) {
+      try {
+        const originUrl = new URL(origin);
+        if (originUrl.host !== host) {
+          return res.status(403).json({
+            statusCode: 403,
+            message: 'Forbidden: Permintaan lintas domain (CSRF) ditolak.',
+          });
+        }
+      } catch {
+        return res.status(403).json({
+          statusCode: 403,
+          message: 'Forbidden: Format origin tidak valid.',
+        });
+      }
+      return next();
+    }
+
+    if (referer) {
+      try {
+        const refererUrl = new URL(referer);
+        if (refererUrl.host !== host) {
+          return res.status(403).json({
+            statusCode: 403,
+            message: 'Forbidden: Permintaan lintas domain (CSRF) ditolak.',
+          });
+        }
+      } catch {
+        return res.status(403).json({
+          statusCode: 403,
+          message: 'Forbidden: Format referer tidak valid.',
+        });
+      }
+      return next();
+    }
+
+    next();
+  });
+
   app.use(flash());
 
   // Sesi disimpan di Postgres (connect-pg-simple), jadi penulisannya asinkron:

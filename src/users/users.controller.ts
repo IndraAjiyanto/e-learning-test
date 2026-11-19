@@ -38,6 +38,8 @@ import {
   flashToastInfo,
   flashToastWarning,
 } from 'src/common/utils/toast.util';
+import { RateLimit } from 'src/common/decorators/rate-limit.decorator';
+import { RateLimiterGuard } from 'src/common/guards/rate-limiter.guard';
 import {
   capabilitiesForCourse,
   certificateTemplateForCourse,
@@ -104,6 +106,13 @@ export class UsersController {
   }
 
   @Post('forgot-password')
+  @UseGuards(RateLimiterGuard)
+  @RateLimit({
+    limit: 3,
+    ttlSeconds: 60,
+    message:
+      'Terlalu banyak permintaan reset password. Silakan tunggu 1 menit sebelum mencoba kembali.',
+  })
   async forgotPassword(
     @Body() forgotPasswordDto: ForgotPasswordDto,
     @Res() res: Response,
@@ -168,6 +177,13 @@ export class UsersController {
   }
 
   @Post('reset-password')
+  @UseGuards(RateLimiterGuard)
+  @RateLimit({
+    limit: 5,
+    ttlSeconds: 60,
+    message:
+      'Terlalu banyak percobaan reset password. Silakan tunggu 1 menit sebelum mencoba kembali.',
+  })
   async resetPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
     @Res() res: Response,
@@ -194,6 +210,13 @@ export class UsersController {
   // ============================================
 
   @Post('send-verify-email')
+  @UseGuards(RateLimiterGuard)
+  @RateLimit({
+    limit: 3,
+    ttlSeconds: 60,
+    message:
+      'Terlalu banyak permintaan pengiriman email verifikasi. Silakan tunggu 1 menit sebelum mencoba kembali.',
+  })
   async sendVerifyEmailPage(
     @Res() res: Response,
     @Req() req: Request,

@@ -20,6 +20,7 @@ import { Installment } from 'src/entities/installment.entity';
 @Injectable()
 export class InvoiceService {
   private xenditInvoiceClient: InvoiceClient;
+  private invoiceNumberLock = Promise.resolve();
 
   constructor(
     @InjectRepository(Invoice)
@@ -47,58 +48,92 @@ export class InvoiceService {
     }
   }
 
+  private async acquireInvoiceLock(): Promise<() => void> {
+    let release: () => void;
+    const waitPromise = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const oldLock = this.invoiceNumberLock;
+    this.invoiceNumberLock = oldLock.then(() => waitPromise);
+    await oldLock;
+    return release!;
+  }
+
   public async generateInvoiceNumber(date = new Date()): Promise<string> {
-    const months = [
-      'I',
-      'II',
-      'III',
-      'IV',
-      'V',
-      'VI',
-      'VII',
-      'VIII',
-      'IX',
-      'X',
-      'XI',
-      'XII',
-    ];
-    const month = months[date.getMonth()];
-    const year = date.getFullYear();
-    const prefix = 'WSA-KA.';
-    const suffix = `/KW/${month}/${year}`;
-    const pattern = `${prefix}%${suffix}`;
+    const release = await this.acquireInvoiceLock();
+    try {
+      const months = [
+        'I',
+        'II',
+        'III',
+        'IV',
+        'V',
+        'VI',
+        'VII',
+        'VIII',
+        'IX',
+        'X',
+        'XI',
+        'XII',
+      ];
+      const month = months[date.getMonth()];
+      const year = date.getFullYear();
+      const prefix = 'WSA-KA.';
+      const suffix = `/KW/${month}/${year}`;
+      const pattern = `${prefix}%${suffix}`;
 
-    const existingInvoices = await this.invoiceRepository
-      .createQueryBuilder('invoice')
-      .select('invoice.invoice_number', 'invoice_number')
-      .where('invoice.invoice_number LIKE :pattern', { pattern })
-      .getRawMany<{ invoice_number: string }>();
+      let maxSeq = 0;
+      try {
+        const raw = await this.invoiceRepository
+          .createQueryBuilder('invoice')
+          .select(
+            `MAX(NULLIF(SUBSTRING("invoice"."invoice_number" FROM '^WSA-KA\\.(\\d+)/KW/'), '')::int)`,
+            'maxSeq',
+          )
+          .where('invoice.invoice_number LIKE :pattern', { pattern })
+          .getRawOne<{ maxSeq: number | string | null }>();
 
-    let maxSeq = 0;
-    const existingSet = new Set<string>();
+        if (raw?.maxSeq) {
+          maxSeq = Number(raw.maxSeq);
+        }
+      } catch {
+        const existingInvoices = await this.invoiceRepository
+          .createQueryBuilder('invoice')
+          .select('invoice.invoice_number', 'invoice_number')
+          .where('invoice.invoice_number LIKE :pattern', { pattern })
+          .getRawMany<{ invoice_number: string }>();
 
-    for (const row of existingInvoices) {
-      if (row.invoice_number) {
-        existingSet.add(row.invoice_number);
-        const match = row.invoice_number.match(/^WSA-KA\.(\d+)\/KW\//);
-        if (match && match[1]) {
-          const num = parseInt(match[1], 10);
-          if (!isNaN(num) && num > maxSeq) {
-            maxSeq = num;
+        for (const row of existingInvoices) {
+          if (row.invoice_number) {
+            const match = row.invoice_number.match(/^WSA-KA\.(\d+)\/KW\//);
+            if (match && match[1]) {
+              const num = parseInt(match[1], 10);
+              if (!isNaN(num) && num > maxSeq) {
+                maxSeq = num;
+              }
+            }
           }
         }
       }
+
+      let nextSeq = maxSeq + 1;
+      let candidate = `${prefix}${String(nextSeq).padStart(3, '0')}${suffix}`;
+
+      // Pastikan candidate benar-benar belum terpakai di DB
+      while (
+        await this.invoiceRepository.findOne({
+          where: { invoice_number: candidate },
+          select: { id: true },
+        })
+      ) {
+        nextSeq++;
+        candidate = `${prefix}${String(nextSeq).padStart(3, '0')}${suffix}`;
+      }
+
+      return candidate;
+    } finally {
+      release();
     }
-
-    let nextSeq = maxSeq + 1;
-    let candidate = `${prefix}${String(nextSeq).padStart(3, '0')}${suffix}`;
-
-    while (existingSet.has(candidate)) {
-      nextSeq++;
-      candidate = `${prefix}${String(nextSeq).padStart(3, '0')}${suffix}`;
-    }
-
-    return candidate;
   }
 
   async createInvoiceForPayment(
@@ -127,34 +162,53 @@ export class InvoiceService {
         ? coursePrice - coursePromo
         : 0;
 
-    const invoice = this.invoiceRepository.create({
-      payment: payment,
-      price: coursePrice,
-      promo: coursePromo,
-      promo_code: discountAmount ?? 0,
-      voucher_code: payment.voucher_code || null,
-      subtotal: finalTotal,
-      discount_amount: courseDiscount,
-      final_total: finalTotal,
-      payment_method: paymentMethod,
-      invoice_number: await this.generateInvoiceNumber(),
-      status: invoiceStatus,
-      user_fullname:
-        payment.user_fullname ||
-        (user?.biodata as { fullName?: string })?.fullName ||
-        user?.username ||
-        null,
-      user_email: payment.user_email || user?.email || payerEmail,
-      user_phone:
-        payment.user_no || (user?.biodata as { no?: string })?.no || null,
-      course_name: courseName,
-      category_name: course?.category?.name || null,
-      proof_url: payment.file || null,
-      user: user || payment.user || undefined,
-      course: course || payment.course || undefined,
-    });
+    let invoice: Invoice | null = null;
+    let attempts = 0;
+    while (attempts < 5) {
+      attempts++;
+      const invoiceNumber = await this.generateInvoiceNumber();
+      try {
+        const candidateInvoice = this.invoiceRepository.create({
+          payment: payment,
+          price: coursePrice,
+          promo: coursePromo,
+          promo_code: discountAmount ?? 0,
+          voucher_code: payment.voucher_code || null,
+          subtotal: finalTotal,
+          discount_amount: courseDiscount,
+          final_total: finalTotal,
+          payment_method: paymentMethod,
+          invoice_number: invoiceNumber,
+          status: invoiceStatus,
+          user_fullname:
+            payment.user_fullname ||
+            (user?.biodata as { fullName?: string })?.fullName ||
+            user?.username ||
+            null,
+          user_email: payment.user_email || user?.email || payerEmail,
+          user_phone:
+            payment.user_no || (user?.biodata as { no?: string })?.no || null,
+          course_name: courseName,
+          category_name: course?.category?.name || null,
+          proof_url: payment.file || null,
+          user: user || payment.user || undefined,
+          course: course || payment.course || undefined,
+        });
 
-    await this.invoiceRepository.save(invoice);
+        invoice = await this.invoiceRepository.save(candidateInvoice);
+        break;
+      } catch (err: unknown) {
+        const dbErr = err as { code?: string } | null;
+        if (dbErr?.code === '23505' && attempts < 5) {
+          continue;
+        }
+        throw err;
+      }
+    }
+
+    if (!invoice) {
+      throw new Error('Gagal menghasilkan invoice unik untuk pembayaran');
+    }
 
     if (finalTotal <= 0) {
       invoice.paid_at = new Date();
@@ -217,36 +271,50 @@ export class InvoiceService {
     const courseDiscount =
       !isInstallment && price && promo && price > promo ? price - promo : 0;
 
-    const invoice = this.invoiceRepository.create({
-      payment: payment,
-      price: price,
-      promo: promo,
-      promo_code: discountAmount || 0,
-      voucher_code: payment.voucher_code || null,
-      subtotal: finalTotal,
-      discount_amount: courseDiscount,
-      final_total: finalTotal,
-      payment_method: isInstallment ? 'Installment' : 'Manual Transfer',
-      invoice_number: await this.generateInvoiceNumber(),
-      status: 'pending',
-      user_fullname:
-        payment.user_fullname ||
-        (user?.biodata as { fullName?: string })?.fullName ||
-        user?.username ||
-        null,
-      user_email: payment.user_email || user?.email || null,
-      user_phone:
-        payment.user_no || (user?.biodata as { no?: string })?.no || null,
-      course_name: course.name,
-      category_name: course.category?.name || null,
-      proof_url: payment.file || null,
-      user: user,
-      course: course,
-    });
+    let attempts = 0;
+    while (attempts < 5) {
+      attempts++;
+      const invoiceNumber = await this.generateInvoiceNumber();
+      try {
+        const invoice = this.invoiceRepository.create({
+          payment: payment,
+          price: price,
+          promo: promo,
+          promo_code: discountAmount || 0,
+          voucher_code: payment.voucher_code || null,
+          subtotal: finalTotal,
+          discount_amount: courseDiscount,
+          final_total: finalTotal,
+          payment_method: isInstallment ? 'Installment' : 'Manual Transfer',
+          invoice_number: invoiceNumber,
+          status: 'pending',
+          user_fullname:
+            payment.user_fullname ||
+            (user?.biodata as { fullName?: string })?.fullName ||
+            user?.username ||
+            null,
+          user_email: payment.user_email || user?.email || null,
+          user_phone:
+            payment.user_no || (user?.biodata as { no?: string })?.no || null,
+          course_name: course.name,
+          category_name: course.category?.name || null,
+          proof_url: payment.file || null,
+          user: user,
+          course: course,
+        });
 
-    const saved = await this.invoiceRepository.save(invoice);
-    payment.invoice = saved;
-    return saved;
+        const saved = await this.invoiceRepository.save(invoice);
+        payment.invoice = saved;
+        return saved;
+      } catch (err: unknown) {
+        const dbErr = err as { code?: string } | null;
+        if (dbErr?.code === '23505' && attempts < 5) {
+          continue;
+        }
+        throw err;
+      }
+    }
+    throw new Error('Gagal menghasilkan invoice unik untuk manual transfer');
   }
 
   async createInvoiceForRegistration(

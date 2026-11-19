@@ -102,6 +102,8 @@ function colorFor(index: number) {
 @Injectable()
 export class UserActivityService {
   private readonly events = new EventEmitter();
+  private readonly touchThrottleMap = new Map<string, number>();
+  private static readonly TOUCH_INTERVAL_MS = 60_000; // Throttle DB writes to max once per minute per user
 
   constructor(
     @InjectRepository(UserActivity)
@@ -196,14 +198,20 @@ export class UserActivityService {
 
   async touch(userId: string) {
     if (!userId) return;
-    await this.activityRepository.update(
-      { userId },
-      { lastSeenAt: new Date() },
-    );
+    const now = Date.now();
+    const lastTouch = this.touchThrottleMap.get(userId) || 0;
+    if (now - lastTouch < UserActivityService.TOUCH_INTERVAL_MS) {
+      return; // Skip DB update if touched within the last 60 seconds to avoid DB write bloat
+    }
+    this.touchThrottleMap.set(userId, now);
+    await this.activityRepository
+      .update({ userId }, { lastSeenAt: new Date(now) })
+      .catch(() => undefined);
   }
 
   async markInactive(userId: string) {
     if (!userId) return;
+    this.touchThrottleMap.delete(userId);
     await this.activityLogRepository
       .save(
         this.activityLogRepository.create({
@@ -218,6 +226,9 @@ export class UserActivityService {
   }
 
   async purgeExpired(maxAgeMinutes = 60) {
+    if (this.touchThrottleMap.size > 2000) {
+      this.touchThrottleMap.clear();
+    }
     const cutoff = new Date(Date.now() - maxAgeMinutes * 60 * 1000);
     const stale = await this.activityRepository.find({
       where: { lastSeenAt: LessThan(cutoff) },
@@ -340,6 +351,16 @@ export class UserActivityService {
       (activity.currentCourseId ?? null) !== courseId ||
       (activity.activityLabel ?? null) !== label;
 
+    const lastTouch = this.touchThrottleMap.get(userId) || 0;
+    const isThrottleExpired =
+      now.getTime() - lastTouch >= UserActivityService.TOUCH_INTERVAL_MS;
+
+    // Jika scope/label tidak berubah dan masih dalam jendela throttle 60 detik, skip DB write
+    if (!changed && !isThrottleExpired) {
+      return;
+    }
+
+    this.touchThrottleMap.set(userId, now.getTime());
     activity.lastSeenAt = now;
     activity.currentCourseId = courseId;
     activity.activityLabel = label;
@@ -373,6 +394,7 @@ export class UserActivityService {
   /** User online (role user, lastSeenAt segar) + course yang sedang dipelajari. */
   async getActiveParticipants(
     thresholdMinutes = 5,
+    limit = 100,
   ): Promise<ActiveParticipant[]> {
     const threshold = new Date(Date.now() - thresholdMinutes * 60 * 1000);
 
@@ -382,6 +404,7 @@ export class UserActivityService {
       .where('user.role = :role', { role: 'user' })
       .andWhere('ua.lastSeenAt >= :threshold', { threshold })
       .orderBy('ua.lastSeenAt', 'DESC')
+      .take(limit)
       .getMany();
 
     if (activities.length === 0) return [];
@@ -440,6 +463,7 @@ export class UserActivityService {
   /** User yang saat ini sedang belajar = role user, lastSeenAt segar, dan currentCourseId terisi. */
   async getCurrentlyLearning(
     thresholdMinutes = 5,
+    limit = 100,
   ): Promise<LearningParticipant[]> {
     const threshold = new Date(Date.now() - thresholdMinutes * 60 * 1000);
 
@@ -450,6 +474,7 @@ export class UserActivityService {
       .andWhere('ua.currentCourseId IS NOT NULL')
       .andWhere('ua.lastSeenAt >= :threshold', { threshold })
       .orderBy('ua.lastSeenAt', 'DESC')
+      .take(limit)
       .getMany();
 
     if (activities.length === 0) return [];
@@ -673,18 +698,18 @@ export class UserActivityService {
     this.events.emit(EVENT_LEARNING_UPDATED);
   }
 
-  /** SSE stream: snapshot awal + push saat ada perubahan + heartbeat tiap 20 detik. */
+  /** SSE stream: snapshot awal + push saat ada perubahan + heartbeat tiap 30 detik. */
   learningStream() {
     const snapshot = () => this.getActiveParticipants(5);
 
     const initial = from(snapshot());
 
     const updates = fromEvent(this.events, EVENT_LEARNING_UPDATED).pipe(
-      debounceTime(400),
+      debounceTime(2000),
       switchMap(() => snapshot()),
     );
 
-    const heartbeat = interval(20000).pipe(switchMap(() => snapshot()));
+    const heartbeat = interval(30000).pipe(switchMap(() => snapshot()));
 
     return merge(initial, updates, heartbeat).pipe(
       map((participants) => ({
@@ -709,10 +734,10 @@ export class UserActivityService {
 
     const initial = from(snapshot());
     const updates = fromEvent(this.events, EVENT_LEARNING_UPDATED).pipe(
-      debounceTime(400),
+      debounceTime(3000),
       switchMap(() => snapshot()),
     );
-    const heartbeat = interval(20000).pipe(switchMap(() => snapshot()));
+    const heartbeat = interval(30000).pipe(switchMap(() => snapshot()));
 
     return merge(initial, updates, heartbeat).pipe(
       map((data) => ({ data: JSON.stringify(data) })),

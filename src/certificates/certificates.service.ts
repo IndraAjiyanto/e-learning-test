@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  OnModuleDestroy,
 } from '@nestjs/common';
 import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
@@ -17,10 +18,17 @@ import { User } from 'src/entities/user.entity';
 import cloudinary from 'src/common/config/multer.config';
 import { Biodata } from 'src/entities/biodata.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
+import { UserCourse } from 'src/entities/user_course.entity';
 import { certificateTemplateForCourse } from 'src/courses/program-type';
 
 @Injectable()
-export class CertificatesService {
+export class CertificatesService implements OnModuleDestroy {
+  private sharedBrowser: Browser | null = null;
+  private browserLaunchPromise: Promise<Browser> | null = null;
+  private activePdfRenders = 0;
+  private readonly pdfQueue: (() => void)[] = [];
+  private static readonly MAX_CONCURRENT_PDF_RENDERS = 2;
+
   constructor(
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
@@ -32,7 +40,60 @@ export class CertificatesService {
     private readonly biodataRepository: Repository<Biodata>,
     @InjectRepository(Portofolios)
     private readonly portfolioRepository: Repository<Portofolios>,
+    @InjectRepository(UserCourse)
+    private readonly userCourseRepository: Repository<UserCourse>,
   ) {}
+
+  async onModuleDestroy() {
+    if (this.sharedBrowser) {
+      await this.sharedBrowser.close().catch(() => undefined);
+      this.sharedBrowser = null;
+    }
+  }
+
+  private async acquirePdfRenderSlot(): Promise<void> {
+    if (this.activePdfRenders < CertificatesService.MAX_CONCURRENT_PDF_RENDERS) {
+      this.activePdfRenders++;
+      return;
+    }
+    return new Promise<void>((resolve) => {
+      this.pdfQueue.push(() => {
+        this.activePdfRenders++;
+        resolve();
+      });
+    });
+  }
+
+  private releasePdfRenderSlot(): void {
+    this.activePdfRenders = Math.max(0, this.activePdfRenders - 1);
+    const next = this.pdfQueue.shift();
+    if (next) {
+      next();
+    }
+  }
+
+  private async getBrowser(): Promise<Browser> {
+    if (this.sharedBrowser && this.sharedBrowser.isConnected()) {
+      return this.sharedBrowser;
+    }
+    if (this.browserLaunchPromise) {
+      return this.browserLaunchPromise;
+    }
+    this.browserLaunchPromise = (async () => {
+      try {
+        const browser = await this.launchChromium();
+        this.sharedBrowser = browser;
+        browser.on('disconnected', () => {
+          this.sharedBrowser = null;
+          this.browserLaunchPromise = null;
+        });
+        return browser;
+      } finally {
+        this.browserLaunchPromise = null;
+      }
+    })();
+    return this.browserLaunchPromise;
+  }
 
   private async nextCertificateNumber(): Promise<string> {
     try {
@@ -103,23 +164,41 @@ export class CertificatesService {
     });
     if (!course) throw new NotFoundException('course not found');
 
+    const userCourse = await this.userCourseRepository.findOne({
+      where: { user: { id: userId }, course: { id: courseId } },
+    });
+    if (!userCourse) {
+      throw new ForbiddenException('You are not enrolled in this program.');
+    }
+    if (!userCourse.progress) {
+      throw new ForbiddenException(
+        'You must complete all program requirements and learning modules before opening the certificate.',
+      );
+    }
+
     let certificate = await this.certificatesRepository.findOne({
       where: { user: { id: userId }, course: { id: courseId } },
     });
 
-    if (!certificate && !user.biodata?.fullName?.trim()) {
+    if (!user.biodata?.fullName?.trim()) {
       throw new BadRequestException(
         'Complete your biodata before opening the certificate.',
       );
     }
 
-    const portfolio = await this.portfolioRepository.findOne({
-      where: { user: { id: userId }, course: { id: courseId } },
-    });
-    if (!certificate && !portfolio) {
-      throw new ForbiddenException(
-        'Upload a portfolio before opening the certificate.',
-      );
+    const isAlreadyIssued = Boolean(certificate?.noCertificate);
+
+    // Jika sertifikat belum pernah diterbitkan sebelumnya, wajibkan upload portfolio terlebih dahulu.
+    // Jika sertifikat sudah pernah terbit resmi (memiliki noCertificate), sertifikat tetap sah dan dapat dilihat.
+    if (!isAlreadyIssued) {
+      const portfolio = await this.portfolioRepository.findOne({
+        where: { user: { id: userId }, course: { id: courseId } },
+      });
+      if (!portfolio) {
+        throw new ForbiddenException(
+          'Upload a portfolio before opening the certificate.',
+        );
+      }
     }
 
     if (!certificate) {
@@ -362,21 +441,27 @@ export class CertificatesService {
   }
 
   async renderCertificatePdf(html: string): Promise<Buffer> {
-    const browser = await this.launchChromium();
+    await this.acquirePdfRenderSlot();
     try {
-      const page = await browser.newPage();
-      await page.setContent(html, { waitUntil: 'load' });
-      await page.evaluate(() => document.fonts?.ready).catch(() => undefined);
-      const pdf = await page.pdf({
-        format: 'A4',
-        landscape: true,
-        printBackground: true,
-        preferCSSPageSize: true,
-        margin: { top: '0', right: '0', bottom: '0', left: '0' },
-      });
-      return Buffer.from(pdf);
+      const browser = await this.getBrowser();
+      const context = await browser.newContext();
+      try {
+        const page = await context.newPage();
+        await page.setContent(html, { waitUntil: 'load' });
+        await page.evaluate(() => document.fonts?.ready).catch(() => undefined);
+        const pdf = await page.pdf({
+          format: 'A4',
+          landscape: true,
+          printBackground: true,
+          preferCSSPageSize: true,
+          margin: { top: '0', right: '0', bottom: '0', left: '0' },
+        });
+        return Buffer.from(pdf);
+      } finally {
+        await context.close().catch(() => undefined);
+      }
     } finally {
-      await browser.close().catch(() => undefined);
+      this.releasePdfRenderSlot();
     }
   }
 
@@ -402,6 +487,18 @@ export class CertificatesService {
       throw new NotFoundException('course not found');
     }
 
+    const userCourse = await this.userCourseRepository.findOne({
+      where: { user: { id: userId }, course: { id: courseId } },
+    });
+    if (!userCourse) {
+      throw new ForbiddenException('You are not enrolled in this program.');
+    }
+    if (!userCourse.progress) {
+      throw new ForbiddenException(
+        'You must complete all program requirements and learning modules before downloading the certificate.',
+      );
+    }
+
     const certificates = await this.certificatesRepository.findOne({
       where: { user: { id: userId }, course: { id: courseId } },
       relations: ['course'],
@@ -416,13 +513,18 @@ export class CertificatesService {
       );
     }
 
-    const portfolio = await this.portfolioRepository.findOne({
-      where: { user: { id: userId }, course: { id: courseId } },
-    });
-    if (!certificates && !portfolio) {
-      throw new ForbiddenException(
-        'Upload a portfolio before downloading the certificate.',
-      );
+    const isAlreadyIssued = Boolean(certificates?.noCertificate);
+
+    // Jika sertifikat belum pernah diterbitkan resmi, wajibkan upload portfolio terlebih dahulu
+    if (!isAlreadyIssued) {
+      const portfolio = await this.portfolioRepository.findOne({
+        where: { user: { id: userId }, course: { id: courseId } },
+      });
+      if (!portfolio) {
+        throw new ForbiddenException(
+          'Upload a portfolio before downloading the certificate.',
+        );
+      }
     }
 
     const certificateNumber =
