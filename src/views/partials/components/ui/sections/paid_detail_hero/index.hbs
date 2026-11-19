@@ -4,7 +4,7 @@
   Container: 1568px, Frame 2147229478 (Side-by-side)
   Left Column: Responsive max 680px (Tag pill, Main title, Tagline, CTA buttons, Hero quick stats)
   Right Container: Responsive max 823px visual banner
-  Props: course, category, lang
+  Props: course, category, lang, regisClick, targetId, regisHref, studentList
 --}}
 
 <section id="hero" class="w-full bg-white py-8 sm:py-12 lg:py-16 font-inter overflow-hidden">
@@ -67,8 +67,8 @@
             </button>
           {{else}}
             <a
-              href="#pricing"
-              onclick="document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }); return false;"
+              href="{{#if regisHref}}{{regisHref}}{{else if targetId}}#{{targetId}}{{else}}#pricing{{/if}}"
+              onclick="document.getElementById('{{#if targetId}}{{targetId}}{{else}}pricing{{/if}}')?.scrollIntoView({ behavior: 'smooth' }); return false;"
               class="inline-flex items-center justify-center w-full sm:w-auto sm:min-w-[184px] h-[51px] px-7 bg-[#003060] text-white font-inter font-bold text-base leading-[19px] rounded-[10px] shadow-[0px_8px_16px_rgba(0,48,96,0.25)] hover:bg-[#002244] active:scale-[0.98] transition-all duration-200 cursor-pointer"
             >
               {{default (t 'test.paidProgram.hero.btnRegister') 'Daftar Sekarang'}}
@@ -177,8 +177,14 @@
               <span class="font-inter font-semibold text-[10px] sm:text-[11px] leading-[13px] uppercase text-[#64748B] tracking-wider truncate">
                 {{default (t 'test.paidProgram.hero.quickStats.classCapacity') 'Kapasitas Kelas'}}
               </span>
-              <span class="font-inter font-bold text-sm sm:text-[15px] xl:text-base leading-tight text-[#0B1F3B] truncate" title="Maks. {{#if course.quota}}{{course.quota}}{{else}}8{{/if}} Siswa">
-                Maks. {{#if course.quota}}{{course.quota}}{{else}}8{{/if}} Siswa
+              <span class="font-inter font-bold text-sm sm:text-[15px] xl:text-base leading-tight text-[#0B1F3B] truncate" title="{{#if course.quota}}{{coalesce studentList 0}} / {{course.quota}} {{default (t 'test.paidProgram.hero.quickStats.students') 'Siswa'}}{{else}}{{default (t 'test.paidProgram.hero.quickStats.maxStudent' count=8) 'Maks. 8 Siswa'}}{{/if}}">
+                {{#if (and course.quota (gte (coalesce studentList 0) course.quota))}}
+                  {{course.quota}} / {{course.quota}} ({{default (t 'test.paidProgram.hero.quickStats.full') 'Penuh'}})
+                {{else if course.quota}}
+                  {{coalesce studentList 0}} / {{course.quota}} {{default (t 'test.paidProgram.hero.quickStats.students') 'Siswa'}}
+                {{else}}
+                  {{default (t 'test.paidProgram.hero.quickStats.maxStudent' count=8) 'Maks. 8 Siswa'}}
+                {{/if}}
               </span>
             </div>
           </div>

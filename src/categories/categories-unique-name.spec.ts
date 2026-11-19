@@ -45,6 +45,7 @@ describe('CategoriesService - Unique Name Validation (Scenario A)', () => {
       {} as any,
       {} as any,
       {} as any,
+      {} as any,
     );
   });
 

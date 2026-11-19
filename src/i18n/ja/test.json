@@ -1214,7 +1214,7 @@
       "yoursBadge": "自分の作品"
     },
     "title": "マイポートフォリオ",
-    "description": "プログラム修了生による、卓越したプロジェクトの数々をご覧ください。各ポートフォリオには、技術的なスキルと創造的なソリューションが示されています。",
+    "description": "あなたのプロジェクトコレクション。各ポートフォリオはプログラム期間中に習得した技術スキルと成果を示します。",
     "filterTittle": "アクティブなフィルター",
     "resetFilters": "リセット",
     "noFilters": "アクティブなフィルターはありません",
@@ -1872,7 +1872,9 @@
         "learningSystem": "学習システム",
         "onlineOffline": "オンライン＆オフライン",
         "classCapacity": "クラス定員",
-        "maxStudent": "最大 {{count}} 名"
+        "maxStudent": "最大 {{count}} 名",
+        "students": "名",
+        "full": "満員"
       }
     },
     "advantage": {
@@ -1932,7 +1934,12 @@
       "btnRegister": "今すぐ申し込む",
       "btnConsultation": "無料相談",
       "btnGoToClass": "学習を開始する",
-      "btnPending": "支払状況を確認する"
+      "btnPending": "支払状況を確認する",
+      "quota": "クラス定員",
+      "enrolledStatus": "名 参加",
+      "slotsLeft": "枠残り",
+      "full": "満員",
+      "programIsFull": "プログラムは満員です"
     },
     "finalCta": {
       "eyebrow": "登録プロセス",
@@ -2144,7 +2151,11 @@
       "cardTitle": "今日からキャリアをスタートしよう",
       "registration": "登録",
       "start": "学習開始",
-      "regisNow": "今すぐ登録する"
+      "regisNow": "今すぐ登録する",
+      "quota": "クラス定員",
+      "enrolledStatus": "名 参加",
+      "slotsLeft": "枠残り",
+      "full": "満員"
     },
     "gallery": {
       "description": "このプログラムを意義深いものにした重要な瞬間や体験をご覧ください。",
@@ -2571,6 +2582,30 @@
     "myLearning": "マイラーニング",
     "myPortfolio": "マイポートフォリオ",
     "paymentHistory": "支払い履歴"
+  },
+  "userSearch": {
+    "placeholder": "プログラム、学習教材、活動を検索...",
+    "mobilePlaceholder": "ダッシュボード内を検索...",
+    "openSearch": "検索を開く",
+    "clearSearch": "検索をクリア",
+    "back": "戻る",
+    "loading": "ダッシュボードデータを検索中...",
+    "noResultsTitle": "一致するデータが見つかりません：",
+    "noResultsDesc": "登録済みのプログラム、セッション、ポートフォリオ、取引履歴のみ表示されます。",
+    "categoryPrograms": "参加中のプログラム",
+    "categoryCourses": "参加中のクラス",
+    "categoryLearnings": "教材・学習セッション",
+    "categoryPortfolios": "マイポートフォリオ",
+    "categoryPayments": "支払い履歴",
+    "categoryMenus": "ダッシュボードメニュー",
+    "showingResultsPrefix": "表示中：",
+    "showingResultsMiddle": "件のダッシュボード検索結果（キーワード：",
+    "selectItemHint": "項目を選択して開く",
+    "statusCompleted": "完了",
+    "statusInProgress": "進行中",
+    "statusPaid": "支払い済み",
+    "statusProcessing": "処理中",
+    "statusFailed": "失敗"
   },
   "quizStart": {
     "answered": "回答済み",

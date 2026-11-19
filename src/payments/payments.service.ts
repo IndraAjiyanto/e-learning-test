@@ -159,6 +159,70 @@ export class PaymentsService {
     );
   }
 
+  async checkQuota(courseId: string, existingCourse?: Course): Promise<void> {
+    const course =
+      existingCourse ||
+      (await this.courseRepository.findOne({
+        where: { id: courseId },
+      }));
+    if (!course) return;
+
+    if (
+      course.quota !== null &&
+      course.quota !== undefined &&
+      course.quota > 0
+    ) {
+      const [pendingCount, enrolledCount] = await Promise.all([
+        course.checkPaid
+          ? this.paymentRepository.count({
+              where: { course: { id: courseId }, process: 'process' },
+            })
+          : this.registrationRepository.count({
+              where: { course: { id: courseId }, process: 'process' },
+            }),
+        this.userCourseRepository.count({
+          where: { course: { id: courseId } },
+        }),
+      ]);
+      if (pendingCount + enrolledCount >= course.quota) {
+        throw new BadRequestException('Kuota peserta untuk program ini sudah penuh');
+      }
+    }
+  }
+
+  async countEnrolledStudents(courseId: string): Promise<number> {
+    return await this.userCourseRepository.count({
+      where: { course: { id: courseId } },
+    });
+  }
+
+  async isCourseFull(courseId: string): Promise<boolean> {
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+    });
+    if (
+      !course ||
+      course.quota === null ||
+      course.quota === undefined ||
+      course.quota <= 0
+    ) {
+      return false;
+    }
+    const [pendingCount, enrolledCount] = await Promise.all([
+      course.checkPaid
+        ? this.paymentRepository.count({
+            where: { course: { id: courseId }, process: 'process' },
+          })
+        : this.registrationRepository.count({
+            where: { course: { id: courseId }, process: 'process' },
+          }),
+      this.userCourseRepository.count({
+        where: { course: { id: courseId } },
+      }),
+    ]);
+    return pendingCount + enrolledCount >= course.quota;
+  }
+
   async create(createPaymentDto: CreatePaymentDto) {
     const user = await this.userRepository.findOne({
       where: { id: createPaymentDto.userId },
@@ -191,6 +255,7 @@ export class PaymentsService {
       if (check == false) {
         return false;
       } else {
+        await this.checkQuota(createPaymentDto.courseId, course);
         const contractTotal =
           (Number(installments.downPayment) || 0) +
           (installments.price || []).reduce(
@@ -263,6 +328,7 @@ export class PaymentsService {
     if (check == false) {
       return false;
     } else {
+      await this.checkQuota(createPaymentDto.courseId, course);
       const promo = course?.promo ? Number(course.promo) : null;
       const price = course?.price ? Number(course.price) : 0;
       const basePrice = promo && promo > 0 ? promo : price;
@@ -337,6 +403,19 @@ export class PaymentsService {
     });
     if (alreadyJoined) {
       throw new BadRequestException('User already joined the program');
+    }
+
+    if (
+      course.quota !== null &&
+      course.quota !== undefined &&
+      course.quota > 0
+    ) {
+      const enrolledCount = await this.userCourseRepository.count({
+        where: { course: { id: courseId } },
+      });
+      if (enrolledCount >= course.quota) {
+        throw new BadRequestException('Kuota peserta untuk program ini sudah penuh');
+      }
     }
 
     const userCourses = this.userCourseRepository.create({
@@ -1262,6 +1341,9 @@ export class PaymentsService {
       discountAmount = validationResult.discountAmount;
       finalTotal = validationResult.finalTotal;
     }
+
+    // Pengecekan kapasitas / kuota program sebelum membuat invoice / payment
+    await this.checkQuota(courseId, course);
 
     const payment = this.paymentRepository.create({
       user: user,

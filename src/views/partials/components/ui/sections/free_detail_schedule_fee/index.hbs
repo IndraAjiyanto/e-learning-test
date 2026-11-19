@@ -15,10 +15,10 @@
 --}}
 
 <!-- SCHEDULE & FEES SECTION -->
-<section id="schedule-fees" class="w-full bg-[#FAFAFA] py-16 md:py-[120px] px-4 sm:px-8 md:px-[80px] font-inter flex flex-col items-center gap-10 md:gap-[64px]">
+<section id="schedule-fees" class="w-full bg-[#FAFAFA] py-16 md:py-[120px] px-4 sm:px-8 md:px-[80px] font-inter flex flex-col items-center gap-10 md:gap-[64px] scroll-mt-20">
   
-  <!-- Pricing Header -->
-  <div class="w-full max-w-[1568px] flex flex-col items-center gap-4 text-center">
+  <!-- Pricing Header / No Payment Required -->
+  <div id="no-payment-required" class="w-full max-w-[1568px] flex flex-col items-center gap-4 text-center">
     <!-- Schedule & Fees -->
     <span class="font-inter font-bold text-[14px] leading-[17px] uppercase tracking-[0.5px] text-[#003060]">
       {{default badgeTitle (t 'test.freeProgram.badge.schedule')}}
@@ -92,6 +92,31 @@
             <div class="px-3 py-1 bg-[#D1FAE5] rounded-[20px] flex flex-row items-center justify-center">
               <span class="font-inter font-medium text-[13px] leading-[16px] text-[#065F46] whitespace-nowrap">
                 {{formatDate course.startDate lang}}
+              </span>
+            </div>
+          </div>
+
+          <!-- Rectangle Divider -->
+          <div class="w-full h-[1px] bg-[#E2E8F0]"></div>
+
+          <!-- quota-row -->
+          <div class="w-full min-h-[52px] px-4 py-3.5 flex flex-row justify-between items-center gap-3">
+            <div class="flex flex-row items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[#D97706] flex-shrink-0"></span>
+              <span class="font-inter font-semibold text-[13px] leading-[16px] text-[#374151]">
+                {{default (t 'test.freeProgram.schedule.quota') 'Kuota Peserta'}}
+              </span>
+            </div>
+            <div class="px-3 py-1 {{#if (and course.quota (gte (coalesce studentList 0) course.quota))}}bg-[#FEE2E2] text-[#DC2626]{{else}}bg-[#FEF3C7] text-[#D97706]{{/if}} rounded-[20px] flex flex-row items-center justify-center gap-1.5">
+              <span class="font-inter font-medium text-[13px] leading-[16px] whitespace-nowrap">
+                {{#if (and course.quota (gte (coalesce studentList 0) course.quota))}}
+                  {{course.quota}} / {{course.quota}} ({{default (t 'test.freeProgram.schedule.full') 'Penuh'}})
+                {{else}}
+                  <strong class="font-semibold">{{coalesce studentList 0}}{{#if course.quota}} / {{course.quota}}{{/if}}</strong> {{default (t 'test.freeProgram.schedule.enrolledStatus') 'Siswa Terdaftar'}}
+                  {{#if course.quota}}
+                    <span class="text-[12px] opacity-80 font-normal">({{subtract course.quota (coalesce studentList 0)}} {{default (t 'test.freeProgram.schedule.slotsLeft') 'sisa'}})</span>
+                  {{/if}}
+                {{/if}}
               </span>
             </div>
           </div>

@@ -775,6 +775,19 @@ export class PaymentsController {
       }
     }
 
+    const isFull = await this.paymentsService.isCourseFull(courseId);
+    if (isFull) {
+      flashToastError(
+        req,
+        'Program Penuh',
+        'Mohon maaf, kuota peserta untuk program ini sudah penuh.',
+      );
+      if (course.category?.id) {
+        return res.redirect(`/category/${course.category.id}`);
+      }
+      return res.redirect('/courses');
+    }
+
     const firstInstallment = course.installments?.[0];
     const hasInstallmentPlan =
       !!firstInstallment && Number(firstInstallment.downPayment) > 0;
@@ -902,6 +915,22 @@ export class PaymentsController {
           `Status "${proses}" tidak dikenali.`,
         );
         return res.redirect(backTo(courseId));
+      }
+
+      if (proses === 'approved') {
+        const course = await this.paymentsService.findCourse(courseId);
+        if (course?.quota && course.quota > 0) {
+          const enrolledCount =
+            await this.paymentsService.countEnrolledStudents(courseId);
+          if (enrolledCount >= course.quota) {
+            flashToastError(
+              req,
+              'Kuota Program Penuh',
+              `Program sudah mencapai kapasitas maksimal (${course.quota} siswa). Pembayaran tidak dapat disetujui.`,
+            );
+            return res.redirect(backTo(courseId));
+          }
+        }
       }
 
       dto.file = payment.file;

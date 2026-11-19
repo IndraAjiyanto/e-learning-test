@@ -322,7 +322,12 @@ export class CoursesService {
       ]);
       const totalUsers = daftarCount + gabungCount;
 
-      if (totalUsers >= course.quota) {
+      if (
+        course.quota !== null &&
+        course.quota !== undefined &&
+        course.quota > 0 &&
+        totalUsers >= course.quota
+      ) {
         throw new BadRequestException('The program is currently full');
       }
 
@@ -420,7 +425,12 @@ export class CoursesService {
       ]);
       const totalUsers = daftarCount + gabungCount;
 
-      if (totalUsers >= course.quota) {
+      if (
+        course.quota !== null &&
+        course.quota !== undefined &&
+        course.quota > 0 &&
+        totalUsers >= course.quota
+      ) {
         throw new BadRequestException('The program is currently full');
       }
 

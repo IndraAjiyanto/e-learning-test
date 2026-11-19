@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CategoriesController } from './categories.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -12,6 +12,7 @@ import { Alumni } from 'src/entities/alumni.entity';
 import { CategoryFaq } from 'src/entities/faqs.entity';
 import { CourseFlow } from 'src/entities/course_flow.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
+import { CoursesModule } from 'src/courses/courses.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { Portofolios } from 'src/entities/portofolios.entity';
       Portofolios,
     ]),
     CommonModule,
+    forwardRef(() => CoursesModule),
   ],
   controllers: [CategoriesController],
   providers: [CategoriesService],

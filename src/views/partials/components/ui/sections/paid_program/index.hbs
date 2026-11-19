@@ -41,6 +41,8 @@
                   tag1=(ternary this.method this.method (default (t 'test.categoryPaidProgram.program.online') "Online"))
                   tag2=(ternary (or (eq this.checkPaid false) this.day) (concat (default this.day 1) " " (default (t 'test.categoryPaidProgram.program.day') "Day")) (concat (default this.month 1) " " (default (t 'test.categoryPaidProgram.program.month') "Month")))
                   tag3=(ternary this.quota (concat this.quota " " (default (t 'test.categoryPaidProgram.program.quota') "Quota")) (concat "20 " (default (t 'test.categoryPaidProgram.program.quota') "Quota")))
+                  quota=this.quota
+                  enrolledCount=this.enrolledCount
                   href=(concat '/program/' this.id)
                   lang=../lang
               }}
