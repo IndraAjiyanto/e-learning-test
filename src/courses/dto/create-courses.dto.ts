@@ -182,6 +182,10 @@ export class CreateCoursesDto {
 
   @IsOptional()
   @IsDateString()
+  start_registration?: string;
+
+  @IsOptional()
+  @IsDateString()
   date_registration?: string;
 
   @IsOptional()

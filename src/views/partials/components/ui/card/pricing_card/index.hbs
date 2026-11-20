@@ -21,7 +21,7 @@
       - Tombol "Registration Now" & link "Free Consultation"
 
   Props:
-  - course            : object (price, promo, startDate, startEnd, date_registration, id, installments)
+  - course            : object (price, promo, startDate, startEnd, start_registration, date_registration, id, installments)
   - installments      : array (opsional list cicilan)
   - contactWhatsapp   : string
   - userActivePayment : object (status transaksi aktif: approved | process)
@@ -184,7 +184,17 @@
       </div>
       <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 sm:text-right">
         <span class="font-normal text-[#4B5563]">
-          {{ternary course.date_registration (formatDateDayMonthYear course.date_registration lang) "Friday, 21 August 2026"}}
+          {{#if course.start_registration}}
+            {{#if course.date_registration}}
+              {{formatDateDayMonthYear course.start_registration lang}} - {{formatDateDayMonthYear course.date_registration lang}}
+            {{else}}
+              {{#if (eq lang 'id')}}Mulai {{formatDateDayMonthYear course.start_registration lang}}{{else if (eq lang 'ja')}}{{formatDateDayMonthYear course.start_registration lang}}から{{else}}From {{formatDateDayMonthYear course.start_registration lang}}{{/if}}
+            {{/if}}
+          {{else if course.date_registration}}
+            {{formatDateDayMonthYear course.date_registration lang}}
+          {{else}}
+            Friday, 21 August 2026
+          {{/if}}
         </span>
         {{#if (or (and installments installments.length) (and course.installments course.installments.length))}}
           <span x-show="tab === 'installment'" x-cloak class="font-semibold text-[#003060]">

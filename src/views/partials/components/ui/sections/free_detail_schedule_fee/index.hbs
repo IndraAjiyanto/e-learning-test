@@ -3,7 +3,7 @@
   Lokasi: src/views/partials/components/ui/sections/free_detail_schedule_fee/index.hbs
 
   Props:
-  - course          : object (data course: date_registration, startDate, quota, userCourses)
+  - course          : object (data course: start_registration, date_registration, startDate, quota, userCourses)
   - studentList     : number (opsional, total pendaftar saat ini)
   - isQuotaFull     : boolean (opsional override status kuota penuh)
   - isFull          : boolean (opsional override status kuota penuh)
@@ -68,8 +68,14 @@
               </span>
             </div>
             <div class="px-3 py-1 bg-[#DBEAFE] rounded-[20px] flex flex-row items-center justify-center">
-              <span class="font-inter font-medium text-[13px] leading-[16px] text-[#1D4ED8] whitespace-nowrap">
-                {{#if course.date_registration}}
+              <span class="font-inter font-medium text-[13px] leading-[16px] text-[#1D4ED8] text-center sm:whitespace-nowrap">
+                {{#if course.start_registration}}
+                  {{#if course.date_registration}}
+                    {{formatDate course.start_registration lang}} - {{formatDate course.date_registration lang}}
+                  {{else}}
+                    {{#if (eq lang 'id')}}Mulai {{formatDate course.start_registration lang}}{{else if (eq lang 'ja')}}{{formatDate course.start_registration lang}}から{{else}}From {{formatDate course.start_registration lang}}{{/if}}
+                  {{/if}}
+                {{else if course.date_registration}}
                   {{#if (eq lang 'id')}}Sampai {{else if (eq lang 'ja')}}まで {{else}}Until {{/if}}{{formatDate course.date_registration lang}}
                 {{else}}
                   {{#if (eq lang 'ja')}}未設定{{else if (eq lang 'id')}}Belum diatur{{else}}Not set{{/if}}

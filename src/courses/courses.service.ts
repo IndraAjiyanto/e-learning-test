@@ -189,6 +189,9 @@ export class CoursesService {
           : null,
       startDate: new Date(createCourseDto.startDate),
       startEnd: new Date(endDate),
+      start_registration: createCourseDto.start_registration
+        ? new Date(createCourseDto.start_registration)
+        : undefined,
       date_registration: createCourseDto.date_registration
         ? new Date(createCourseDto.date_registration)
         : undefined,
@@ -2164,6 +2167,9 @@ export class CoursesService {
     }
     if (endDate) {
       course.startEnd = new Date(endDate);
+    }
+    if (updateCourseDto.start_registration) {
+      course.start_registration = new Date(updateCourseDto.start_registration);
     }
     if (updateCourseDto.date_registration) {
       course.date_registration = new Date(updateCourseDto.date_registration);

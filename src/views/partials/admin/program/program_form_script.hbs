@@ -500,7 +500,8 @@ function programData(mode) {
         results.push(this.validateTimeFields());
       }
 
-      results.push(this.validateDateField('date_registration', 'Date Registration'));
+      results.push(this.validateDateField('start_registration', 'Start Registration'));
+      results.push(this.validateDateField('date_registration', 'Date Registration', 'start_registration', 'Start Registration'));
       results.push(this.validateDateField('startDate', 'Start Date'));
       results.push(this.validateDateField('endDate', 'End Date', 'startDate', 'Start Date'));
 

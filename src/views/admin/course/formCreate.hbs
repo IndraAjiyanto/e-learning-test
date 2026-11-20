@@ -251,6 +251,11 @@
               </template>
 
               {{> components/ui/super_admin/form/text_field
+                id='start_registration' name='start_registration' field='start_registration' type='date' icon='calendar'
+                label='Start Registration' placeholder='Select start registration date' required=true
+              }}
+
+              {{> components/ui/super_admin/form/text_field
                 id='date_registration' name='date_registration' field='date_registration' type='date' icon='calendar'
                 label='Registration Date' placeholder='Select registration date' required=true
               }}
@@ -465,6 +470,7 @@
       'section-description': LANGS.map((l) => `description.${l}`),
       'section-schedule': [
         ...(paid ? ['month'] : ['time_start', 'time_end', 'day']),
+        'start_registration',
         'date_registration',
         'startDate',
         'endDate',
@@ -483,7 +489,7 @@
     const emptyErrors = () => ({
       name: '', group: '', categoryId: '', jenis_kelasId: '', programType: '', mentoringsId: '', paid: '', method: '',
       quota: '', price: '', promo: '', month: '', day: '', time_start: '', time_end: '',
-      date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: '',
+      start_registration: '', date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: '',
       description: byLang(() => ''), locations: byLang(() => ''),
       materials: byLang(() => ''), learningTargets: byLang(() => ''), criteria: byLang(() => ''),
     });
@@ -527,7 +533,7 @@
           categoryId: categories.some((c) => c.value === categoryId) ? categoryId : '',
           jenis_kelasId: '', programType: '', mentoringsId: '', paid: 'true', method: 'online',
           quota: '', price: '', promo: '', month: '', day: '', time_start: '', time_end: '',
-          date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: 0,
+          start_registration: '', date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: 0,
           description: byLang(() => ''), locations: byLang(() => ''),
         },
         lists: Object.fromEntries(LISTS.map((key) => [key, byLang(() => [''])])),
@@ -586,8 +592,13 @@
             case 'time_end':
               if (!val) return 'Time end is required.';
               return d.time_start && val <= d.time_start ? 'Time end must be later than time start.' : '';
+            case 'start_registration':
+              return val ? '' : 'Start registration date is required.';
             case 'date_registration':
-              return val ? '' : 'Registration date is required.';
+              if (!val) return 'Registration date is required.';
+              return d.start_registration && val < d.start_registration
+                ? 'Registration date must be on or after the start registration date.'
+                : '';
             case 'startDate':
               return val ? '' : 'Start date is required.';
             case 'endDate':
