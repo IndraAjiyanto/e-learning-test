@@ -103,6 +103,9 @@ export class Course {
   launch: boolean;
 
   @Column({ nullable: true })
+  start_registration: Date;
+
+  @Column({ nullable: true })
   date_registration: Date;
 
   /** Lihat ProgramType. Program lama otomatis 'bootcamp' lewat default. */

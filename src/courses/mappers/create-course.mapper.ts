@@ -202,6 +202,9 @@ export function mapCreateProgram(
   const timeEnd = asText(body.time_end);
   if (timeEnd) dto.time_end = timeEnd;
 
+  const startRegistration = asText(body.start_registration);
+  if (startRegistration) dto.start_registration = startRegistration;
+
   const dateRegistration = asText(body.date_registration);
   if (dateRegistration) dto.date_registration = dateRegistration;
 
@@ -328,6 +331,9 @@ export function mapUpdateProgram(
   if (timeStart) dto.time_start = timeStart;
   const timeEnd = asText(body.time_end);
   if (timeEnd) dto.time_end = timeEnd;
+
+  const startRegistration = asText(body.start_registration);
+  if (startRegistration) dto.start_registration = startRegistration;
 
   const dateRegistration = asText(body.date_registration);
   if (dateRegistration) dto.date_registration = dateRegistration;

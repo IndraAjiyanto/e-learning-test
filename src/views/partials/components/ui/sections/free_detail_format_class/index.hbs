@@ -3,11 +3,11 @@
   Lokasi: src/views/partials/components/ui/sections/free_detail_format_class/index.hbs
   Level: L2 Section
 
-  Kartu: Tanggal Mulai, Tanggal Akhir Registrasi, Jam Sesi, Opsi Format
+  Kartu: Tanggal Mulai, Tanggal Mulai Registrasi, Tanggal Akhir Registrasi, Jam Sesi, Opsi Format
   (nilai method apa adanya dari DB), dan Lokasi (locations / locationLink).
 
   Props:
-  - course : object (course data: startDate, date_registration, time_start, time_end, method, locations, locationLink)
+  - course : object (course data: startDate, start_registration, date_registration, time_start, time_end, method, locations, locationLink)
   - lang   : string (optional, locale code)
 --}}
 
@@ -57,7 +57,33 @@
           </div>
         </div>
 
-        <!-- Detail Item 2 - Tanggal Akhir Registrasi -->
+        <!-- Detail Item 2 - Tanggal Mulai Registrasi -->
+        <div class="box-border w-full max-w-[552px] min-h-[110px] md:min-h-[132px] bg-white border border-[#E2E8F0] shadow-[0px_4px_12px_rgba(11,31,59,0.07)] rounded-[16px] p-5 md:p-[20px] flex flex-row items-center gap-4 md:gap-[16px] transition-shadow duration-200 hover:shadow-[0px_6px_16px_rgba(11,31,59,0.1)]">
+          <!-- Icon Circle -->
+          <div class="w-12 h-12 shrink-0 rounded-full bg-[#003060]/[0.07] flex items-center justify-center">
+            <svg class="w-5 h-5 text-[#003060]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </div>
+          <!-- Text Content -->
+          <div class="flex flex-col items-start gap-1 flex-1 min-w-0">
+            <span class="font-inter font-normal text-[14px] leading-[17px] text-[#64748B]">
+              {{default (t 'test.freeProgram.formatClass.registrationStart') 'Tanggal Mulai Registrasi'}}
+            </span>
+            <span class="font-inter font-bold text-[17px] md:text-[18px] leading-[22px] text-[#0B1F3B] truncate w-full">
+              {{#if course.start_registration}}
+                {{formatDateSimple course.start_registration lang}}
+              {{else}}
+                -
+              {{/if}}
+            </span>
+          </div>
+        </div>
+
+        <!-- Detail Item 3 - Tanggal Akhir Registrasi -->
         <div class="box-border w-full max-w-[552px] min-h-[110px] md:min-h-[132px] bg-white border border-[#E2E8F0] shadow-[0px_4px_12px_rgba(11,31,59,0.07)] rounded-[16px] p-5 md:p-[20px] flex flex-row items-center gap-4 md:gap-[16px] transition-shadow duration-200 hover:shadow-[0px_6px_16px_rgba(11,31,59,0.1)]">
           <!-- Icon Circle -->
           <div class="w-12 h-12 shrink-0 rounded-full bg-[#003060]/[0.07] flex items-center justify-center">
@@ -83,7 +109,7 @@
           </div>
         </div>
 
-        <!-- Detail Item 3 - Jam Sesi -->
+        <!-- Detail Item 4 - Jam Sesi -->
         <div class="box-border w-full max-w-[552px] min-h-[110px] md:min-h-[132px] bg-white border border-[#E2E8F0] shadow-[0px_4px_12px_rgba(11,31,59,0.07)] rounded-[16px] p-5 md:p-[20px] flex flex-row items-center gap-4 md:gap-[16px] transition-shadow duration-200 hover:shadow-[0px_6px_16px_rgba(11,31,59,0.1)]">
           <!-- Icon Circle -->
           <div class="w-12 h-12 shrink-0 rounded-full bg-[#003060]/[0.07] flex items-center justify-center">
@@ -109,7 +135,7 @@
           </div>
         </div>
 
-        <!-- Detail Item 4 - Opsi Format -->
+        <!-- Detail Item 5 - Opsi Format -->
         <div class="box-border w-full max-w-[552px] min-h-[110px] md:min-h-[132px] bg-white border border-[#E2E8F0] shadow-[0px_4px_12px_rgba(11,31,59,0.07)] rounded-[16px] p-5 md:p-[20px] flex flex-row items-center gap-4 md:gap-[16px] transition-shadow duration-200 hover:shadow-[0px_6px_16px_rgba(11,31,59,0.1)]">
           <!-- Icon Circle -->
           <div class="w-12 h-12 shrink-0 rounded-full bg-[#003060]/[0.07] flex items-center justify-center">
@@ -130,9 +156,9 @@
           </div>
         </div>
 
-        <!-- Detail Item 5 - Lokasi -->
+        <!-- Detail Item 6 - Lokasi -->
         {{#if course.locations}}
-        <div class="box-border w-full max-w-[552px] md:col-span-2 min-h-[110px] md:min-h-[132px] bg-white border border-[#E2E8F0] shadow-[0px_4px_12px_rgba(11,31,59,0.07)] rounded-[16px] p-5 md:p-[20px] flex flex-row items-center gap-4 md:gap-[16px] transition-shadow duration-200 hover:shadow-[0px_6px_16px_rgba(11,31,59,0.1)]">
+        <div class="box-border w-full max-w-[552px] min-h-[110px] md:min-h-[132px] bg-white border border-[#E2E8F0] shadow-[0px_4px_12px_rgba(11,31,59,0.07)] rounded-[16px] p-5 md:p-[20px] flex flex-row items-center gap-4 md:gap-[16px] transition-shadow duration-200 hover:shadow-[0px_6px_16px_rgba(11,31,59,0.1)]">
           <!-- Icon Circle -->
           <div class="w-12 h-12 shrink-0 rounded-full bg-[#003060]/[0.07] flex items-center justify-center">
             <svg class="w-5 h-5 text-[#003060]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
