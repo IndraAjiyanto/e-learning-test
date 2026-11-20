@@ -151,6 +151,14 @@
         </div>
         <div class='flex flex-col gap-1'>
           <span class='font-inter text-[11px] font-semibold uppercase tracking-wider text-[#64748B]'>
+            {{default (t 'test.detailProgram.infoProgram.registrationStart') 'Registration Deadline'}}
+          </span>
+          <span class='font-inter text-sm font-semibold text-[#0B1F3B]'>
+            {{#if course.start_registration}}{{formatDateSimple course.start_registration lang}}{{else}}-{{/if}}
+          </span>
+        </div>
+        <div class='flex flex-col gap-1'>
+          <span class='font-inter text-[11px] font-semibold uppercase tracking-wider text-[#64748B]'>
             {{default (t 'test.detailProgram.infoProgram.registrationDeadline') 'Registration Deadline'}}
           </span>
           <span class='font-inter text-sm font-semibold text-[#0B1F3B]'>
