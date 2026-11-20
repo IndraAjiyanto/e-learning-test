@@ -2,7 +2,16 @@ type PassportRequest = Request & {
   login: (user: unknown, done: (err: unknown) => void) => void;
   logout: (done: (err: unknown) => void) => void;
 };
-import { Controller, Get, Post, Res, Req, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Res,
+  Req,
+  Param,
+  Body,
+  UseGuards,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
@@ -13,6 +22,8 @@ import {
   flashToastWarning,
 } from 'src/common/utils/toast.util';
 import { DenyRoles } from 'src/common/decorators/deny-roles.decorator';
+import { RateLimit } from 'src/common/decorators/rate-limit.decorator';
+import { RateLimiterGuard } from 'src/common/guards/rate-limiter.guard';
 
 @Controller()
 export class AuthController {
@@ -57,6 +68,13 @@ export class AuthController {
   }
 
   @Post('register')
+  @UseGuards(RateLimiterGuard)
+  @RateLimit({
+    limit: 5,
+    ttlSeconds: 60,
+    message:
+      'Terlalu banyak permintaan pendaftaran. Silakan tunggu 1 menit sebelum mencoba kembali.',
+  })
   async createAcount(
     @Body() createUserDto: CreateUserDto,
     @Req() req: Request,
@@ -83,6 +101,13 @@ export class AuthController {
   }
 
   @Post('login')
+  @UseGuards(RateLimiterGuard)
+  @RateLimit({
+    limit: 5,
+    ttlSeconds: 60,
+    message:
+      'Terlalu banyak percobaan login. Silakan tunggu 1 menit sebelum mencoba kembali.',
+  })
   async login(
     @Body() body: Record<string, unknown>,
     @Req() req: Request,

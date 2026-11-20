@@ -96,9 +96,10 @@ export class AttendanceService {
     return saved;
   }
 
-  async findAll() {
+  async findAll(limit = 500) {
     const attendances = await this.attendanceRepository.find({
       relations: ['session', 'session.weeks', 'session.weeks.course', 'user'],
+      take: limit,
       select: {
         id: true,
         status: true,
@@ -126,15 +127,35 @@ export class AttendanceService {
       return [];
     }
 
-    const approvedLogbooks = await this.logBookRepository
-      .createQueryBuilder('lb')
-      .select(['lb.userId AS "userId"', 'lb.sessionId AS "sessionId"'])
-      .where('lb.process = :process', { process: 'approved' })
-      .getRawMany<{ userId: string; sessionId: string }>();
-
-    const approvedUserSessionSet = new Set(
-      approvedLogbooks.map((lb) => `${lb.userId}:${lb.sessionId}`),
+    const userIds = Array.from(
+      new Set(
+        attendances
+          .map((a) => a.user?.id)
+          .filter((id): id is string => Boolean(id)),
+      ),
     );
+    const sessionIds = Array.from(
+      new Set(
+        attendances
+          .map((a) => a.session?.id)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    );
+
+    let approvedUserSessionSet = new Set<string>();
+    if (userIds.length > 0 && sessionIds.length > 0) {
+      const approvedLogbooks = await this.logBookRepository
+        .createQueryBuilder('lb')
+        .select(['lb.userId AS "userId"', 'lb.sessionId AS "sessionId"'])
+        .where('lb.process = :process', { process: 'approved' })
+        .andWhere('lb.userId IN (:...userIds)', { userIds })
+        .andWhere('lb.sessionId IN (:...sessionIds)', { sessionIds })
+        .getRawMany<{ userId: string; sessionId: string }>();
+
+      approvedUserSessionSet = new Set(
+        approvedLogbooks.map((lb) => `${lb.userId}:${lb.sessionId}`),
+      );
+    }
 
     return attendances.map((att) => ({
       ...att,

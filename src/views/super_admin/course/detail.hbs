@@ -42,7 +42,7 @@
           <p class='font-inter text-sm font-medium leading-[22.75px] text-[#737373]'>{{#if course.month}}{{course.month}} Month{{else if course.day}}{{course.day}} Day{{else}}-{{/if}}</p>
         {{/components/ui/super_admin/detail/field/index}}
 
-        {{> components/ui/super_admin/detail/field/index label='Registration Date' value=(formatDate course.date_registration) }}
+        {{> components/ui/super_admin/detail/field/index label='Registration Deadline' value=(formatDate course.date_registration) }}
 
         {{> components/ui/super_admin/detail/field/index label='Start Date' value=(formatDate course.startDate) }}
 

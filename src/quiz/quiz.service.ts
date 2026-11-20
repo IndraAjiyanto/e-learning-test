@@ -61,26 +61,43 @@ export class QuizService {
     });
 
     if (lastSessionProgress.length > 0) {
+      const userMap = new Map<string, User>();
       for (const progres of lastSessionProgress) {
-        const existingProgresQuiz = await this.progresQuizRepository.findOne({
+        if (progres.user?.id && !userMap.has(progres.user.id)) {
+          userMap.set(progres.user.id, progres.user);
+        }
+      }
+      const uniqueUserIds = Array.from(userMap.keys());
+
+      if (uniqueUserIds.length > 0) {
+        const existingProgressList = await this.progresQuizRepository.find({
           where: {
             quiz: { id: newQuiz.id },
-            user: { id: progres.user.id },
+            user: { id: In(uniqueUserIds) },
           },
+          relations: ['user'],
         });
-        if (existingProgresQuiz) {
-          await this.progresQuizRepository.save({
-            id: existingProgresQuiz.id,
+        const existingMap = new Map(
+          existingProgressList.map((ep) => [ep.user.id, ep]),
+        );
+
+        const progressToSave = uniqueUserIds.map((uid) => {
+          const existing = existingMap.get(uid);
+          if (existing) {
+            existing.process = true;
+            return existing;
+          }
+          return this.progresQuizRepository.create({
             quiz: newQuiz,
-            user: progres.user,
+            user: userMap.get(uid)!,
             process: true,
           });
-        } else {
-          await this.progresQuizRepository.save({
-            quiz: newQuiz,
-            user: progres.user,
-            process: true,
-          });
+        });
+
+        for (let i = 0; i < progressToSave.length; i += 100) {
+          await this.progresQuizRepository.save(
+            progressToSave.slice(i, i + 100),
+          );
         }
       }
     }

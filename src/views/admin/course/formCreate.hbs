@@ -257,7 +257,7 @@
 
               {{> components/ui/super_admin/form/text_field
                 id='date_registration' name='date_registration' field='date_registration' type='date' icon='calendar'
-                label='Registration Date' placeholder='Select registration date' required=true
+                label='Registration Deadline' placeholder='Select registration deadline' required=true
               }}
 
               <template x-if="formData.paid === 'true'">
@@ -595,9 +595,9 @@
             case 'start_registration':
               return val ? '' : 'Start registration date is required.';
             case 'date_registration':
-              if (!val) return 'Registration date is required.';
+              if (!val) return 'Registration deadline is required.';
               return d.start_registration && val < d.start_registration
-                ? 'Registration date must be on or after the start registration date.'
+                ? 'Registration deadline must be on or after the start registration date.'
                 : '';
             case 'startDate':
               return val ? '' : 'Start date is required.';

@@ -6,6 +6,7 @@ import { Certificates } from '../entities/certificate.entity';
 import { User } from '../entities/user.entity';
 import { Biodata } from '../entities/biodata.entity';
 import { Portofolios } from '../entities/portofolios.entity';
+import { UserCourse } from '../entities/user_course.entity';
 
 describe('CertificatesService', () => {
   let service: CertificatesService;
@@ -42,6 +43,12 @@ describe('CertificatesService', () => {
         },
         {
           provide: getRepositoryToken(Portofolios),
+          useValue: {
+            findOne: jest.fn(),
+          },
+        },
+        {
+          provide: getRepositoryToken(UserCourse),
           useValue: {
             findOne: jest.fn(),
           },

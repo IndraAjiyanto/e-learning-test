@@ -28,13 +28,35 @@ export class CertificatesController {
     } catch (error: unknown) {
       const status =
         typeof error === 'object' && error && 'status' in error
-          ? Number(error.status) || 500
+          ? Number((error as { status?: unknown }).status) || 500
           : 500;
       const message =
         error instanceof Error
           ? error.message
           : 'Certificate preview is not available.';
-      return res.status(status).type('text').send(message);
+      const fallbackHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f8fafc; color: #475569; }
+            .box { text-align: center; max-width: 440px; padding: 32px 24px; background: white; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+            .icon { font-size: 36px; margin-bottom: 12px; }
+            h3 { margin: 0 0 8px 0; color: #1e293b; font-size: 18px; font-weight: 600; }
+            p { font-size: 14px; line-height: 1.5; color: #64748b; margin: 0; }
+          </style>
+        </head>
+        <body>
+          <div class="box">
+            <div class="icon">🔒</div>
+            <h3>Certificate Preview</h3>
+            <p>${message}</p>
+          </div>
+        </body>
+        </html>
+      `;
+      return res.status(status).type('html').send(fallbackHtml);
     }
   }
 
