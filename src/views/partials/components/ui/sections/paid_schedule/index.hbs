@@ -57,21 +57,28 @@
           value=(ternary course.startEnd (formatDateDayMonthYear course.startEnd lang) "30 April 2026")
       }}
 
-      {{!-- Item 3: Tanggal Akhir Registration --}}
+      {{!-- Item 3: Tanggal Mulai Registrasi --}}
+      {{> components/ui/card/schedule_item/index
+          iconType="calendar"
+          label=(default (t 'test.paidProgram.schedule.registrationStart') 'Tanggal Mulai Registrasi')
+          value=(ternary course.start_registration (formatDateDayMonthYear course.start_registration lang) "-")
+      }}
+
+      {{!-- Item 4: Tanggal Akhir Registration --}}
       {{> components/ui/card/schedule_item/index
           iconType="clock"
           label=(default (t 'test.paidProgram.schedule.registrationDeadline') 'Tanggal Akhir Registrasi')
           value=(ternary course.date_registration (formatDateDayMonthYear course.date_registration lang) (ternary course.time_start (concat (default (t 'test.paidProgram.schedule.everyday') 'Setiap Hari') ", " (formatTime course.time_start) " - " (formatTime course.time_end) " WIB") (default (t 'test.paidProgram.schedule.tueThu') 'Selasa & Kamis, 19:00 - 21:00 WIB')))
       }}
 
-      {{!-- Item 4: Opsi Format --}}
+      {{!-- Item 5: Opsi Format --}}
       {{> components/ui/card/schedule_item/index
           iconType="format"
           label=(default (t 'test.paidProgram.schedule.formatOption') 'Opsi Format')
           value=(default course.method '-')
       }}
 
-      {{!-- Item 5: Lokasi --}}
+      {{!-- Item 6: Lokasi --}}
       {{> components/ui/card/schedule_item/index
           iconType="location"
           label=(default (t 'test.detailProgram.infoProgram.location') 'Lokasi')
@@ -79,7 +86,7 @@
           link=course.locationLink
       }}
 
-      {{!-- Item 6: Kapasitas Kelas --}}
+      {{!-- Item 7: Kapasitas Kelas --}}
       {{> components/ui/card/schedule_item/index
           iconType="users"
           label=(default (t 'test.paidProgram.hero.quickStats.classCapacity') 'Kapasitas Kelas')
