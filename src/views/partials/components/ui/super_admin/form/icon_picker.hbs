@@ -101,8 +101,9 @@
       role='listbox'
       class='absolute left-0 right-0 z-20 mt-1 overflow-hidden rounded-lg border border-[#d4d4d4] bg-white shadow-[0px_8px_8px_-4px_rgba(0,0,0,0.03),0px_20px_24px_-4px_rgba(0,0,0,0.08)]'
     >
-      <div x-show='loading' class='px-3.5 py-6 text-center font-inter text-sm leading-5 text-[#a3a3a3]'>
-        Loading icons...
+      <div x-show='loading' class='px-3.5 py-6 flex items-center justify-center gap-2 font-inter text-sm leading-5 text-[#a3a3a3]'>
+        <i class='fas fa-spinner fa-spin text-sm text-[#003060]'></i>
+        <span>Loading icons...</span>
       </div>
 
       <div x-show='loadError' x-cloak class='px-3.5 py-6 text-center font-inter text-sm leading-5 text-[#ef4444]'>

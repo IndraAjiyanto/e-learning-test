@@ -9,7 +9,7 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from 'src/entities/payment.entity';
-import { IsNull, Not, Repository } from 'typeorm';
+import { In, IsNull, Not, Repository } from 'typeorm';
 import { Course } from 'src/entities/course.entity';
 import { User } from 'src/entities/user.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
@@ -52,6 +52,22 @@ export type MonthlyInstallmentResult =
   | { blocked: true; existingInvoiceUrl: string; message: string }
   | InstallmentPayment;
 
+interface InstallmentPricing {
+  totalOriginal: number;
+  totalDiscount: number;
+  downPayment: {
+    originalAmount: number;
+    discountAmount: number;
+    amount: number;
+  };
+  monthly: Array<{
+    month: number;
+    originalAmount: number;
+    discountAmount: number;
+    amount: number;
+  }>;
+}
+
 @Injectable()
 export class PaymentsService {
   constructor(
@@ -80,6 +96,132 @@ export class PaymentsService {
     private readonly invoiceService: InvoiceService,
     private readonly installmentPaymentService: InstallmentPaymentService,
   ) {}
+
+  private calculateInstallmentPricing(
+    installment: Installment,
+    totalDiscount: number,
+  ): InstallmentPricing {
+    const downPayment = Math.max(0, Number(installment.downPayment) || 0);
+    const monthlyOriginal = (installment.price || []).map((value) =>
+      Math.max(0, Number(value) || 0),
+    );
+    const totalOriginal =
+      downPayment + monthlyOriginal.reduce((sum, value) => sum + value, 0);
+    const cappedDiscount = Math.min(
+      Math.max(0, Number(totalDiscount) || 0),
+      totalOriginal,
+    );
+    const components = [downPayment, ...monthlyOriginal];
+    let allocated = 0;
+    const discounts = components.map((amount, index) => {
+      if (index === components.length - 1) {
+        return Math.max(0, cappedDiscount - allocated);
+      }
+      const discount =
+        totalOriginal > 0
+          ? Math.floor((amount / totalOriginal) * cappedDiscount)
+          : 0;
+      allocated += discount;
+      return discount;
+    });
+
+    return {
+      totalOriginal,
+      totalDiscount: cappedDiscount,
+      downPayment: {
+        originalAmount: downPayment,
+        discountAmount: discounts[0] || 0,
+        amount: Math.max(0, downPayment - (discounts[0] || 0)),
+      },
+      monthly: monthlyOriginal.map((amount, index) => ({
+        month: index + 1,
+        originalAmount: amount,
+        discountAmount: discounts[index + 1] || 0,
+        amount: Math.max(0, amount - (discounts[index + 1] || 0)),
+      })),
+    };
+  }
+
+  private async createInstallmentSnapshots(
+    payment: Payment,
+    pricing: InstallmentPricing,
+  ): Promise<void> {
+    await this.installmentPaymentService.createMany(
+      pricing.monthly.map((item) => ({
+        payment,
+        month: item.month,
+        original_amount: item.originalAmount,
+        discount_amount: item.discountAmount,
+        amount: item.amount,
+        status: 'process',
+        no: `INV-M${item.month}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      })),
+    );
+  }
+
+  async checkQuota(courseId: string, existingCourse?: Course): Promise<void> {
+    const course =
+      existingCourse ||
+      (await this.courseRepository.findOne({
+        where: { id: courseId },
+      }));
+    if (!course) return;
+
+    if (
+      course.quota !== null &&
+      course.quota !== undefined &&
+      course.quota > 0
+    ) {
+      const [pendingCount, enrolledCount] = await Promise.all([
+        course.checkPaid
+          ? this.paymentRepository.count({
+              where: { course: { id: courseId }, process: 'process' },
+            })
+          : this.registrationRepository.count({
+              where: { course: { id: courseId }, process: 'process' },
+            }),
+        this.userCourseRepository.count({
+          where: { course: { id: courseId } },
+        }),
+      ]);
+      if (pendingCount + enrolledCount >= course.quota) {
+        throw new BadRequestException('Kuota peserta untuk program ini sudah penuh');
+      }
+    }
+  }
+
+  async countEnrolledStudents(courseId: string): Promise<number> {
+    return await this.userCourseRepository.count({
+      where: { course: { id: courseId } },
+    });
+  }
+
+  async isCourseFull(courseId: string): Promise<boolean> {
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+    });
+    if (
+      !course ||
+      course.quota === null ||
+      course.quota === undefined ||
+      course.quota <= 0
+    ) {
+      return false;
+    }
+    const [pendingCount, enrolledCount] = await Promise.all([
+      course.checkPaid
+        ? this.paymentRepository.count({
+            where: { course: { id: courseId }, process: 'process' },
+          })
+        : this.registrationRepository.count({
+            where: { course: { id: courseId }, process: 'process' },
+          }),
+      this.userCourseRepository.count({
+        where: { course: { id: courseId } },
+      }),
+    ]);
+    return pendingCount + enrolledCount >= course.quota;
+  }
 
   async create(createPaymentDto: CreatePaymentDto) {
     const user = await this.userRepository.findOne({
@@ -113,20 +255,24 @@ export class PaymentsService {
       if (check == false) {
         return false;
       } else {
-        const basePrice = Number(installments.downPayment) || 0;
+        await this.checkQuota(createPaymentDto.courseId, course);
+        const contractTotal =
+          (Number(installments.downPayment) || 0) +
+          (installments.price || []).reduce(
+            (sum, value) => sum + (Number(value) || 0),
+            0,
+          );
         let discountAmount = 0;
-        let finalTotal = basePrice;
 
         if (promoCode) {
           try {
             const validationResult = await this.voucherService.validateVoucher(
               promoCode,
               createPaymentDto.courseId,
-              basePrice,
+              contractTotal,
               createPaymentDto.userId,
             );
             discountAmount = validationResult.discountAmount;
-            finalTotal = validationResult.finalTotal;
           } catch (err: unknown) {
             console.warn(
               '[PaymentsService] Invalid voucher on manual installment:',
@@ -135,21 +281,35 @@ export class PaymentsService {
           }
         }
 
+        const pricing = this.calculateInstallmentPricing(
+          installments,
+          discountAmount,
+        );
         const payment: Payment = this.paymentRepository.create({
           ...createPaymentDto,
           user: user,
           course: course,
           installment: installments,
+          voucher_code: promoCode || null,
+          voucher_discount_total: promoCode ? pricing.totalDiscount : null,
+          pricing_snapshot: {
+            totalOriginal: pricing.totalOriginal,
+            totalDiscount: pricing.totalDiscount,
+            downPayment: pricing.downPayment,
+            monthly: pricing.monthly,
+          },
         });
         const saved = await this.paymentRepository.save(payment);
+        await this.createInstallmentSnapshots(saved, pricing);
+
         await this.invoiceService
           .createManualInvoice(
             saved,
             course,
             user,
             installments,
-            discountAmount,
-            finalTotal,
+            pricing.downPayment.discountAmount,
+            pricing.downPayment.amount,
           )
           .catch((err) => {
             console.error(
@@ -168,6 +328,7 @@ export class PaymentsService {
     if (check == false) {
       return false;
     } else {
+      await this.checkQuota(createPaymentDto.courseId, course);
       const promo = course?.promo ? Number(course.promo) : null;
       const price = course?.price ? Number(course.price) : 0;
       const basePrice = promo && promo > 0 ? promo : price;
@@ -196,6 +357,8 @@ export class PaymentsService {
         ...createPaymentDto,
         user: user,
         course: course,
+        voucher_code: promoCode || null,
+        voucher_discount_total: promoCode ? Number(discountAmount) : null,
       });
       const saved = await this.paymentRepository.save(payment);
       await this.invoiceService
@@ -240,6 +403,19 @@ export class PaymentsService {
     });
     if (alreadyJoined) {
       throw new BadRequestException('User already joined the program');
+    }
+
+    if (
+      course.quota !== null &&
+      course.quota !== undefined &&
+      course.quota > 0
+    ) {
+      const enrolledCount = await this.userCourseRepository.count({
+        where: { course: { id: courseId } },
+      });
+      if (enrolledCount >= course.quota) {
+        throw new BadRequestException('Kuota peserta untuk program ini sudah penuh');
+      }
     }
 
     const userCourses = this.userCourseRepository.create({
@@ -370,6 +546,21 @@ export class PaymentsService {
     }
   }
 
+  async findUserActivePayment(
+    userId: string,
+    courseId: string,
+  ): Promise<Payment | null> {
+    return this.paymentRepository.findOne({
+      where: {
+        user: { id: userId },
+        course: { id: courseId },
+        process: In(['process', 'approved']),
+      },
+      order: { createdAt: 'DESC' },
+      relations: ['installment', 'invoice'],
+    });
+  }
+
   async findCourse(courseId: string) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
@@ -421,11 +612,19 @@ export class PaymentsService {
           'course.category',
           'installment',
           'invoice',
+          'registration',
         ],
       }),
       this.registrationRepository.find({
         where: { user: { id: userId } },
-        relations: ['user', 'user.biodata', 'course', 'course.category'],
+        relations: [
+          'user',
+          'user.biodata',
+          'course',
+          'course.category',
+          'payment',
+          'payment.invoice',
+        ],
       }),
     ]);
 
@@ -445,120 +644,152 @@ export class PaymentsService {
     );
 
     const rows = [
-      ...payments.map((payment) => {
-        const isInstallment = !!payment.installment;
-        const installmentDetail = isInstallment
-          ? (installmentDetailMap.get(payment.id) ?? null)
-          : null;
+      ...payments
+        .filter((payment) => !payment.registration)
+        .map((payment) => {
+          const isInstallment = !!payment.installment;
+          const installmentDetail = isInstallment
+            ? (installmentDetailMap.get(payment.id) ?? null)
+            : null;
 
-        const hasPromo =
-          payment.course?.promo !== null &&
-          payment.course?.promo !== undefined &&
-          Number(payment.course.promo) > 0;
-        const promoPrice = hasPromo ? Number(payment.course.promo) : null;
-        const normalPrice = payment.course?.price
-          ? Number(payment.course.price)
-          : null;
-        const fallbackPrice = promoPrice ?? normalPrice;
+          const hasPromo =
+            payment.course?.promo !== null &&
+            payment.course?.promo !== undefined &&
+            Number(payment.course.promo) > 0;
+          const promoPrice = hasPromo ? Number(payment.course.promo) : null;
+          const normalPrice = payment.course?.price
+            ? Number(payment.course.price)
+            : null;
+          const fallbackPrice = promoPrice ?? normalPrice;
 
-        const price =
-          payment.invoice?.price !== null &&
-          payment.invoice?.price !== undefined
-            ? Number(payment.invoice.price)
-            : normalPrice;
-        const promo =
-          payment.invoice?.promo !== null &&
-          payment.invoice?.promo !== undefined
-            ? Number(payment.invoice.promo)
-            : promoPrice;
-        // Sesuai aturan task: Data "total" di ambil dari table invoice column "subtotal"
-        const total =
-          payment.invoice?.subtotal !== null &&
-          payment.invoice?.subtotal !== undefined
-            ? Number(payment.invoice.subtotal)
-            : payment.invoice?.final_total !== null &&
-                payment.invoice?.final_total !== undefined
-              ? Number(payment.invoice.final_total)
-              : (fallbackPrice ?? 0);
+          const price =
+            payment.invoice?.price !== null &&
+            payment.invoice?.price !== undefined
+              ? Number(payment.invoice.price)
+              : normalPrice;
+          const promo =
+            payment.invoice?.promo !== null &&
+            payment.invoice?.promo !== undefined
+              ? Number(payment.invoice.promo)
+              : promoPrice;
+          // Sesuai aturan task: Data "total" di ambil dari table invoice column "subtotal"
+          const total =
+            payment.invoice?.subtotal !== null &&
+            payment.invoice?.subtotal !== undefined
+              ? Number(payment.invoice.subtotal)
+              : payment.invoice?.final_total !== null &&
+                  payment.invoice?.final_total !== undefined
+                ? Number(payment.invoice.final_total)
+                : (fallbackPrice ?? 0);
 
-        // Potongan voucher promo code: prioritas kolom promo_code, fallback ke selisih (promo - total) jika promo_code kosong
-        const promoCode =
-          payment.invoice?.promo_code !== null &&
-          payment.invoice?.promo_code !== undefined &&
-          Number(payment.invoice.promo_code) > 0
-            ? Number(payment.invoice.promo_code)
-            : promo && total && promo > total
-              ? promo - total
-              : 0;
-
-        // Diskon kursus: potongan dari harga normal ke promo kursus (misal normal 5jt, promo 4.5jt -> diskon 500rb)
-        // Fallback berurutan: selisih (price - promo) -> discount_amount DB -> selisih (price - total - promoCode)
-        const discountAmount =
-          price && promo && price > promo
-            ? price - promo
-            : payment.invoice?.discount_amount !== null &&
-                payment.invoice?.discount_amount !== undefined &&
-                Number(payment.invoice.discount_amount) > 0 &&
-                Number(payment.invoice.discount_amount) !== promoCode
-              ? Number(payment.invoice.discount_amount)
-              : price && total && price > total
-                ? Math.max(0, price - total - promoCode)
+          // Potongan voucher promo code: prioritas kolom promo_code, fallback ke selisih (promo - total) jika promo_code kosong
+          const promoCode =
+            payment.invoice?.promo_code !== null &&
+            payment.invoice?.promo_code !== undefined &&
+            Number(payment.invoice.promo_code) > 0
+              ? Number(payment.invoice.promo_code)
+              : promo && total && promo > total
+                ? promo - total
                 : 0;
 
-        return {
-          id: payment.id,
-          kind: isInstallment ? 'installment' : 'full',
-          courseId: payment.course?.id ?? null,
-          courseName: payment.course?.name ?? 'Program',
-          categoryName: payment.course?.category?.name ?? null,
-          date: payment.invoice?.paid_at ?? payment.createdAt,
-          invoiceDate: payment.invoice?.createdAt ?? payment.createdAt,
-          paidAt:
-            payment.invoice?.paid_at ??
-            (payment.process === 'approved'
-              ? (payment.invoice?.updatedAt ??
-                payment.updatedAt ??
-                payment.createdAt)
-              : null),
-          method:
-            payment.invoice?.payment_method ||
-            (isInstallment ? 'Installment' : 'Full Payment'),
-          amount: total,
-          subtotal: total,
-          total: total,
-          finalTotal: total,
-          discount: discountAmount,
-          originalPrice: price,
-          price,
-          promo,
-          promoPrice: promo,
-          promoCode,
-          proof: payment.file ?? null,
-          no: payment.invoice?.invoice_number || payment.no || null,
-          paymentLink: payment.invoice?.xendit_invoice_url ?? null,
-          keyword:
-            payment.referalSource ||
-            (isInstallment ? 'Installment Plan' : 'Online Course'),
-          userName:
-            payment.invoice?.user_fullname ||
-            payment.user_fullname ||
-            payment.user?.biodata?.fullName ||
-            payment.user?.username ||
-            null,
-          userEmail:
-            payment.invoice?.user_email ||
-            payment.user_email ||
-            payment.user?.email ||
-            null,
-          userPhone:
-            payment.invoice?.user_phone ||
-            payment.user_no ||
-            payment.user?.biodata?.no ||
-            null,
-          installmentDetail,
-          ...statusOf(payment.process),
-        };
-      }),
+          // Diskon kursus: potongan dari harga normal ke promo kursus (misal normal 5jt, promo 4.5jt -> diskon 500rb)
+          // Fallback berurutan: selisih (price - promo) -> discount_amount DB -> selisih (price - total - promoCode)
+          const discountAmount =
+            price && promo && price > promo
+              ? price - promo
+              : payment.invoice?.discount_amount !== null &&
+                  payment.invoice?.discount_amount !== undefined &&
+                  Number(payment.invoice.discount_amount) > 0 &&
+                  Number(payment.invoice.discount_amount) !== promoCode
+                ? Number(payment.invoice.discount_amount)
+                : price && total && price > total
+                  ? Math.max(0, price - total - promoCode)
+                  : 0;
+
+          const invoice = payment.invoice;
+          const hasXendit = !!(
+            invoice?.xendit_invoice_url ||
+            invoice?.xendit_invoice_id ||
+            invoice?.xendit_payment_channel
+          );
+          const paymentChannel = hasXendit ? 'xendit' : 'manual';
+          const transactionType = isInstallment
+            ? 'installment'
+            : 'full payment';
+
+          return {
+            id: payment.id,
+            kind: isInstallment ? 'installment' : 'full',
+            transactionType,
+            transactionKind: transactionType,
+            type: transactionType,
+            courseId: payment.course?.id ?? null,
+            courseName: payment.course?.name ?? 'Program',
+            categoryName: payment.course?.category?.name ?? null,
+            date: invoice?.paid_at ?? payment.createdAt,
+            invoiceDate: invoice?.createdAt ?? payment.createdAt,
+            paidAt:
+              invoice?.paid_at ??
+              (payment.process === 'approved'
+                ? (invoice?.updatedAt ?? payment.updatedAt ?? payment.createdAt)
+                : null),
+            method:
+              invoice?.payment_method ||
+              (isInstallment
+                ? 'Installment'
+                : paymentChannel === 'manual'
+                  ? 'Manual Transfer'
+                  : 'Xendit'),
+            paymentMethod:
+              invoice?.payment_method ||
+              (isInstallment
+                ? 'Installment'
+                : paymentChannel === 'manual'
+                  ? 'Manual Transfer'
+                  : 'Xendit'),
+            paymentChannel,
+            channel: paymentChannel,
+            amount: total,
+            subtotal: total,
+            total: total,
+            finalTotal: total,
+            discount: discountAmount,
+            originalPrice: price,
+            price,
+            promo,
+            promoPrice: promo,
+            promoCode,
+            voucherCode: payment.voucher_code || invoice?.voucher_code || null,
+            proof: payment.file ?? null,
+            no: payment.invoice?.invoice_number || payment.no || null,
+            paymentLink: payment.invoice?.xendit_invoice_url ?? null,
+            referalSource: payment.referalSource || null,
+            referal_source: payment.referalSource || null,
+            current_status: payment.current_status || null,
+            currentStatus: payment.current_status || null,
+            keyword:
+              payment.referalSource ||
+              (isInstallment ? 'Installment Plan' : 'Online Course'),
+            userName:
+              payment.invoice?.user_fullname ||
+              payment.user_fullname ||
+              payment.user?.biodata?.fullName ||
+              payment.user?.username ||
+              null,
+            userEmail:
+              payment.invoice?.user_email ||
+              payment.user_email ||
+              payment.user?.email ||
+              null,
+            userPhone:
+              payment.invoice?.user_phone ||
+              payment.user_no ||
+              payment.user?.biodata?.no ||
+              null,
+            installmentDetail,
+            ...statusOf(payment.process),
+          };
+        }),
       ...registrations.map((registration) => {
         const hasPromo =
           registration.course?.promo !== null &&
@@ -573,16 +804,35 @@ export class PaymentsService {
           normalPrice && promoPrice && normalPrice > promoPrice
             ? normalPrice - promoPrice
             : 0;
+        const invoiceNumber =
+          registration.no ||
+          registration.payment?.invoice?.invoice_number ||
+          registration.payment?.no ||
+          null;
+        const invoiceDate =
+          registration.payment?.invoice?.paid_at ||
+          registration.payment?.invoice?.createdAt ||
+          registration.createdAt;
         return {
           id: registration.id,
           kind: 'registration',
+          transactionType: 'registration',
+          transactionKind: 'registration',
+          type: 'registration',
           courseId: registration.course?.id ?? null,
           courseName: registration.course?.name ?? 'Program',
           categoryName: registration.course?.category?.name ?? null,
-          date: registration.createdAt,
-          invoiceDate: registration.createdAt,
-          paidAt: registration.createdAt,
+          date: invoiceDate,
+          invoiceDate: invoiceDate,
+          paidAt: registration.process === 'approved' ? invoiceDate : null,
           method: 'Registration',
+          paymentMethod: 'Registration',
+          referalSource: registration.referal_source || null,
+          referal_source: registration.referal_source || null,
+          current_status: registration.current_status || null,
+          currentStatus: registration.current_status || null,
+          paymentChannel: 'manual',
+          channel: 'manual',
           amount: subtotal,
           subtotal,
           discount: regDiscount,
@@ -591,9 +841,10 @@ export class PaymentsService {
           promo: promoPrice,
           promoCode: 0,
           finalTotal: subtotal,
-          proof: registration.file ?? null,
-          no: null,
-          paymentLink: null,
+          proof: registration.file ?? registration.payment?.file ?? null,
+          no: invoiceNumber,
+          paymentLink:
+            registration.payment?.invoice?.xendit_invoice_url ?? null,
           keyword: registration.referal_source || 'Registration',
           userName:
             registration.user_fullname ||
@@ -621,7 +872,14 @@ export class PaymentsService {
         user: { id: userId },
         installment: Not(IsNull()),
       },
-      relations: ['course', 'course.category', 'installment', 'invoice'],
+      relations: [
+        'course',
+        'course.category',
+        'installment',
+        'invoice',
+        'installmentPayments',
+      ],
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -686,7 +944,13 @@ export class PaymentsService {
         user: { id: userId },
         installment: Not(IsNull()),
       },
-      relations: ['course', 'course.category', 'installment', 'invoice'],
+      relations: [
+        'course',
+        'course.category',
+        'installment',
+        'invoice',
+        'installmentPayments',
+      ],
       order: { createdAt: 'DESC' },
     });
 
@@ -700,12 +964,23 @@ export class PaymentsService {
 
     return parents.map((p) => {
       const schedule = p.installment?.price || [];
-      const dpAmount = p.installment?.downPayment || 0;
+      const snapshot = p.pricing_snapshot as {
+        downPayment?: { amount?: number };
+      } | null;
+      const dpAmount =
+        snapshot?.downPayment?.amount !== undefined
+          ? Number(snapshot.downPayment.amount)
+          : Number(p.installment?.downPayment || 0);
       const sumInstallments = schedule.reduce((a, b) => a + (b || 0), 0);
-      const totalProgramFee =
-        (p.installment?.downPayment || 0) + sumInstallments;
+      const totalProgramFee = dpAmount + sumInstallments;
 
       const rows = installmentRows.filter((r) => r.payment?.id === p.id);
+      const monthlyAmounts = schedule.map((amount, index) => {
+        const row = rows.find((item) => item.month === index + 1);
+        return row?.amount !== null && row?.amount !== undefined
+          ? Number(row.amount)
+          : Number(amount || 0);
+      });
       const paidSet = new Set<number>(
         rows.filter((r) => r.status === 'approved').map((r) => r.month),
       );
@@ -713,7 +988,11 @@ export class PaymentsService {
       let hasPreviousUnpaid = false;
       const monthlyStatus = schedule.map((amount, i) => {
         const month = i + 1;
-        const dpDate = p.dpPaidAt ? new Date(p.dpPaidAt) : new Date();
+        const dpDate = p.dpPaidAt
+          ? new Date(p.dpPaidAt)
+          : p.createdAt
+            ? new Date(p.createdAt)
+            : new Date();
         dpDate.setHours(0, 0, 0, 0);
         const storedDate = p.installment?.dueDates?.[month - 1];
         const dueDate = storedDate
@@ -721,30 +1000,61 @@ export class PaymentsService {
           : dateHelpers.getMonthlyDueDate(dpDate, month, dpDate.getDate());
 
         const tx = rows.find((r) => r.month === month);
+        const hasSubmittedPayment = Boolean(
+          tx && (tx.file || tx.xendit_invoice_id || tx.xendit_invoice_url),
+        );
+        const isMonthPaid = Boolean(
+          paidSet.has(month) || (tx && tx.status === 'approved'),
+        );
+        const isMonthUnderReview = Boolean(
+          hasSubmittedPayment && tx && tx.status === 'process',
+        );
+        const isMonthRejected = Boolean(tx && tx.status === 'rejected');
 
-        let status: 'paid' | 'process' | 'due' | 'upcoming' = 'upcoming';
-        if (paidSet.has(month)) {
+        let status: 'paid' | 'process' | 'due' | 'upcoming' | 'rejected' =
+          'upcoming';
+        if (isMonthPaid) {
           status = 'paid';
-        } else if (tx && tx.status === 'process') {
+        } else if (isMonthUnderReview) {
           status = 'process';
-        } else if (today.getTime() >= dueDate.getTime()) {
+        } else if (isMonthRejected) {
+          status = 'rejected';
+        } else if (!hasPreviousUnpaid && today.getTime() >= dueDate.getTime()) {
           status = 'due';
+        } else {
+          status = 'upcoming';
         }
 
-        const isDpApproved = p.process === 'approved';
+        const isDpApproved =
+          p.process === 'approved' ||
+          (p as unknown as { status?: unknown }).status === 'paid' ||
+          (p.process as string) === 'paid';
         const isPaid = status === 'paid';
-        const canPay = isDpApproved && !isPaid && !hasPreviousUnpaid;
+        const canPay =
+          isDpApproved && !isPaid && !isMonthUnderReview && !hasPreviousUnpaid;
         if (!isPaid) {
           hasPreviousUnpaid = true;
         }
 
         return {
           month,
-          amount,
+          amount: monthlyAmounts[i],
+          originalAmount:
+            rows.find((row) => row.month === month)?.original_amount ??
+            Number(amount || 0),
+          discountAmount:
+            rows.find((row) => row.month === month)?.discount_amount ?? 0,
           dueDate,
           status,
           txId: tx?.id || null,
-          process: tx?.status || null,
+          process: isMonthUnderReview
+            ? 'process'
+            : isMonthRejected
+              ? 'rejected'
+              : isMonthPaid
+                ? 'approved'
+                : null,
+          file: tx?.file || null,
           canPay,
         };
       });
@@ -752,8 +1062,12 @@ export class PaymentsService {
       const paidMonths = Array.from(paidSet);
       const totalPaid = paidSet.size
         ? dpAmount +
-          paidMonths.reduce((acc, m) => acc + (schedule[m - 1] || 0), 0)
+          paidMonths.reduce((acc, m) => acc + (monthlyAmounts[m - 1] || 0), 0)
         : dpAmount;
+      const storedTotal =
+        rows.length > 0
+          ? dpAmount + monthlyAmounts.reduce((sum, amount) => sum + amount, 0)
+          : totalProgramFee;
 
       return {
         id: p.id,
@@ -772,7 +1086,7 @@ export class PaymentsService {
               month: p.installment.month,
               downPayment: p.installment.downPayment,
               price: p.installment.price,
-              dueDates: p.installment.dueDates,
+              dueDates: dateHelpers.toDateOnlyArray(p.installment.dueDates),
             }
           : null,
         process: p.process,
@@ -780,13 +1094,11 @@ export class PaymentsService {
         dpPaidAt: p.dpPaidAt,
         planMonth: p.installment?.month || 3,
         downPayment: dpAmount,
-        totalProgramFee,
+        totalProgramFee: storedTotal,
         paidSoFar: totalPaid,
-        remainingBalance: totalProgramFee - totalPaid,
+        remainingBalance: storedTotal - totalPaid,
         progressPercentage:
-          totalProgramFee > 0
-            ? Math.round((totalPaid / totalProgramFee) * 100)
-            : 0,
+          storedTotal > 0 ? Math.round((totalPaid / storedTotal) * 100) : 0,
         monthly: monthlyStatus,
       };
     });
@@ -796,7 +1108,7 @@ export class PaymentsService {
     console.log('🔵 [PaymentsService] findRegistration for userId:', userId);
     const result = await this.registrationRepository.find({
       where: { user: { id: userId } },
-      relations: ['course', 'course.category'],
+      relations: ['course', 'course.category', 'payment', 'payment.invoice'],
     });
     console.log('🔵 [PaymentsService] findRegistration result:', result);
     return result;
@@ -806,6 +1118,38 @@ export class PaymentsService {
     return await this.paymentRepository.find({
       where: { installment: IsNull() },
       relations: ['user', 'course', 'course.category', 'invoice'],
+      select: {
+        id: true,
+        file: true,
+        no: true,
+        referalSource: true,
+        process: true,
+        current_status: true,
+        user_fullname: true,
+        user_email: true,
+        user_no: true,
+        dpPaidAt: true,
+        createdAt: true,
+        user: {
+          id: true,
+          username: true,
+          email: true,
+        },
+        course: {
+          id: true,
+          name: true,
+          category: {
+            id: true,
+            name: true,
+          },
+        },
+        invoice: {
+          id: true,
+          xendit_invoice_id: true,
+          xendit_invoice_url: true,
+        },
+      },
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -818,13 +1162,65 @@ export class PaymentsService {
         'course.category',
         'installment',
         'invoice',
+        'installmentPayments',
       ],
+      select: {
+        id: true,
+        file: true,
+        no: true,
+        referalSource: true,
+        process: true,
+        current_status: true,
+        user_fullname: true,
+        user_email: true,
+        user_no: true,
+        dpPaidAt: true,
+        createdAt: true,
+        user: {
+          id: true,
+          username: true,
+          email: true,
+        },
+        course: {
+          id: true,
+          name: true,
+          category: {
+            id: true,
+            name: true,
+          },
+        },
+        installment: {
+          id: true,
+          month: true,
+          price: true,
+          dueDates: true,
+        },
+        installmentPayments: {
+          id: true,
+          month: true,
+          status: true,
+          file: true,
+          xendit_invoice_id: true,
+        },
+        invoice: {
+          id: true,
+          xendit_invoice_id: true,
+          xendit_invoice_url: true,
+        },
+      },
+      order: { createdAt: 'DESC' },
     });
   }
 
   async findAllRegistrations() {
     return await this.registrationRepository.find({
-      relations: ['user', 'course', 'course.category'],
+      relations: [
+        'user',
+        'course',
+        'course.category',
+        'payment',
+        'payment.invoice',
+      ],
     });
   }
 
@@ -895,7 +1291,12 @@ export class PaymentsService {
         throw new Error('Installment plan is not available for this course');
       }
       selectedInstallment = course.installments[0];
-      basePrice = selectedInstallment.downPayment;
+      basePrice =
+        Number(selectedInstallment.downPayment) +
+        (selectedInstallment.price || []).reduce(
+          (sum, value) => sum + (Number(value) || 0),
+          0,
+        );
 
       // Cegah duplikasi: installment hanya boleh terhubung ke satu payment (OneToOne)
       const existingPayment = await this.paymentRepository.findOne({
@@ -941,6 +1342,9 @@ export class PaymentsService {
       finalTotal = validationResult.finalTotal;
     }
 
+    // Pengecekan kapasitas / kuota program sebelum membuat invoice / payment
+    await this.checkQuota(courseId, course);
+
     const payment = this.paymentRepository.create({
       user: user,
       course: course,
@@ -956,22 +1360,53 @@ export class PaymentsService {
         undefined,
       referalSource: formData?.referal_source || undefined,
       attend_program: formData?.attend_program ? true : false,
+      voucher_code: promoCode || null,
+      voucher_discount_total: promoCode ? Number(discountAmount) : null,
     });
 
     await this.paymentRepository.save(payment);
 
-    if (finalTotal <= 0) {
+    let installmentPricing: InstallmentPricing | null = null;
+    if (paymentMethod === 'Installment' && selectedInstallment) {
+      installmentPricing = this.calculateInstallmentPricing(
+        selectedInstallment,
+        discountAmount,
+      );
+      payment.voucher_discount_total = promoCode
+        ? installmentPricing.totalDiscount
+        : null;
+      payment.pricing_snapshot = {
+        totalOriginal: installmentPricing.totalOriginal,
+        totalDiscount: installmentPricing.totalDiscount,
+        downPayment: installmentPricing.downPayment,
+        monthly: installmentPricing.monthly,
+      };
+      payment.process =
+        installmentPricing.downPayment.amount <= 0 ? 'approved' : 'process';
+      await this.paymentRepository.save(payment);
+      await this.createInstallmentSnapshots(payment, installmentPricing);
+    }
+
+    if (
+      paymentMethod !== 'Installment'
+        ? finalTotal <= 0
+        : (installmentPricing?.downPayment.amount || 0) <= 0
+    ) {
       await this.addUserToCourse(userId, courseId);
     }
 
     return this.invoiceService.createInvoiceForPayment(
       payment,
-      finalTotal,
+      installmentPricing?.downPayment.amount ?? finalTotal,
       user.email,
       course.name,
       paymentMethod,
-      basePrice,
-      discountAmount,
+      paymentMethod === 'Installment'
+        ? installmentPricing?.downPayment.originalAmount || 0
+        : basePrice,
+      paymentMethod === 'Installment'
+        ? installmentPricing?.downPayment.discountAmount || 0
+        : discountAmount,
       user,
       course,
     );
@@ -981,6 +1416,14 @@ export class PaymentsService {
   async getPaymentByNo(no: string) {
     return this.paymentRepository.findOne({
       where: { no },
+      relations: ['course', 'user', 'invoice', 'installment'],
+    });
+  }
+
+  // Get payment by ID
+  async getPaymentById(id: string): Promise<Payment | null> {
+    return this.paymentRepository.findOne({
+      where: { id },
       relations: ['course', 'user', 'invoice', 'installment'],
     });
   }
@@ -1010,7 +1453,8 @@ export class PaymentsService {
       throw new Error('Pembayaran DP belum lunas/approved');
     }
     if (!parent.dpPaidAt) {
-      throw new Error('Pembayaran DP belum tercatat');
+      parent.dpPaidAt = parent.createdAt || new Date();
+      await this.paymentRepository.save(parent);
     }
     if (parent.user && parent.user.id !== userId) {
       throw new Error('Payment tidak berhak diakses user ini');
@@ -1044,8 +1488,8 @@ export class PaymentsService {
       }
     }
 
-    const amount = schedule[month - 1];
-    if (!amount && amount !== 0) {
+    const scheduleAmount = schedule[month - 1];
+    if (scheduleAmount === undefined || scheduleAmount === null) {
       throw new Error('Nominal cicilan tidak ditemukan');
     }
 
@@ -1086,7 +1530,21 @@ export class PaymentsService {
 
       // Sudah EXPIRED/FAILED atau belum pernah dibuat -> regenerasi invoice
       // baru agar user tetap bisa membayar.
-      row.amount = amount;
+      if (row.original_amount === null || row.original_amount === undefined) {
+        row.original_amount = Number(scheduleAmount);
+      }
+      if (row.discount_amount === null || row.discount_amount === undefined) {
+        row.discount_amount = 0;
+      }
+      const amountToPay =
+        row.amount !== null && row.amount !== undefined
+          ? Number(row.amount)
+          : Math.max(
+              0,
+              Number(row.original_amount || scheduleAmount) -
+                Number(row.discount_amount || 0),
+            );
+      row.amount = amountToPay;
       row.no = `INV-M${month}-${Date.now()}-${Math.random()
         .toString(36)
         .slice(2, 8)}`;
@@ -1094,18 +1552,26 @@ export class PaymentsService {
       row.xendit_invoice_url = '';
       row.status = 'process';
     } else {
+      const originalAmount = Number(scheduleAmount);
       row = await this.installmentPaymentService.create({
         payment: parent,
         month,
-        amount,
+        original_amount: originalAmount,
+        discount_amount: 0,
+        amount: originalAmount,
         status: 'process',
         no: `INV-M${month}-${Date.now()}`,
       });
     }
 
+    const finalAmount =
+      row.amount !== null && row.amount !== undefined
+        ? Number(row.amount)
+        : Number(scheduleAmount);
+
     return this.invoiceService.createInvoiceForInstallment(
       row,
-      amount,
+      finalAmount,
       parent.user?.email || 'guest@example.com',
       course?.name || 'Program',
     );
@@ -1163,6 +1629,16 @@ export class PaymentsService {
     parentPaymentId: string,
     month: number,
     file: string,
+    applicant?: Partial<
+      Pick<
+        Payment,
+        | 'referalSource'
+        | 'current_status'
+        | 'user_fullname'
+        | 'user_email'
+        | 'user_no'
+      >
+    >,
   ) {
     if (!file) {
       throw new Error('Bukti pembayaran wajib diunggah');
@@ -1183,6 +1659,20 @@ export class PaymentsService {
     }
     if (parent.user && parent.user.id !== userId) {
       throw new Error('Payment tidak berhak diakses user ini');
+    }
+
+    if (applicant) {
+      let changed = false;
+      for (const [key, value] of Object.entries(applicant)) {
+        const target = parent as unknown as Record<string, unknown>;
+        if (value && !target[key]) {
+          target[key] = value;
+          changed = true;
+        }
+      }
+      if (changed) {
+        await this.paymentRepository.save(parent);
+      }
     }
 
     const schedule = parent.installment.price || [];

@@ -33,20 +33,28 @@
       lang: '{{lang}}',
 
       async init() {
-        this.allKategori = this.allKategori.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-        this.allJenisKelas = this.allJenisKelas.sort((a, b) =>
-          a.nameClassesType.localeCompare(b.nameClassesType)
-        );
+        if (Array.isArray(this.allKategori)) {
+          this.allKategori.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+        }
+        if (Array.isArray(this.allJenisKelas)) {
+          this.allJenisKelas.sort((a, b) => {
+            const nameA = this.getByLang(a.nameClassesType, this.lang) || a.nameClassesType || '';
+            const nameB = this.getByLang(b.nameClassesType, this.lang) || b.nameClassesType || '';
+            return String(nameA).localeCompare(String(nameB));
+          });
+        }
         this.filteredKategoriList = [...this.allKategori];
         this.filteredJenisKelasList = [...this.allJenisKelas];
         await this.fetchPortfolio();
       },
 
       getByLang(obj, lang) {
-        if (!obj || typeof obj !== 'object') return '';
-        return obj[lang] || obj.id || obj.en || '';
+        if (!obj) return '';
+        if (typeof obj === 'string') return obj;
+        if (typeof obj === 'object') {
+          return obj[lang] || obj.id || obj.en || Object.values(obj)[0] || '';
+        }
+        return '';
       },
 
       filterKategori() {
@@ -105,8 +113,8 @@
         this.selectedJenisKelasId = jenisKelasId;
         this.currentPage = 1;
         if (jenisKelasId) {
-          const jenis = this.allJenisKelas.find(j => j.id == jenisKelasId);
-          this.selectedJenisKelas = jenis ? jenis.nameClassesType : '';
+          const jenis = this.allJenisKelas.find(j => String(j.id) === String(jenisKelasId));
+          this.selectedJenisKelas = jenis ? (this.getByLang(jenis.nameClassesType, this.lang) || jenis.nameClassesType) : '';
         } else {
           this.selectedJenisKelas = '';
         }

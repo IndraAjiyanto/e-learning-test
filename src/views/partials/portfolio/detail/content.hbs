@@ -2,15 +2,15 @@
   Komponen: Detail Portfolio Main Content (Description & Overview)
   Lokasi: src/views/partials/portfolio/detail/content.hbs
 --}}
-<div class="space-y-6">
+<div class="space-y-6 min-w-0 max-w-full">
   <!-- Project Description Card -->
-  <div class="bg-[#FFFFFF] rounded-2xl p-6 sm:p-8 border border-[#D9D9D9]">
+  <div class="bg-[#FFFFFF] rounded-2xl p-6 sm:p-8 border border-[#D9D9D9] min-w-0 max-w-full overflow-hidden">
     <h2 class="font-inter font-bold text-[18px] leading-[24px] text-[#003060] mb-3 pb-3 border-b border-[#D9D9D9]">
       {{t "test.detailPortfolio.projectDescription"}}
     </h2>
-    <div class="font-inter font-normal text-[16px] leading-[26px] text-[#475569]">
+    <div class="font-inter font-normal text-[16px] leading-[26px] text-[#475569] min-w-0 max-w-full break-words [overflow-wrap:anywhere] [word-break:break-word]">
       {{#if portfolio.description}}
-        <p>{{portfolio.description}}</p>
+        <p class="whitespace-pre-line break-words [overflow-wrap:anywhere] [word-break:break-word]">{{portfolio.description}}</p>
       {{else}}
         <p class="text-gray-400 italic">{{default (t 'test.detailPortfolio.noDescription') 'No description provided.'}}</p>
       {{/if}}
@@ -18,16 +18,15 @@
   </div>
 
   <!-- Project Overview Card -->
-  <div class="bg-[#FFFFFF] rounded-2xl p-6 sm:p-8 border border-[#D9D9D9]">
+  <div class="bg-[#FFFFFF] rounded-2xl p-6 sm:p-8 border border-[#D9D9D9] min-w-0 max-w-full overflow-hidden">
     <h2 class="font-inter font-bold text-[18px] leading-[24px] text-[#003060] mb-3 pb-3 border-b border-[#D9D9D9]">
       {{t "test.detailPortfolio.projectOverview"}}
     </h2>
-    <div class="font-inter font-normal text-[16px] leading-[26px] text-[#475569] prose prose-sm max-w-none">
-      {{#if portfolio.contentHtml}}
-        {{{portfolio.contentHtml}}}
-      {{else}}
-        <p class="text-gray-400 italic">{{default (t 'test.detailPortfolio.noOverview') 'No detailed overview provided.'}}</p>
-      {{/if}}
+    <div class="portfolio-overview-container font-inter font-normal text-[16px] leading-[26px] text-[#475569] min-w-0 max-w-full break-words [overflow-wrap:anywhere] [word-break:break-word] overflow-x-hidden">
+      {{> components/ui/content-preview/index
+        content=(default portfolio.contentHtml portfolio.content)
+        emptyMessage=(default (t 'test.detailPortfolio.noOverview') 'No detailed overview provided.')
+      }}
     </div>
   </div>
 </div>

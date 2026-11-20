@@ -79,9 +79,9 @@
               </span>
             </button>
 
-            {{#unless isCompleted}}
             {{!-- Delete button --}}
-            <form action='/syllabus/{{syllabus.id}}/{{courseId}}?_method=DELETE' method='POST' class='m-0 p-0'>
+            {{#unless isCompleted}}
+              <form action='/syllabus/{{syllabus.id}}/{{courseId}}?_method=DELETE' method='POST' class='m-0 p-0'>
               <button
                 type='button'
                 onclick='openDeleteModal(this)'
@@ -90,7 +90,8 @@
                   Delete
                 </span>
               </button>
-            </form>
+              </form>
+            {{/unless}}
 
             {{!-- Edit Syllabus button --}}
             <a
@@ -100,7 +101,6 @@
                 Edit Syllabus
               </span>
             </a>
-            {{/unless}}
           </div>
 
         </div>
@@ -108,7 +108,7 @@
         {{#if isCompleted}}
           {{> components/ui/admin/locked-notice/index
             title='Syllabus is locked'
-            message='This syllabus cannot be edited or deleted because it has already been completed by a participant.' }}
+            message='This syllabus can be edited, but it cannot be deleted because it has already been completed by a participant.' }}
         {{/if}}
       </div>
 
@@ -181,6 +181,25 @@
               </div>
             </div>
 
+            {{#unless isCompleted}}
+            {{!-- Delete Quiz button --}}
+            <form action='/syllabus/quiz/{{syllabus.quiz.[0].id}}?_method=DELETE' method='POST' class='box-border w-[44px] shrink-0 h-[44px] m-0 p-0'>
+              <button
+                type='button'
+                onclick="openDeleteModal(this, 'Delete Quiz?', 'Are you sure you want to delete this quiz? All associated questions and scores will be removed permanently.')"
+                class='box-border w-[44px] h-[44px] flex flex-row gap-0 justify-center items-center bg-[#FFFFFF] rounded-[8px] [outline:1px_solid_#D9D9D9] [outline-offset:-0.5px] hover:bg-[#FEF2F2] transition-colors'
+                title='Delete Quiz' aria-label='Delete Quiz'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#C80606' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[16px] h-[16px]'>
+                  <path d='M3 6h18'/>
+                  <path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/>
+                  <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/>
+                  <line x1='10' x2='10' y1='11' y2='17'/>
+                  <line x1='14' x2='14' y1='11' y2='17'/>
+                </svg>
+              </button>
+            </form>
+            {{/unless}}
+
             {{!-- _Button base: Detail (81x44 bg-white border-brand text-brand) --}}
             <a
               href='/syllabus/quiz/detail/{{syllabus.quiz.[0].id}}'
@@ -240,7 +259,7 @@
 
         {{!-- Modal Body --}}
         <div class='box-border w-full p-[24px] overflow-y-auto flex-1 bg-[#FFFFFF]'>
-          {{> components/ui/content-preview/index content=syllabus.content emptyMessage="Belum ada konten untuk silabus ini."}}
+          {{> components/ui/content-preview/index content=syllabus.content emptyMessage="No content for this syllabus yet."}}
         </div>
 
         {{!-- Modal Footer --}}
@@ -267,3 +286,5 @@
 
 {{!-- Toast sukses --}}
 {{> components/ui/admin/toast/success/index toast=toast }}
+
+{{> components/ui/admin/modal/confirm_action/index}}

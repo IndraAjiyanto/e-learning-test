@@ -9,17 +9,22 @@
         {{#if this.isUnlocked}}
           <a
             href="/syllabus/learn/{{this.id}}"
-            class="box-border flex flex-row justify-between items-center p-6 w-full bg-white border-l-[6px] border border-[#F59E0B] rounded-[12px] shadow-[0px_4px_12px_rgba(0,0,0,0.02)] transition-all hover:shadow-md cursor-pointer text-left"
+            class="box-border flex flex-row justify-between items-center p-6 w-full bg-white border-l-[6px] border {{#if this.isPassed}}border-[#22C55E]{{else}}border-[#F59E0B]{{/if}} rounded-[12px] shadow-[0px_4px_12px_rgba(0,0,0,0.02)] transition-all hover:shadow-md cursor-pointer text-left"
           >
             <div class="flex flex-col items-start gap-2 flex-1">
-              <div class="flex flex-row items-center gap-2">
-                <i class="fa-solid fa-book-open text-[#F59E0B] text-base"></i>
+              <div class="flex flex-row items-center gap-2 flex-wrap">
+                <i class="fa-solid {{#if this.isPassed}}fa-circle-check text-[#16A34A]{{else}}fa-book-open text-[#F59E0B]{{/if}} text-base"></i>
                 <span class="font-bold text-[15px] leading-[18px] text-[#003060]">
                   {{this.title}}
                 </span>
+                {{#if this.isPassed}}
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#EAF7EE] text-[#15803D]">
+                    {{t 'test.startLearning.completed'}}
+                  </span>
+                {{/if}}
               </div>
               <div class="flex flex-col items-start pl-6 gap-1">
-                <span class="font-semibold text-[12px] leading-[15px] text-[#718096]">
+                <span class="font-semibold text-[12px] leading-[15px] {{#if this.isPassed}}text-[#15803D]{{else}}text-[#718096]{{/if}}">
                   {{default (t 'test.nonBootcamp.scorePrefix') 'Skor:'}} {{#if this.hasAttempt}}{{this.bestScore}}{{else}}-{{/if}}
                 </span>
                 <span class="font-normal text-[11px] leading-[13px] text-[#718096]">
@@ -28,7 +33,7 @@
               </div>
             </div>
             <div class="flex items-center justify-center w-5 h-5 flex-none">
-              <i class="fa-solid fa-chevron-right text-[#718096] text-sm"></i>
+              <i class="fa-solid {{#if this.isPassed}}fa-check text-[#16A34A]{{else}}fa-chevron-right text-[#718096]{{/if}} text-sm"></i>
             </div>
           </a>
         {{else}}
@@ -55,8 +60,34 @@
         {{/if}}
       {{/each}}
     {{else}}
-      <div class="p-8 text-center text-[#718096] text-sm">
-        {{default (t 'test.nonBootcamp.empty') 'Belum ada silabus yang tersedia untuk program ini.'}}
+      {{!-- Empty State: Belum Ada Silabus (Non-Bootcamp) --}}
+      <div class="w-full flex flex-col items-center justify-center p-8 sm:p-12 md:p-14 rounded-[16px] border border-dashed border-[#CBD5E1] bg-[#F8FAFC] text-center my-2">
+        <div class="relative mb-5 flex size-20 sm:size-22 items-center justify-center rounded-2xl bg-white shadow-[0px_8px_24px_rgba(0,48,96,0.08)] border border-[#E2E8F0]">
+          <span class="flex size-14 items-center justify-center rounded-xl bg-[#FEF3C7] text-[#D97706]">
+            <i class="fa-solid fa-book-open text-2xl sm:text-3xl"></i>
+          </span>
+          <span class="absolute -top-1.5 -right-1.5 flex size-6 items-center justify-center rounded-full bg-[#003060] text-white text-[10px] shadow-sm">
+            <i class="fa-solid fa-clock"></i>
+          </span>
+        </div>
+
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] text-xs font-semibold uppercase tracking-wider mb-3">
+          <span class="size-1.5 rounded-full bg-[#F59E0B] animate-pulse"></span>
+          {{default (t 'test.nonBootcamp.emptyBadge') 'Sedang Disiapkan'}}
+        </span>
+
+        <h3 class="font-inter font-bold text-lg sm:text-xl text-[#0B1F3B] mb-2 max-w-md">
+          {{default (t 'test.nonBootcamp.emptyTitle') 'Silabus Belum Tersedia'}}
+        </h3>
+
+        <p class="font-inter font-normal text-sm sm:text-base leading-relaxed text-[#64748B] max-w-lg mb-4">
+          {{default (t 'test.nonBootcamp.emptyDesc') 'Daftar silabus pembelajaran untuk program ini sedang dalam tahap penyusunan oleh instruktur. Silakan periksa kembali dalam waktu dekat.'}}
+        </p>
+
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-[#E2E8F0] shadow-2xs text-xs sm:text-sm text-[#475569]">
+          <i class="fa-solid fa-circle-info text-[#003060]"></i>
+          <span>Hubungi admin atau instruktur jika memerlukan informasi lebih lanjut mengenai kurikulum</span>
+        </div>
       </div>
     {{/if}}
   </div>

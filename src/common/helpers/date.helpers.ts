@@ -23,7 +23,7 @@ export const dateHelpers = {
           locale = ja;
           break;
         default:
-          locale = id;
+          locale = enUS;
       }
       return format(new Date(date), 'EEEE, d MMMM yyyy', { locale });
     }
@@ -44,15 +44,15 @@ export const dateHelpers = {
     if (isNaN(d.getTime())) return '-';
     let locale: Locale;
     switch (lang) {
-      case 'en':
-        locale = enUS;
+      case 'id':
+        locale = id;
         break;
       case 'ja':
         locale = ja;
         break;
-      case 'id':
+      case 'en':
       default:
-        locale = id;
+        locale = enUS;
     }
     return format(d, 'd MMMM yyyy', { locale });
   },
@@ -69,15 +69,15 @@ export const dateHelpers = {
     if (isNaN(d.getTime())) return '-';
     let locale: Locale;
     switch (lang) {
-      case 'en':
-        locale = enUS;
+      case 'id':
+        locale = id;
         break;
       case 'ja':
         locale = ja;
         break;
-      case 'id':
+      case 'en':
       default:
-        locale = id;
+        locale = enUS;
     }
     return format(d, 'd MMM yyyy', { locale });
   },

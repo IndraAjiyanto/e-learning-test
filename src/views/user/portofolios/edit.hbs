@@ -9,15 +9,15 @@
   back=false
   trail=(ternary isFromCourse
     (array
-      (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
-      (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning')
-      (obj 'label' (t 'test.startLearning.portfolio') 'href' (concat '/users/profile?tab=course-portfolio&courseId=' courseId))
-      (obj 'label' (t 'test.myPortfolio.editPortfolio.editPortfolio'))
+      (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard' 'icon' 'ph ph-house')
+      (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning' 'icon' 'ph ph-book-open')
+      (obj 'label' (t 'test.startLearning.portfolio') 'href' (concat '/users/profile?tab=course-portfolio&courseId=' courseId) 'icon' 'ph ph-briefcase')
+      (obj 'label' (t 'test.myPortfolio.editPortfolio.editPortfolio') 'icon' 'ph ph-file-text')
     )
     (array
-      (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
-      (obj 'label' (t 'test.userSidebar.myPortfolio') 'href' '/users/profile?tab=portfolio')
-      (obj 'label' (t 'test.myPortfolio.editPortfolio.editPortfolio'))
+      (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard' 'icon' 'ph ph-house')
+      (obj 'label' (t 'test.userSidebar.myPortfolio') 'href' '/users/profile?tab=portfolio' 'icon' 'ph ph-briefcase')
+      (obj 'label' (t 'test.myPortfolio.editPortfolio.editPortfolio') 'icon' 'ph ph-file-text')
     )
   )
 }}
@@ -213,6 +213,12 @@
 
           <!-- Action Buttons -->
           <div class="flex items-center gap-4 pt-6 border-t border-[#E5E5E5]">
+            <a
+              href="{{#if isFromCourse}}/users/profile?tab=course-portfolio&courseId={{courseId}}{{else}}/users/profile?tab=portfolio{{/if}}"
+              class="inline-flex h-[44px] flex-1 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white font-inter text-base font-semibold text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]"
+            >
+              {{t "test.myPortfolio.editPortfolio.cancel"}}
+            </a>
             <button
               type="submit"
               :disabled="loading || !canSubmit()"
@@ -221,12 +227,6 @@
               <span x-show="loading" class="loading loading-spinner loading-sm mr-2"></span>
               <span>{{t "test.myPortfolio.editPortfolio.updatePortfolio"}}</span>
             </button>
-            <a
-              href="{{#if isFromCourse}}/users/profile?tab=course-portfolio&courseId={{courseId}}{{else}}/users/profile?tab=portfolio{{/if}}"
-              class="inline-flex h-[44px] flex-1 cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[#D4D4D4] bg-white font-inter text-base font-semibold text-[#003060] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[#F5F5F5]"
-            >
-              {{t "test.myPortfolio.editPortfolio.cancel"}}
-            </a>
           </div>
         </div>
       </form>

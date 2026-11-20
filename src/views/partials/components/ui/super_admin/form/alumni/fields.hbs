@@ -25,6 +25,8 @@
   Id field dibentuk `{namaField}-{kodeBahasa}` (mis. `name-id`) dan state tab
   `{namaField}Lang` — keduanya dipakai form/alumni/form untuk membuka tab dan
   memfokuskan field pertama yang error.
+
+  Foto di-crop 1:1 lebih dulu lewat form/crop_modal sebelum divalidasi.
 --}}
 {{#*inline 'alumniLangPanel'}}
   <div x-show="{{field}}Lang === '{{code}}'" x-cloak>
@@ -78,10 +80,11 @@
     id='profile'
     name='profile'
     label='Upload Image'
-    meta='JPG / PNG · 300×300 – 2000×2000 · Max 5 MB'
+    meta='JPG / PNG · Max 5 MB'
     previewAlt='Profile photo preview'
     boxClass='h-[200px]'
     required=true
+    crop=true
   }}
 
   <div class='flex flex-col gap-3'>

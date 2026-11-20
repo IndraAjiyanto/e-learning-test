@@ -31,8 +31,8 @@ export class DashboardController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    const currentPage = parseInt(page || '1', 10);
-    const itemsPerPage = parseInt(limit || '6', 10);
+    const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
+    const itemsPerPage = Math.min(50, Math.max(1, parseInt(limit || '6', 10) || 6));
 
     // Daftar putih, bukan `status === 'true'`: query string selalu berupa teks,
     // dan 'false' yang lolos ke where akan terbaca sebagai selesai. Nilai lain
@@ -70,70 +70,71 @@ export class DashboardController {
       } else if (req.user.role === 'admin') {
         res.redirect('/program');
       } else if (req.user.role === 'user') {
-        const special_program =
-          await this.dashboardService.findSpecialProgram();
-        const faq = await this.dashboardService.findFAQ();
-        const courseType = await this.dashboardService.findCourseTypes();
-        const category = await this.dashboardService.findCategories();
-        const alumni = await this.dashboardService.findAllAlumni();
-        const collaborations = await this.dashboardService.findCollaborations();
-        const categoryPartner =
-          await this.dashboardService.findCategoryPartners();
-        const benefits = await this.dashboardService.findAllBenefits();
-        const about = await this.dashboardService.findAbout();
-        const social = await this.dashboardService.findSocial();
-        const gallery = await this.galleryService.findAll();
-        const programs = await this.dashboardService.findAllCategories();
-        const partners = await this.dashboardService.findAllPartners();
-        res.render('dashboard', {
-          special_program,
-          partners,
-          user: req.user,
-          gallery,
-          programs,
-          // kelas,
+        const [
           faq,
-          courseType,
           category,
           alumni,
-          collaborations,
           categoryPartner,
           benefits,
           about,
-          social,
+          gallery,
+          partners,
+        ] = await Promise.all([
+          this.dashboardService.findFAQ(),
+          this.dashboardService.findCategories(),
+          this.dashboardService.findAllAlumni(),
+          this.dashboardService.findCategoryPartners(),
+          this.dashboardService.findAllBenefits(),
+          this.dashboardService.findAbout(),
+          this.galleryService.findAll(),
+          this.dashboardService.findAllPartners(),
+        ]);
+
+        res.render('dashboard', {
+          partners,
+          user: req.user,
+          gallery,
+          programs: category,
+          faq,
+          category,
+          alumni,
+          categoryPartner,
+          benefits,
+          about,
         });
       }
     } else {
-      const special_program = await this.dashboardService.findSpecialProgram();
-      const faq = await this.dashboardService.findFAQ();
-      const courseType = await this.dashboardService.findCourseTypes();
-      const category = await this.dashboardService.findCategories();
-      const alumni = await this.dashboardService.findAllAlumni();
-      // const collaborations = await this.dashboardService.findCollaborations();
-      const categoryPartner =
-        await this.dashboardService.findCategoryPartners();
-      const benefits = await this.dashboardService.findAllBenefits();
-      const about = await this.dashboardService.findAbout();
-      const social = await this.dashboardService.findSocial();
-      const gallery = await this.galleryService.findAll();
-      const programs = await this.dashboardService.findAllCategories();
-      const partners = await this.dashboardService.findAllPartners();
-      res.render('dashboard', {
-        special_program,
-        partners,
-        user: req.user,
-        gallery,
-        programs,
-        // kelas,
+      const [
         faq,
-        courseType,
         category,
         alumni,
-        // collaborations,
         categoryPartner,
         benefits,
         about,
-        social,
+        gallery,
+        partners,
+      ] = await Promise.all([
+        this.dashboardService.findFAQ(),
+        this.dashboardService.findCategories(),
+        this.dashboardService.findAllAlumni(),
+        this.dashboardService.findCategoryPartners(),
+        this.dashboardService.findAllBenefits(),
+        this.dashboardService.findAbout(),
+        this.galleryService.findAll(),
+        this.dashboardService.findAllPartners(),
+      ]);
+
+      res.render('dashboard', {
+        partners,
+        user: req.user,
+        gallery,
+        programs: category,
+        faq,
+        category,
+        alumni,
+        categoryPartner,
+        benefits,
+        about,
       });
     }
   }
@@ -149,8 +150,8 @@ export class DashboardController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    const currentPage = parseInt(page || '1', 10);
-    const itemsPerPage = parseInt(limit || '6', 10);
+    const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
+    const itemsPerPage = Math.min(50, Math.max(1, parseInt(limit || '6', 10) || 6));
 
     const portfolioList = await this.dashboardService.findPortfolio({
       userId: userId || null,
@@ -203,8 +204,8 @@ export class DashboardController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    const currentPage = parseInt(page || '1', 10);
-    const itemsPerPage = parseInt(limit || '6', 10);
+    const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
+    const itemsPerPage = Math.min(50, Math.max(1, parseInt(limit || '6', 10) || 6));
 
     const result = await this.dashboardService.findAlumni({
       courseId: courseId || null,

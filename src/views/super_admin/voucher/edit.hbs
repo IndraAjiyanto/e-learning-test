@@ -40,7 +40,7 @@
           courses: {{json courses}},
           users: {{json users}},
           selectedCourseIds: {{json voucher.courses}},
-          selectedUserIds: {{json voucher.allowed_user_ids}},
+          selectedUserIds: {{json voucher.allowed_users}},
           excludeId: {{json voucher.id}}
         }), ...formDirtyGate() }'
         x-init='$nextTick(() => captureBaseline())'

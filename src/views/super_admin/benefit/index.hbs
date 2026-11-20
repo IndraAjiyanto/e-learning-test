@@ -19,7 +19,7 @@
         }}
         <div class='flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold {{#if isMaxBenefit}}bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]{{else}}bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]{{/if}}'>
           <div class='w-2 h-2 rounded-full {{#if isMaxBenefit}}bg-[#D97706]{{else}}bg-[#10B981]{{/if}}'></div>
-          <span>{{benefitCount}}/5 Benefit Terdaftar</span>
+          <span>{{benefitCount}}/5 Registered Benefits</span>
         </div>
       </div>
 
@@ -44,7 +44,7 @@
       <div class="flex items-center justify-between p-4 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] text-[#92400E] text-sm">
         <div class="flex items-center gap-2.5">
           <i class="fas fa-circle-info text-[#D97706] text-base shrink-0"></i>
-          <span>Batas maksimal <strong>5 benefit</strong> telah tercapai (5/5). Tombol tambah benefit dinonaktifkan. Hapus atau edit benefit yang ada jika ingin melakukan perubahan.</span>
+          <span>Maximum limit of <strong>5 benefits</strong> has been reached (5/5). Add benefit button is disabled. Delete or edit existing benefits to make changes.</span>
         </div>
         <span class="px-2.5 py-1 bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] font-semibold text-xs rounded-full shrink-0">Batas Kuota Penuh</span>
       </div>
@@ -60,6 +60,7 @@
 
           {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
             <colgroup>
+              <template x-if='selectMode'><col class='w-[48px]' /></template>
               <col class='w-[66px]' />
               <col class='w-[94px]' />
               <col class='w-[73px]' />
@@ -69,6 +70,7 @@
             </colgroup>
             <thead>
               <tr>
+                {{> components/ui/super_admin/table/header_cell checkbox=true }}
                 {{> components/ui/super_admin/table/header_cell label='No' }}
                 {{> components/ui/super_admin/table/header_cell label='Number' }}
                 {{> components/ui/super_admin/table/header_cell label='Icon' }}
@@ -79,7 +81,11 @@
             </thead>
             <tbody>
               <template x-for='(row, index) in rows' :key='row.id'>
-                <tr class='transition-colors hover:bg-[#fafafa]'>
+                <tr
+                  class='transition-colors hover:bg-[#fafafa]'
+                  :class="selectedIds && selectedIds.some(id => String(id) === String(row.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+                >
+                  {{> components/ui/super_admin/table/cell checkbox=true }}
 
                   {{> components/ui/super_admin/table/cell
                     text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
@@ -125,7 +131,7 @@
                 </tr>
               </template>
 
-              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='6'}}
+              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='7'}}
                 No benefits found.
               {{/components/ui/super_admin/table/message_row}}
             </tbody>

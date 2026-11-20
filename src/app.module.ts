@@ -56,11 +56,7 @@ import { BenefitCategoryModule } from './benefit_category/benefit_category.modul
 import { FaqModule } from './faq/faq.module';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { UserActivityMiddleware } from './user_activity/user-activity.middleware';
-import {
-  AcceptLanguageResolver,
-  CookieResolver,
-  I18nModule,
-} from 'nestjs-i18n';
+import { CookieResolver, I18nModule } from 'nestjs-i18n';
 import { GalleryModule } from './gallery/gallery.module';
 import { CategoryPartnerModule } from './category_partner/category_partner.module';
 import { PartnerModule } from './partner/partner.module';
@@ -75,6 +71,7 @@ import { PaymentSettingsModule } from './payment-settings/payment-settings.modul
 import { SyllabusModule } from './syllabus/syllabus.module';
 import { FinalAssignmentModule } from './final_assignment/final_assignment.module';
 import { SearchModule } from './search/search.module';
+import { BulkDeleteModule } from './bulk_delete/bulk-delete.module';
 import path from 'path';
 
 @Module({
@@ -83,14 +80,13 @@ import path from 'path';
       isGlobal: true,
     }),
     I18nModule.forRoot({
-      fallbackLanguage: 'id',
+      fallbackLanguage: 'en',
       loaderOptions: {
         path: path.join(__dirname, '/i18n/'),
         watch: true,
       },
       resolvers: [
         { use: CookieResolver, options: ['lang'] },
-        AcceptLanguageResolver,
       ],
     }),
     TypeOrmModule.forRoot(dataSourceOptions),
@@ -160,6 +156,7 @@ import path from 'path';
     SyllabusModule,
     FinalAssignmentModule,
     SearchModule,
+    BulkDeleteModule,
   ],
   controllers: [AppController],
   providers: [AppService],

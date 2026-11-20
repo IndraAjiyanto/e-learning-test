@@ -10,20 +10,22 @@
   - Title: Montserrat 600, 22px, leading 26px, text-[#0B1F3B]
   - Tags: pill rounded-full (999px) border #E5E7EB bg-white px-2.5 py-1.5, Inter 600 12px text-[#0B1F3B] + dot · (#9CA3AF)
   - Description: Inter 400 14px leading 170% text-[#6B7280]
-  - Bottom row: Explore program (Inter 600 13px #003060) + cta-button (40x40 rounded-full bg-[#003060] with arrow-right)
+  - Bottom row: Full-width button with label from i18n ("Lihat kelas") + arrow icon
 
   Props:
-  - id          : string (ID program)
-  - image       : string (URL gambar)
-  - icon        : string (FontAwesome class atau icon name)
-  - title       : string (Nama program)
-  - tag1        : string (Tag pertama)
-  - tag2        : string (Tag kedua)
-  - tag3        : string (Tag ketiga)
-  - tag4        : string (Tag keempat)
-  - tags        : array of strings
-  - description : string (Deskripsi program)
-  - href        : string (URL tujuan)
+  - id            : string (ID program)
+  - image         : string (URL gambar)
+  - icon          : string (FontAwesome class atau icon name)
+  - title         : string (Nama program)
+  - tag1          : string (Tag pertama)
+  - tag2          : string (Tag kedua)
+  - tag3          : string (Tag ketiga)
+  - tag4          : string (Tag keempat)
+  - tags          : array of strings
+  - quota         : number (Kapasitas kuota program)
+  - enrolledCount : number (Jumlah peserta yang sudah terdaftar)
+  - description   : string (Deskripsi program)
+  - href          : string (URL tujuan)
 --}}
 
 <div class="box-border flex w-full flex-col justify-between overflow-hidden rounded-[16px] border border-[#E5E7EB] bg-[#FFFFFF] shadow-[0px_6px_18px_-6px_rgba(0,0,0,0.0509804)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0px_16px_36px_-6px_rgba(11,31,59,0.12)]">
@@ -38,6 +40,11 @@
         onerror="this.src='/public/image/specialProgram/bgJapan.png'"
       />
       <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+      {{#if (and quota (gte (coalesce enrolledCount 0) quota))}}
+        <div class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-red-600/90 text-white font-inter text-[11px] font-bold tracking-wide uppercase shadow-sm backdrop-blur-xs select-none">
+          {{default (t 'test.paidProgram.hero.quickStats.full') 'Penuh'}}
+        </div>
+      {{/if}}
     </div>
   </div>
 
@@ -86,7 +93,16 @@
               {{tag2}}
             </span>
           {{/if}}
-          {{#if tag3}}
+          {{#if quota}}
+            <span class="font-inter text-[12px] text-[#9CA3AF] select-none">·</span>
+            <span class="box-border inline-flex items-center rounded-full border px-2.5 py-1 font-inter text-[12px] font-semibold leading-[15px] {{#if (gte (coalesce enrolledCount 0) quota)}}border-red-200 bg-red-50 text-red-700{{else}}border-[#E5E7EB] bg-white text-[#0B1F3B]{{/if}}">
+              {{#if (gte (coalesce enrolledCount 0) quota)}}
+                {{quota}} / {{quota}} ({{default (t 'test.paidProgram.hero.quickStats.full') 'Penuh'}})
+              {{else}}
+                {{coalesce enrolledCount 0}} / {{quota}} {{default (t 'test.paidProgram.hero.quickStats.students') 'Siswa'}}
+              {{/if}}
+            </span>
+          {{else if tag3}}
             <span class="font-inter text-[12px] text-[#9CA3AF] select-none">·</span>
             <span class="box-border inline-flex items-center rounded-full border border-[#E5E7EB] bg-white px-2.5 py-1 font-inter text-[12px] font-semibold leading-[15px] text-[#0B1F3B]">
               {{tag3}}
@@ -116,21 +132,14 @@
       </p>
     </div>
 
-    {{!-- bottom-row: Explore program + cta-button (40x40 rounded-full #003060 with arrow-right) --}}
-    <div class="mt-5 flex items-center justify-between border-t border-[#F3F4F6] pt-3">
+    {{!-- bottom-row: Full-width button --}}
+    <div class="mt-5 border-t border-[#F3F4F6] pt-3 w-full">
       <a
         href="{{default href (ternary id (concat '/program/' id) '#programs')}}"
-        class="font-inter text-[13px] font-semibold leading-[16px] text-[#003060] hover:text-[#6EB6E5] transition-colors"
+        class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#003060] py-3 px-4 font-inter text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-[#00244a] hover:shadow-md active:scale-[0.99]"
       >
-        {{default (t 'test.categoryPaidProgram.program.exploreProgram') 'Explore program'}}
-      </a>
-
-      <a
-        href="{{default href (ternary id (concat '/program/' id) '#programs')}}"
-        class="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#003060] text-white shadow-sm transition-transform hover:scale-105 active:scale-95"
-        aria-label="{{default (t 'test.categoryPaidProgram.program.exploreProgram') 'Explore program'}}"
-      >
-        <svg class="size-3.5" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <span>{{default (t 'test.categoryPaidProgram.program.exploreProgram') (default (t 'test.categoryFreeProgram.program.exploreProgram') 'Lihat kelas')}}</span>
+        <svg class="size-4 shrink-0" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M3 8h10M9 4l4 4-4 4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </a>

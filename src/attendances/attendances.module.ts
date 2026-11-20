@@ -7,6 +7,7 @@ import { User } from 'src/entities/user.entity';
 import { Course } from 'src/entities/course.entity';
 import { Session } from 'src/entities/session.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
+import { Logbook } from 'src/entities/logbook.entity';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { SessionProgress } from 'src/entities/session_progress.entity';
       User,
       Session,
       Course,
-      SessionProgress,
+      Logbook,
     ]),
   ],
   controllers: [AttendanceController],

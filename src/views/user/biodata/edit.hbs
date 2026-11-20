@@ -150,9 +150,9 @@
           <button type="submit" :disabled="loading"
             class="btn bg-gradient-to-br from-primary via-secondary to-gray-900 text-white hover:from-primary hover:to-secondary rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 font-semibold text-lg flex-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
             <span x-show="loading" class="loading loading-spinner loading-sm"></span>
-            <span x-show="!loading"></span>{{t "test.profile.editBiodata.updateProfile"}}</span>
+            <span x-show="!loading">{{t "test.profile.editBiodata.updateProfile"}}</span>
           </button>
-          <a href="/users/profile"
+          <a href="/users/profile?tab=profile"
           :disabled="loading"
             class="btn bg-white rounded-xl border border-slate-300 shadow-lg hover:shadow-xl text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all duration-300 font-semibold text-lg flex-1 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 ">
             {{t "test.profile.editBiodata.backToProfile"}}

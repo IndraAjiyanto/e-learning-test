@@ -1,7 +1,7 @@
 import Handlebars from 'handlebars';
 
-// Satu sumber fallback untuk semua helper multibahasa: bahasa diminta → Indonesia
-// ('id') → Inggris ('en'). `asText` membatasi nilai menjadi string, jadi kolom
+// Satu sumber fallback untuk semua helper multibahasa: bahasa diminta → Inggris
+// ('en') → Indonesia ('id'). `asText` membatasi nilai menjadi string, jadi kolom
 // nullable seperti Category.name_en (null) atau tipe aneh lain lolos ke tahap
 // berikutnya alih-alih menampilkan 'null'.
 const asText = (value: unknown): string =>
@@ -11,7 +11,7 @@ const pickLang = (
   obj: Record<string, unknown> | null | undefined,
   lang: string,
 ): string =>
-  asText(obj?.[lang]) || asText(obj?.['id']) || asText(obj?.['en']) || '';
+  asText(obj?.[lang]) || asText(obj?.['en']) || asText(obj?.['id']) || '';
 
 export const stringHelpers = {
   substring: (str: string, start: number, end: number) => {
@@ -36,7 +36,7 @@ export const stringHelpers = {
     return args.slice(0, -1);
   },
   lookup: (str: unknown[], index: number) => (str ? str[index] : ''),
-  json: (context: unknown) => JSON.stringify(context),
+  json: (context: unknown) => JSON.stringify(context ?? null),
   // Untuk data island: <script type="application/json">{{{jsonSafe x}}}</script>.
   //
   // `json` polosnya bisa berisi urutan `</script>`, dan browser memotong blok
@@ -204,5 +204,19 @@ export const stringHelpers = {
   capitalize: (str: unknown) => {
     if (typeof str !== 'string' || !str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
+  },
+  formatFormLabel: (text: unknown, required?: unknown) => {
+    if (typeof text !== 'string') return '';
+    const trimmed = text.trim();
+    const hasAsterisk = trimmed.endsWith('*');
+    const isRequired = hasAsterisk || Boolean(required);
+    const cleanText = hasAsterisk ? trimmed.slice(0, -1).trimEnd() : trimmed;
+    const escaped = Handlebars.escapeExpression(cleanText);
+    if (isRequired) {
+      return new Handlebars.SafeString(
+        `${escaped}<span class="text-[#dc2626]">*</span>`,
+      );
+    }
+    return new Handlebars.SafeString(escaped);
   },
 };

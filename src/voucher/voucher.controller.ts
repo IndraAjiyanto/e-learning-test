@@ -43,26 +43,36 @@ export class VoucherController {
 
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const vouchersRaw = await this.voucherService.findAll();
-    const allUsers = await this.voucherService.findAllUsers();
+    try {
+      const vouchersRaw = await this.voucherService.findAll();
 
-    const vouchers = vouchersRaw.map((v) => {
-      let targetLabel = 'Public (All Users)';
-      if (v.allowed_user_ids && v.allowed_user_ids.length > 0) {
-        const allowedNames = v.allowed_user_ids.map((id) => {
-          const u = allUsers.find((user) => user.id === id);
-          return u ? u.username : `ID:${id}`;
-        });
-        targetLabel = allowedNames.join(', ');
-      }
-      return { ...v, target_users_label: targetLabel };
-    });
+      const vouchers = vouchersRaw.map((v) => {
+        let targetLabel = 'Public (All Users)';
+        if (v.allowed_users && v.allowed_users.length > 0) {
+          const allowedNames = v.allowed_users.map(
+            (u) => u.username || u.email || `ID:${u.id}`,
+          );
+          targetLabel = allowedNames.join(', ');
+        }
+        return { ...v, target_users_label: targetLabel };
+      });
 
-    res.render('super_admin/voucher/index', {
-      user: req.user,
-      vouchers,
-      error: req.flash('error')[0],
-    });
+      res.render('super_admin/voucher/index', {
+        user: req.user,
+        vouchers,
+        error: req.flash('error')[0],
+      });
+    } catch (error: unknown) {
+      const err = error as Error;
+      console.error('[VoucherController.findAll] Error loading vouchers:', err);
+      res.render('super_admin/voucher/index', {
+        user: req.user,
+        vouchers: [],
+        error:
+          req.flash('error')[0] ||
+          'Gagal memuat data voucher. Silakan periksa kembali data voucher atau hubungi administrator.',
+      });
+    }
   }
 
   // ─── FORM CREATE ──────────────────────────────────────────────────────────
@@ -173,7 +183,11 @@ export class VoucherController {
     @Req() req: Request,
   ) {
     try {
-      await this.voucherService.update(id, updateVoucherDto);
+      await this.voucherService.update(id, {
+        ...updateVoucherDto,
+        courseIds: updateVoucherDto.courseIds ?? [],
+        allowed_user_ids: updateVoucherDto.allowed_user_ids ?? [],
+      });
       flashToast(
         req,
         'Voucher Updated',

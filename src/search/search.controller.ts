@@ -15,7 +15,11 @@ export class SearchController {
   ) {
     try {
       const query = queryDto?.q || '';
-      const userId = (req.user as { id?: string } | undefined)?.id;
+      const userId =
+        (req.user as { id?: string } | undefined)?.id ||
+        (req.session as unknown as { passport?: { user?: string } })?.passport
+          ?.user;
+
       const data = await this.searchService.search(query, userId);
       const total =
         (data.courses?.length || 0) +

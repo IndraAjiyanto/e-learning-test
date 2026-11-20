@@ -49,6 +49,13 @@
     >
 
       {{#> components/ui/admin/form/form-card noNumber=true}}
+        {{#if (eq users.length 0)}}
+          <div class='flex items-center gap-[8px] p-[12px] bg-[#EFF6FF] border border-[#BFDBFE] rounded-[8px] text-[14px] text-[#1E40AF] font-inter'>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <p>No users are available for logbook creation. Only users who have recorded attendance and do not yet have a logbook for this session can be selected.</p>
+          </div>
+        {{/if}}
+
         {{!-- Row 1: User + Obstacle --}}
         <div class='flex flex-col md:flex-row gap-[12px] w-full'>
           <div class='flex-1 min-w-0'>

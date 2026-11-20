@@ -27,12 +27,12 @@
       <button type='button' @click="activePreviewMode = 'assignment'"
         :class="activePreviewMode === 'assignment' ? 'bg-[#FFFFFF] text-[#003060] shadow-sm font-semibold' : 'text-[#737373] font-medium hover:text-[#171717]'"
         class='flex-1 py-[6px] px-[10px] rounded-[6px] text-[12px] font-inter transition-all text-center'>
-        Tugas Master
+        Master Assignment
       </button>
       <button type='button' @click="activePreviewMode = 'student'"
         :class="activePreviewMode === 'student' ? 'bg-[#FFFFFF] text-[#003060] shadow-sm font-semibold' : 'text-[#737373] font-medium hover:text-[#171717]'"
         class='flex-1 py-[6px] px-[10px] rounded-[6px] text-[12px] font-inter transition-all text-center truncate'>
-        <span x-text="selectedUsername ? 'Jawaban ' + selectedUsername : 'Jawaban Siswa'"></span>
+        <span x-text="selectedUsername ? selectedUsername + '\'s Submission' : 'Student Submission'"></span>
       </button>
     </div>
 
@@ -54,8 +54,8 @@
             </svg>
           </div>
           <div class='flex flex-col gap-[4px] max-w-[320px]'>
-            <p class='text-[15px] font-inter font-semibold text-[#FFFFFF]' x-text="activePreviewMode === 'student' ? 'Preview Berkas Jawaban' : 'Berkas Tugas'"></p>
-            <p class='text-[13px] font-inter text-[#A3A3A3] break-all' x-text='currentPreviewRawUrl() || "Belum ada file yang dapat dimuat"'></p>
+            <p class='text-[15px] font-inter font-semibold text-[#FFFFFF]' x-text="activePreviewMode === 'student' ? 'Answer Submission Preview' : 'Assignment File'"></p>
+            <p class='text-[13px] font-inter text-[#A3A3A3] break-all' x-text='currentPreviewRawUrl() || "No file available to preview"'></p>
           </div>
           <template x-if='currentPreviewRawUrl()'>
             <a :href='currentPreviewRawUrl()' target='_blank' rel='noopener noreferrer'
@@ -65,7 +65,7 @@
                 <polyline points='15 3 21 3 21 9'/>
                 <line x1='10' y1='14' x2='21' y2='3'/>
               </svg>
-              <span>Buka File di Tab Baru</span>
+              <span>Open File in New Tab</span>
             </a>
           </template>
         </div>
@@ -73,7 +73,7 @@
 
       {{!-- Floating Action to Open External Window --}}
       <template x-if='currentPreviewRawUrl() && currentPreviewEmbedUrl()'>
-        <a :href='currentPreviewRawUrl()' target='_blank' rel='noopener noreferrer' title='Buka di tab baru'
+        <a :href='currentPreviewRawUrl()' target='_blank' rel='noopener noreferrer' title='Open in new tab'
           class='absolute top-3 right-3 z-10 w-[36px] h-[36px] bg-[#171717]/80 hover:bg-[#171717] text-white rounded-full flex items-center justify-center shadow-lg transition-colors backdrop-blur-sm'>
           <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
             <path d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/>
@@ -87,8 +87,8 @@
     {{!-- Metadata Summary --}}
     <div class='flex flex-col gap-[6px] w-full pt-[4px]'>
       <div class='flex justify-between items-center text-[12px] text-[#737373] font-inter'>
-        <span>Tugas: <strong class='text-[#171717] font-medium'>{{assignment.title}}</strong></span>
-        <span>Dibuat: {{formatDate assignment.createdAt}}</span>
+        <span>Assignment: <strong class='text-[#171717] font-medium'>{{assignment.title}}</strong></span>
+        <span>Created: {{formatDate assignment.createdAt}}</span>
       </div>
     </div>
 

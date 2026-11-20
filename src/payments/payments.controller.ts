@@ -31,6 +31,10 @@ import {
   isReferalSource,
   getReferalSourceI18nOptions,
 } from 'src/entities/types/referal-source';
+import {
+  CURRENT_STATUS_OPTIONS,
+  currentStatus,
+} from 'src/entities/payment.entity';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('payment')
@@ -108,6 +112,7 @@ export class PaymentsController {
         // dan tombol "back" bisa menampilkannya. Tanpa prop ini select-nya akan
         // kosong dan user tidak bisa lanjut.
         referalSourceOptions: REFERAL_SOURCES,
+        currentStatusOptions: CURRENT_STATUS_OPTIONS,
         // Versi berlabel i18n untuk step 1. Nilai `value` tetap kanonis
         // (dipakai kolom enum), hanya `labelKey` yang ikut ke template.
         referalSourceI18nOptions: getReferalSourceI18nOptions(),
@@ -263,6 +268,13 @@ export class PaymentsController {
         typeof bodyRecord.whatsappNumber === 'string'
           ? bodyRecord.whatsappNumber
           : '';
+      const formCurrentStatus = bodyRecord.currentStatus;
+      if (
+        typeof formCurrentStatus === 'string' &&
+        CURRENT_STATUS_OPTIONS.includes(formCurrentStatus as currentStatus)
+      ) {
+        dto.current_status = formCurrentStatus as currentStatus;
+      }
       dto.promoCode =
         typeof bodyRecord.promoCode === 'string' &&
         bodyRecord.promoCode.trim() !== ''
@@ -327,8 +339,15 @@ export class PaymentsController {
   ) {
     let uploadedFile: string | undefined;
     try {
+      const parent = await this.paymentsService.getPaymentById(paymentId);
+      const isParentManual =
+        parent &&
+        !parent.invoice?.xendit_invoice_id &&
+        !parent.invoice?.xendit_invoice_url &&
+        !parent.invoice?.xendit_payment_channel;
+
       const { manual_enabled } = await this.paymentSettingsService.effective();
-      if (!manual_enabled) {
+      if (!manual_enabled && !isParentManual) {
         flashToastError(
           req,
           'Method inactive',
@@ -408,6 +427,31 @@ export class PaymentsController {
       createPaymentDto.courseId = courseId;
       createPaymentDto.userId = userId;
       createPaymentDto.process = 'process';
+      const bodyRecord = req.body as Record<string, unknown>;
+
+      const formSource =
+        typeof bodyRecord.source === 'string' ? bodyRecord.source : '';
+      createPaymentDto.referalSource = isReferalSource(formSource)
+        ? formSource
+        : 'Other';
+
+      const formCurrentStatus = bodyRecord.currentStatus;
+      if (
+        typeof formCurrentStatus === 'string' &&
+        CURRENT_STATUS_OPTIONS.includes(formCurrentStatus as currentStatus)
+      ) {
+        createPaymentDto.current_status = formCurrentStatus as currentStatus;
+      }
+
+      const extra = createPaymentDto as unknown as Record<string, unknown>;
+      extra.user_fullname =
+        typeof bodyRecord.fullName === 'string' ? bodyRecord.fullName : '';
+      extra.user_email =
+        typeof bodyRecord.email === 'string' ? bodyRecord.email : '';
+      extra.user_no =
+        typeof bodyRecord.whatsappNumber === 'string'
+          ? bodyRecord.whatsappNumber
+          : '';
       if (!createPaymentDto.no) {
         createPaymentDto.no = 'MAND-' + Date.now();
       }
@@ -472,8 +516,15 @@ export class PaymentsController {
     // atau bukti transfer lain untuk bulan yang sama.
     let uploadedFile: string | undefined;
     try {
+      const parent = await this.paymentsService.getPaymentById(paymentId);
+      const isParentManual =
+        parent &&
+        !parent.invoice?.xendit_invoice_id &&
+        !parent.invoice?.xendit_invoice_url &&
+        !parent.invoice?.xendit_payment_channel;
+
       const { manual_enabled } = await this.paymentSettingsService.effective();
-      if (!manual_enabled) {
+      if (!manual_enabled && !isParentManual) {
         flashToastError(
           req,
           'Method inactive',
@@ -486,11 +537,33 @@ export class PaymentsController {
         (req.body as { uploadedImageUrls?: string[] }).uploadedImageUrls?.[0] ??
         '';
       uploadedFile = file;
+      const bodyRecord = req.body as Record<string, unknown>;
+      const formSource =
+        typeof bodyRecord.source === 'string' ? bodyRecord.source : '';
+      const formCurrentStatus = bodyRecord.currentStatus;
+      const str = (value: unknown) =>
+        typeof value === 'string' && value.trim() !== ''
+          ? value.trim()
+          : undefined;
+
+      const applicant = {
+        referalSource: isReferalSource(formSource) ? formSource : undefined,
+        current_status:
+          typeof formCurrentStatus === 'string' &&
+          CURRENT_STATUS_OPTIONS.includes(formCurrentStatus as currentStatus)
+            ? (formCurrentStatus as currentStatus)
+            : undefined,
+        user_fullname: str(bodyRecord.fullName),
+        user_email: str(bodyRecord.email),
+        user_no: str(bodyRecord.whatsappNumber),
+      };
+
       await this.paymentsService.createManualInstallmentPayment(
         req.user!.id,
         paymentId,
         Number(month),
         file,
+        applicant,
       );
 
       flashToast(
@@ -675,6 +748,46 @@ export class PaymentsController {
       throw new NotFoundException('Program tidak ditemukan');
     }
 
+    if (req.user) {
+      const activePayment = await this.paymentsService.findUserActivePayment(
+        req.user.id,
+        courseId,
+      );
+
+      if (activePayment) {
+        if (activePayment.process === 'approved') {
+          flashToast(
+            req,
+            'Pembayaran Sudah Diterima',
+            'Anda sudah terdaftar di program ini.',
+          );
+          return res.redirect(
+            `/program/myProgram/${req.user.id}?courseId=${courseId}`,
+          );
+        } else if (activePayment.process === 'process') {
+          flashToast(
+            req,
+            'Pembayaran Sedang Diproses',
+            'Anda sudah memiliki transaksi yang sedang menunggu konfirmasi untuk program ini.',
+          );
+          return res.redirect('/users/profile?tab=history-payment');
+        }
+      }
+    }
+
+    const isFull = await this.paymentsService.isCourseFull(courseId);
+    if (isFull) {
+      flashToastError(
+        req,
+        'Program Penuh',
+        'Mohon maaf, kuota peserta untuk program ini sudah penuh.',
+      );
+      if (course.category?.id) {
+        return res.redirect(`/category/${course.category.id}`);
+      }
+      return res.redirect('/courses');
+    }
+
     const firstInstallment = course.installments?.[0];
     const hasInstallmentPlan =
       !!firstInstallment && Number(firstInstallment.downPayment) > 0;
@@ -694,6 +807,7 @@ export class PaymentsController {
       // yang sama dengan enum kolom, kalau tidak pilihan user bisa gagal
       // disimpan. Lihat src/entities/types/referal-source.ts.
       referalSourceOptions: REFERAL_SOURCES,
+      currentStatusOptions: CURRENT_STATUS_OPTIONS,
       // Dipakai step 1 untuk menampilkan label sesuai bahasa, sementara
       // `value` yang dikirim tetap string kanonis milik enum.
       referalSourceI18nOptions: getReferalSourceI18nOptions(),
@@ -703,13 +817,13 @@ export class PaymentsController {
   @Roles('super_admin')
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const payment = await this.paymentsService.findAll();
-    const registration = await this.paymentsService.findAllRegistrations();
-    const installments = await this.paymentsService.findAllInstallments();
+    const [payment, installments] = await Promise.all([
+      this.paymentsService.findAll(),
+      this.paymentsService.findAllInstallments(),
+    ]);
     res.render('super_admin/payments/index', {
       user: req.user,
       payment,
-      registration,
       installments,
     });
   }
@@ -803,10 +917,29 @@ export class PaymentsController {
         return res.redirect(backTo(courseId));
       }
 
+      if (proses === 'approved') {
+        const course = await this.paymentsService.findCourse(courseId);
+        if (course?.quota && course.quota > 0) {
+          const enrolledCount =
+            await this.paymentsService.countEnrolledStudents(courseId);
+          if (enrolledCount >= course.quota) {
+            flashToastError(
+              req,
+              'Kuota Program Penuh',
+              `Program sudah mencapai kapasitas maksimal (${course.quota} siswa). Pembayaran tidak dapat disetujui.`,
+            );
+            return res.redirect(backTo(courseId));
+          }
+        }
+      }
+
       dto.file = payment.file;
       dto.userId = userId;
       dto.courseId = courseId;
       dto.process = proses;
+      if (proses === 'approved' && payment.installment && !payment.dpPaidAt) {
+        dto.dpPaidAt = new Date();
+      }
       await this.paymentsService.update(paymentId, dto);
 
       if (proses === 'approved') {

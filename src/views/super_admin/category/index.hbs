@@ -27,7 +27,12 @@
 
     <div
       class='flex flex-col gap-3.5'
-      x-data='clientTable({ items: {{json category}}, searchKeys: ["name", "name_en", "name_ja", "description.id", "description.en", "description.ja"] })'
+      x-data='clientTable({
+        items: {{json category}},
+        searchKeys: ["name", "name_en", "name_ja", "description.id", "description.en", "description.ja"],
+        entityName: "categories",
+        deleteEntity: "category"
+      })'
     >
       {{> components/ui/super_admin/table/toolbar
         placeholder='Search category..'
@@ -46,6 +51,7 @@
 
           {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
             <colgroup>
+              <template x-if='selectMode'><col class='w-[48px]' /></template>
               <col class='w-[90px]' />
               <col class='w-[260px]' />
               <col class='w-[340px]' />
@@ -54,6 +60,7 @@
             </colgroup>
             <thead>
               <tr>
+                {{> components/ui/super_admin/table/header_cell checkbox=true }}
                 {{> components/ui/super_admin/table/header_cell label='Icon' }}
                 {{> components/ui/super_admin/table/header_cell label='Category Name' }}
                 {{> components/ui/super_admin/table/header_cell label='Description' }}
@@ -63,7 +70,11 @@
             </thead>
             <tbody>
               <template x-for='row in rows' :key='row.id'>
-                <tr class='transition-colors hover:bg-[#fafafa]'>
+                <tr
+                  class='transition-colors hover:bg-[#fafafa]'
+                  :class="selectedIds && selectedIds.some(id => String(id) === String(row.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+                >
+                  {{> components/ui/super_admin/table/cell checkbox=true disabled='row.courses && row.courses.length > 0' title='(row.courses && row.courses.length > 0) ? ("Category cannot be deleted because it still contains " + row.courses.length + " related program(s).") : "Select category"' }}
                   {{#> components/ui/super_admin/table/cell}}
                     {{> components/ui/super_admin/table/avatar src='row.icon' name='row.name' }}
                   {{/components/ui/super_admin/table/cell}}
@@ -116,24 +127,10 @@
                         </svg>
                       </a>
 
-                      <form :action="'/category/' + row.id + '?_method=DELETE'" method='post'>
-                        <button
-                          type='button'
-                          @click="
-                            if ((row.courses || []).length > 0) {
-                              window.dispatchEvent(new CustomEvent('toast:error', {
-                                detail: {
-                                  title: 'Gagal Menghapus Kategori',
-                                  description: 'Kategori &quot;' + row.name + '&quot; tidak dapat dihapus karena masih memiliki ' + (row.courses || []).length + ' program. Hapus atau pindahkan program tersebut terlebih dahulu.'
-                                }
-                              }));
-                            } else {
-                              openDeleteModal($el);
-                            }
-                          "
-                          title='Delete category'
-                          aria-label='Delete category'
-                          class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#dc2626] transition-colors hover:bg-[#fef2f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626]/40 active:bg-[#fee2e2]'
+                      <template x-if='row.courses && row.courses.length > 0'>
+                        <div
+                          class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#a3a3a3] opacity-40 cursor-not-allowed'
+                          :title="'Category cannot be deleted because it still contains ' + row.courses.length + ' related program(s).'"
                         >
                           {{!-- lucide: trash-2 --}}
                           <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
@@ -143,14 +140,32 @@
                             <line x1='10' x2='10' y1='11' y2='17' />
                             <line x1='14' x2='14' y1='11' y2='17' />
                           </svg>
+                        </div>
+                      </template>
+                      <template x-if='!row.courses || row.courses.length === 0'>
+                        <button
+                          type='button'
+                          @click='confirmDeleteSingle(row)'
+                          title='Delete category'
+                          aria-label='Delete category'
+                          class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#dc2626] transition-colors hover:bg-[#fef2f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626]/40 active:bg-[#fee2e2]'
+                        >
+                          {{!-- lucide: trash-2 --}}
+                          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round' class='h-5 w-5'>
+                            <path d='M3 6h18' />
+                            <path d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
+                            <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2' />
+                            <line x1='10' x2='10' y1='11' y2='17' />
+                            <line x1='14' x2='14' y1='11' y2='17' />
+                          </svg>
                         </button>
-                      </form>
+                      </template>
                     </div>
                   {{/components/ui/super_admin/table/cell}}
                 </tr>
               </template>
 
-              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='5'}}
+              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='6'}}
                 No categories found.
               {{/components/ui/super_admin/table/message_row}}
             </tbody>

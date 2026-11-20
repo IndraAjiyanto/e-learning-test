@@ -3,7 +3,7 @@
   Path: admin/course/detail_syllabus.hbs
   Route: GET /program/detail/program/admin/:courseId (detailKelas)
   Data kontrak: { course, categoryId?, user, lastWeek, caps, containerWeek }
-  Layout: card hero + card basic info + duo form/capacity + card learning + tab section (Sylabus & User)
+  Layout: card hero + card basic info + duo form/capacity + card learning + tab section (Sylabus, Final Assignment, User, Mentor)
 --}}
 <div class='min-h-screen bg-[#f3f3f3] px-4 py-8 sm:px-[34px] sm:py-[42px]'>
   <div class='box-border w-full max-w-[1052px] mx-auto flex flex-col gap-[16px] justify-start items-start'>
@@ -30,14 +30,6 @@
           Sylabus
         </button>
 
-        {{!-- Container: Tab User (89x40 p-[10px_28px] gap-4) --}}
-        <button type='button'
-          @click="toggleFetch('/program/userProgram/{{course.id}}', 'user')"
-          :class="tab === 'user' ? 'border-b-2 border-[#003060]' : 'border-b-2 border-transparent'"
-          class='shrink-0 h-[40px] flex flex-row justify-center items-start px-[28px] py-[10px] gap-[4px] font-inter font-semibold text-[14px] leading-[20px] text-[#003060] whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
-          User
-        </button>
-
         {{#if caps.finalAssignment}}
         {{!-- Container: Tab Final Assignment (183x40 p-[10px_28px] gap-4, active border-b-2 #003060) --}}
         <button type='button'
@@ -47,17 +39,28 @@
           Final Assignment
         </button>
         {{/if}}
+
+        {{!-- Container: Tab User (89x40 p-[10px_28px] gap-4) --}}
+        <button type='button'
+          @click="toggleFetch('/program/userProgram/{{course.id}}', 'user')"
+          :class="tab === 'user' ? 'border-b-2 border-[#003060]' : 'border-b-2 border-transparent'"
+          class='shrink-0 h-[40px] flex flex-row justify-center items-start px-[28px] py-[10px] gap-[4px] font-inter font-semibold text-[14px] leading-[20px] text-[#003060] whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
+          User
+        </button>
+
+        {{!-- Container: Tab Mentor (104x40 p-[10px_28px] gap-4) --}}
+        <button type='button'
+          @click="toggleFetch('/program/mentorProgram/{{course.id}}', 'mentor')"
+          :class="tab === 'mentor' ? 'border-b-2 border-[#003060]' : 'border-b-2 border-transparent'"
+          class='shrink-0 h-[40px] flex flex-row justify-center items-start px-[28px] py-[10px] gap-[4px] font-inter font-semibold text-[14px] leading-[20px] text-[#003060] whitespace-nowrap hover:bg-[#F5F5F5] transition-colors'>
+          Mentor
+        </button>
       </div>
 
       {{!-- Tab Content Areas --}}
       <div x-show="tab === 'sylabus'" class='w-full'>
         <template x-if="loaded['sylabus']">
           <div class='w-full' x-data="sylabusData()" x-init="fetchSylabus()">{{> course/sylabus_tab }}</div>
-        </template>
-      </div>
-      <div x-show="tab === 'user'" class='w-full'>
-        <template x-if="loaded['user']">
-          <div class='w-full' x-data="userData()" x-init="fetchUsers()">{{> course/user_tab}}</div>
         </template>
       </div>
       {{#if caps.finalAssignment}}
@@ -67,6 +70,16 @@
         </template>
       </div>
       {{/if}}
+      <div x-show="tab === 'user'" class='w-full'>
+        <template x-if="loaded['user']">
+          <div class='w-full' x-data="userData()" x-init="fetchUsers()">{{> course/user_tab}}</div>
+        </template>
+      </div>
+      <div x-show="tab === 'mentor'" class='w-full'>
+        <template x-if="loaded['mentor']">
+          <div class='w-full' x-data="mentorData()" x-init="fetchMentors()">{{> course/mentor_tab}}</div>
+        </template>
+      </div>
 
     </div>
 
@@ -81,7 +94,7 @@ function tabData() {
     data: [],
     loaded: {},
     async init() {
-      const validTabs = ['sylabus', 'user'{{#if caps.finalAssignment}}, 'final_assignment'{{/if}}];
+      const validTabs = ['sylabus', 'user', 'mentor'{{#if caps.finalAssignment}}, 'final_assignment'{{/if}}];
       if (!this.tab || !validTabs.includes(this.tab)) {
         this.tab = 'sylabus';
         localStorage.setItem('activeTabNonBootcamp', 'sylabus');

@@ -18,7 +18,13 @@
   hanya menulis nomor dan deskripsi yang sering cuma mengulang nomornya, jadi
   satu-satunya cara tahu ada apa di dalam sebuah minggu adalah membukanya.
 --}}
-<span class="grid size-9 shrink-0 place-items-center rounded-lg bg-[#E4F1F7] font-inter text-sm font-bold text-[#003060]">{{number}}</span>
+<span class="grid size-9 shrink-0 place-items-center rounded-lg {{#if (lookup summary 'quizzesPassed')}}bg-[#EAF7EE] text-[#15803D]{{else}}bg-[#E4F1F7] text-[#003060]{{/if}} font-inter text-sm font-bold">
+  {{#if (lookup summary 'quizzesPassed')}}
+    <i class="fa-solid fa-check"></i>
+  {{else}}
+    {{number}}
+  {{/if}}
+</span>
 
 <span class="min-w-0 flex-1">
   <span class="block truncate font-montserrat text-base font-bold text-[#171717]">{{title}}</span>

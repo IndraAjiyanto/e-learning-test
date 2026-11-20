@@ -9,6 +9,7 @@ import {
   Generated,
 } from 'typeorm';
 import { Course } from './course.entity';
+import { User } from './user.entity';
 import { Exclude } from 'class-transformer';
 
 export type VoucherType = 'free' | 'discount';
@@ -34,8 +35,13 @@ export class Voucher {
   @Generated('uuid')
   url_code: string;
 
-  @Column({ type: 'json', nullable: true })
-  allowed_user_ids: string[];
+  @ManyToMany(() => User)
+  @JoinTable({
+    name: 'voucher_users',
+    joinColumn: { name: 'voucherId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'userId', referencedColumnName: 'id' },
+  })
+  allowed_users: User[];
 
   @CreateDateColumn()
   createdAt: Date;

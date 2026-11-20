@@ -8,9 +8,8 @@
           form/textarea-input, button/primary-button, button/secondary-button,
           logbook/logbook-mentor-form-fields (baru, prefix logbook-, dipakai
           bersama edit.hbs), logbook/logbook-photo-upload (existing, via fields).
-  Catatan: TIDAK ada field User (BE: userId = admin login via req.user.id) &
-          TIDAK ada Documentation Link (entity MentorLogbook tidak punya
-          otherDocumentation) — beda dari form logbook user.
+  Catatan: User logbook otomatis diambil dari akun mentor yang ditugaskan pada program/course
+          terkait pertemuan ini (tanpa perlu input tambahan).
   BE: POST /logbooks-mentor/:sessionId multipart { activity, activityDetail, obstacle, documentation (file) }
       FileInterceptor('documentation') + ValidateImage (JPG/PNG 5MB, folder mentor_logbook)
       Cancel → /session/:sessionId

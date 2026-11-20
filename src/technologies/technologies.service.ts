@@ -50,6 +50,9 @@ export class TechnologiesService {
     page: number;
     limit: number;
   }) {
+    const page = Math.max(1, Number(params.page) || 1);
+    const limit = Math.min(100, Math.max(1, Number(params.limit) || 10));
+
     const query = this.technologiesRepository
       .createQueryBuilder('technology')
       .orderBy('technology.createdAt', 'DESC');
@@ -60,10 +63,10 @@ export class TechnologiesService {
       });
     }
 
-    query.skip((params.page - 1) * params.limit).take(params.limit);
+    query.skip((page - 1) * limit).take(limit);
 
     const [data, total] = await query.getManyAndCount();
-    return { data, total };
+    return { data, total, page, limit };
   }
 
   async findOne(id: string) {

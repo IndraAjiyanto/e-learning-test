@@ -13,10 +13,6 @@
   Container Status row h22 (Status Montserrat 14/600 #171717 + badge Pending),
   Main Content gap14 horizontal: List Container w560 vertical gap12 (4 sky cards)
   + Sidebar Content w348 vertical gap12 (User Info, Date & Time, Photo).
-  Kolom LinkedIn: User Information tambah field LinkedIn (link #2563EB, fallback "-");
-  sumber future-proof selectedLogbook?.user?.linkedin || selectedLogbook?.user?.biodata?.linkedin
-  (entity User & Biodata BELUM punya kolom linkedin — BE: SessionService.findLogBook
-  me-relasikan user + user.biodata; tampil "-" sampai BE menyediakannya).
   Kolom Action: tetap di logbook-table (View→openModal, Edit→GET /logbooks/formEdit/:id,
   Delete→DELETE /logbooks/:sessionId/:id + Confirm Approve/Reject PATCH /logbooks/:id/:proses).
   BE: GET /session/logbooks/:sessionId → Logbook[] { id, activity, activityDetails,
@@ -52,7 +48,7 @@
           {{> components/ui/admin/logbook/logbook-detail-card icon='link' title='Documentation Link' contentVar='selectedLogbook?.otherDocumentation' isLink=true}}
         </div>
 
-        {{!-- Kanan: User Information (+LinkedIn) / Date & Time / Photo --}}
+        {{!-- Kanan: User Information / Date & Time / Photo --}}
         <div class='w-full lg:w-[348px] lg:shrink-0 flex flex-col gap-[12px] justify-start items-stretch'>
 
           <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[10px] p-[20px_14px] justify-start items-stretch bg-[#F0F9FF] [outline:1px_solid_#BAE6FD] [outline-offset:-0.5px] rounded-[10px]'>
@@ -63,7 +59,6 @@
             <div class='w-full flex flex-col gap-[8px] justify-start items-stretch'>
               {{> components/ui/admin/logbook/logbook-detail-field label='Full Name:' valueVar='selectedLogbook?.user?.username'}}
               {{> components/ui/admin/logbook/logbook-detail-field label='Email:' valueVar='selectedLogbook?.user?.email'}}
-              {{> components/ui/admin/logbook/logbook-detail-field label='LinkedIn:' valueVar='selectedLogbook?.user?.linkedin || selectedLogbook?.user?.biodata?.linkedin' isLink=true}}
             </div>
           </div>
 

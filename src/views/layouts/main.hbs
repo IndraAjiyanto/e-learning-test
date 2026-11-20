@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light" class="bg-[#f3f3f3]">
+<html lang="{{default currentLang 'en'}}" data-theme="light" class="bg-[#f3f3f3]">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -27,7 +27,7 @@
   <script defer src="/public/assets/main.js?v=3"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-  <script defer src="/public/assets/editor.bundle.js?v=6"></script>
+  <script defer src="/public/assets/editor.bundle.js?v=7"></script>
   <script src="/public/js/simplycountdown.js"></script>
   <link href="/public/css/style.css?v=4" rel="stylesheet">
   <link href="/public/css/all.min.css" rel="stylesheet">
@@ -40,7 +40,7 @@
   <link rel="stylesheet" href="/public/css/flag-icons.min.css">
   <link rel="stylesheet" href="/public/css/cropper.min.css">
       <link rel="stylesheet" href="/public/css/simplyCountdown.css">
-      <link rel="stylesheet" href="/public/css/quil.css">
+      <link rel="stylesheet" href="/public/css/quil.css?v=5">
 <script src="/public/js/cropper.min.js"></script>
   <script defer src="/public/assets/invoice-pdf.bundle.js?v=10"></script>
 
@@ -101,6 +101,12 @@
         bar.classList.add('is-active');
         to(0.9, '10s cubic-bezier(0.1, 0.7, 0.1, 1)');
       }
+      function reset() {
+        clearTimeout(fadeT); clearTimeout(resetT);
+        bar.classList.remove('is-active');
+        bar.style.transition = 'none';
+        bar.style.transform = 'scaleX(0)';
+      }
       sweep();
       window.addEventListener('pageshow', function (e) { if (e.persisted) sweep(); });
       document.addEventListener('click', function (e) {
@@ -113,8 +119,13 @@
         if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         start();
       }, true);
-      document.addEventListener('submit', function () { start(); }, true);
+      document.addEventListener('submit', function (e) {
+        if (e.defaultPrevented) return;
+        start();
+      });
       window.addEventListener('beforeunload', start);
+      window.startRouteProgress = start;
+      window.resetRouteProgress = reset;
     })();
   </script>
 
@@ -150,9 +161,11 @@
          jangan ganggu layar login; `hideAlumniPopup` -> halaman yang
          mengoper flag ini sudah punya daftar alumni sendiri, yaitu halaman
          /dashboard/alumni yang jadi tujuan klik pop-upnya. --}}
+    {{!-- Dinonaktifkan sementara (jangan dihapus)
     {{#unless (or isAuthPage hideAlumniPopup)}}
       {{> components/ui/floating_alumni_popup}}
     {{/unless}}
+    --}}
     {{/if}}
   {{/if}}
 
@@ -170,6 +183,40 @@
   {{> components/ui/super_admin/toast/error/index toast=toastError }}
   {{> components/ui/super_admin/toast/warning/index toast=toastWarning }}
   {{> components/ui/super_admin/toast/info/index toast=toastInfo }}
+
+  <script>
+    window.submitDeleteForm = function(action, data) {
+      if (!action) return;
+      var form = document.createElement('form');
+      form.method = 'POST';
+      form.action = action;
+      form.style.display = 'none';
+
+      data = data || {};
+      for (var key in data) {
+        if (!Object.prototype.hasOwnProperty.call(data, key)) continue;
+        var val = data[key];
+        if (Array.isArray(val)) {
+          val.forEach(function(item) {
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key + '[]';
+            input.value = item;
+            form.appendChild(input);
+          });
+        } else if (val !== undefined && val !== null) {
+          var input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = val;
+          form.appendChild(input);
+        }
+      }
+
+      document.body.appendChild(form);
+      form.submit();
+    };
+  </script>
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {

@@ -13,7 +13,7 @@
   - imageSrc   : string (fallback: '/public/image/paymentSucces.svg')
   - imageAlt   : string (fallback: test.payment.success.imageAlt)
   - buttonText : string (fallback: test.payment.success.buttonText)
-  - buttonHref : string (default: '/')
+  - buttonHref : string (default: '/users/profile?tab=history-payment')
   - class      : string (opsional)
 --}}
 
@@ -50,7 +50,7 @@
   <!-- Action Button (Figma: back-home-button) -->
   <div class="flex justify-center w-full">
     <a
-      href="{{default buttonHref '/'}}"
+      href="{{default buttonHref '/users/profile?tab=history-payment'}}"
       class="
         inline-flex items-center justify-center gap-2.5 px-8 sm:px-9 h-[51px]
         bg-[#003060] hover:bg-[#082a4d] text-white rounded-[100px]

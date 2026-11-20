@@ -41,7 +41,12 @@ export class InstallmentPaymentService {
   async findByPaymentId(paymentId: string) {
     return this.installmentPaymentRepository.find({
       where: { payment: { id: paymentId } },
-      relations: ['payment'],
+      relations: [
+        'payment',
+        'payment.user',
+        'payment.course',
+        'payment.installment',
+      ],
       order: { month: 'ASC' },
     });
   }
@@ -49,7 +54,7 @@ export class InstallmentPaymentService {
   async findOneByPaymentAndMonth(paymentId: string, month: number) {
     return this.installmentPaymentRepository.findOne({
       where: { payment: { id: paymentId }, month },
-      relations: ['payment'],
+      relations: ['payment', 'payment.user', 'payment.course'],
     });
   }
 
@@ -67,5 +72,13 @@ export class InstallmentPaymentService {
     return this.installmentPaymentRepository.find({
       where: { payment: { id: paymentId }, status: 'process' },
     });
+  }
+
+  async createMany(rows: Partial<InstallmentPayment>[]) {
+    if (!rows || rows.length === 0) return [];
+    const entities = rows.map((row) =>
+      this.installmentPaymentRepository.create(row as InstallmentPayment),
+    );
+    return this.installmentPaymentRepository.save(entities);
   }
 }

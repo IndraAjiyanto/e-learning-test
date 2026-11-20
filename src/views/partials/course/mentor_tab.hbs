@@ -119,7 +119,17 @@ function mentorData() {
     mentorTechBg(index) {
       return MENTOR_TECH_BG[index % MENTOR_TECH_BG.length];
     },
-    }
+
+    mentorConfirmDelete(buttonEl, mentorName) {
+      const name = mentorName ? ` "${mentorName}"` : '';
+      if (typeof openDeleteModal === 'function') {
+        openDeleteModal(buttonEl, 'Delete Mentor', `Are you sure you want to delete this mentor${name}?`);
+        return;
+      }
+      if (confirm(`Are you sure you want to delete this mentor${name}?`)) {
+        buttonEl.closest('form').submit();
+      }
+    },
   };
 }
 </script>

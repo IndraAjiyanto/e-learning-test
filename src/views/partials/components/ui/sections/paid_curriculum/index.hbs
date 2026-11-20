@@ -10,12 +10,13 @@
     - Description: "Complete a hands-on, project-based curriculum designed to align with current digital corporate operational standards.", Inter 400 16px #64748B, max-w 680px
   - Accordion:
     - Max-w: 1040px, gap 16px-24px
-    - 6 Modules with collapsible content via Alpine.js
+    - Dynamic Modules with collapsible content via Alpine.js
 
   Props:
-  - course : object (course data jika memiliki relasi course.weeks)
-  - weeks  : array (opsional array weeks)
-  - lang   : string
+  - course       : object (course data jika memiliki relasi course.weeks atau course.courseFlow)
+  - course_flows : array (opsional array course_flow)
+  - weeks        : array (opsional array weeks)
+  - lang         : string
 --}}
 
 <section 
@@ -97,56 +98,30 @@
         {{/each}}
 
       {{else}}
-        {{!-- Fallback 6 Modul Lengkap Sesuai Spesifikasi Figma --}}
+        {{!-- Empty State: Belum Ada Silabus / Kurikulum --}}
+        <div class="w-full flex flex-col items-center justify-center p-8 sm:p-12 md:p-16 rounded-[20px] border border-dashed border-[#CBD5E1] bg-white text-center shadow-[0px_4px_16px_rgba(0,0,0,0.02)]">
+          <div class="relative mb-5 flex size-20 sm:size-24 items-center justify-center rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] shadow-2xs">
+            <span class="flex size-14 items-center justify-center rounded-xl bg-[#E0F2FE] text-[#003060]">
+              <i class="fa-solid fa-layer-group text-2xl sm:text-3xl"></i>
+            </span>
+            <span class="absolute -top-1.5 -right-1.5 flex size-6 items-center justify-center rounded-full bg-[#F59E0B] text-white text-[10px] shadow-sm">
+              <i class="fa-solid fa-clock"></i>
+            </span>
+          </div>
 
-        {{!-- Module 0: Design Thinking & User Research --}}
-        {{> components/ui/card/curriculum_item/index
-            index=0
-            title="Design Thinking & User Research"
-            description="Pelajari metode design thinking, riset pengguna, persona, user journey, dan teknik wawancara untuk memahami kebutuhan pengguna secara mendalam."
-            lang=lang
-        }}
+          <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#E0F2FE] border border-[#BAE6FD] text-[#0369A1] text-xs font-semibold uppercase tracking-wider mb-3">
+            <span class="size-1.5 rounded-full bg-[#0284C7] animate-pulse"></span>
+            {{default (t 'test.paidProgram.curriculum.emptyBadge') 'Sedang Disiapkan'}}
+          </span>
 
-        {{!-- Module 1: Information Architecture & Wireframing --}}
-        {{> components/ui/card/curriculum_item/index
-            index=1
-            title="Information Architecture & Wireframing"
-            description="Kuasai struktur informasi, sitemap, user flow, dan wireframing untuk merancang pengalaman pengguna yang intuitif dan terorganisir."
-            lang=lang
-        }}
+          <h3 class="font-montserrat font-bold text-lg sm:text-xl md:text-2xl text-[#0B1F3B] mb-2 max-w-md">
+            {{default (t 'test.paidProgram.curriculum.emptyTitle') 'Silabus Belum Tersedia'}}
+          </h3>
 
-        {{!-- Module 2: Visual Design & UI Fundamentals --}}
-        {{> components/ui/card/curriculum_item/index
-            index=2
-            title="Visual Design & UI Fundamentals"
-            description="Dalami prinsip desain visual, tipografi, warna, layout grid, dan komponen UI untuk menciptakan antarmuka yang menarik dan fungsional."
-            lang=lang
-        }}
-
-        {{!-- Module 3: Design System & Scalable Components --}}
-        {{> components/ui/card/curriculum_item/index
-            index=3
-            title="Design System & Component Library"
-            description="Tingkatkan skill Figma dengan auto layout, komponen, varian, design token, dan bangun design system yang scalable."
-            lang=lang
-        }}
-
-        {{!-- Module 4: Interactive Prototyping & Motion --}}
-        {{> components/ui/card/curriculum_item/index
-            index=4
-            title="Interactive Prototyping & Motion"
-            description="Buat prototipe interaktif dengan transisi, animasi micro-interaction, dan motion design untuk presentasi desain yang lebih hidup."
-            lang=lang
-        }}
-
-        {{!-- Module 5: Usability Testing & Final Capstone Project --}}
-        {{> components/ui/card/curriculum_item/index
-            index=5
-            title="Usability Testing & Final Capstone Project"
-            description="Lakukan usability testing, analisis hasil pengujian, iterasi desain, dan kerjakan proyek akhir sebagai portofolio profesional."
-            lang=lang
-        }}
-
+          <p class="font-inter font-normal text-sm sm:text-base leading-relaxed text-[#64748B] max-w-lg">
+            {{default (t 'test.paidProgram.curriculum.emptyDesc') 'Rincian modul dan silabus kurikulum untuk program ini sedang dipersiapkan oleh tim instruktur untuk menjamin materi pembelajaran terbaik.'}}
+          </p>
+        </div>
       {{/if}}
     </div>
 

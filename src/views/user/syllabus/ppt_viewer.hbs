@@ -8,13 +8,14 @@
   pageTitle=(default selected.title 'Slide Presentasi')
   back=false
   trail=(array
-    (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
-    (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning')
+    (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard' 'icon' 'ph ph-house')
+    (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning' 'icon' 'ph ph-book-open')
     (obj
       'label' (t 'test.startLearning.startLearning')
-      'href' (concat '/program/myProgram/' user.id '?courseId=' course.id))
-    (obj 'label' syllabus.title 'href' (concat '/syllabus/learn/' syllabus.id))
-    (obj 'label' 'Slide Presentasi')
+      'href' (concat '/program/myProgram/' user.id '?courseId=' course.id)
+      'icon' 'ph ph-play-circle')
+    (obj 'label' syllabus.title 'href' (concat '/syllabus/learn/' syllabus.id) 'icon' 'ph ph-book-bookmark')
+    (obj 'label' 'Slide Presentasi' 'icon' 'ph ph-presentation-chart')
   )
 }}
 <div class="min-h-full px-4 pb-12 pt-6 sm:px-8 font-inter">
@@ -106,7 +107,7 @@
               <div class="w-full h-full flex flex-col items-center justify-center p-6 text-center text-white gap-3">
                 <i class="fa-solid fa-file-powerpoint text-4xl text-blue-400"></i>
                 <p class="font-semibold text-base">Pratinjau slide tidak tersedia secara langsung.</p>
-                <p class="text-xs text-slate-400 max-w-sm">Silakan gunakan tombol unduh di kanan atas untuk melihat file presentasi di komputermu.</p>
+                <p class="text-xs text-slate-400 max-w-sm">Pastikan link presentasi Google Slides telah disetel untuk dapat diakses publik.</p>
               </div>
             {{/if}}
           </div>

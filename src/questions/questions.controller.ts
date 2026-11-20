@@ -154,14 +154,6 @@ export class QuestionsController {
     @Res() res: Response,
   ) {
     try {
-      if (await this.quizService.hasAttempts(quizId)) {
-        flashToastError(
-          req,
-          'Cannot Update Question',
-          'Quiz cannot be edited because it has already been attempted by a user.',
-        );
-        return res.redirect(`/quiz/${quizId}`);
-      }
       const questions = await this.questionsService.findOne(questionId);
       if (
         (req.body as { uploadedImageUrls?: string[] })?.uploadedImageUrls

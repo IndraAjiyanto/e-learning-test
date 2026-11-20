@@ -35,52 +35,35 @@
       return filtered.slice(start, start + this.size);
       },
 
-      exportExcel() {
+      async exportExcel() {
         try {
           const s = this.search.toLowerCase();
 
           const filtered = this.data.filter(l =>
             (
-              `${l.activity} ${l.activityDetail} ${l.obstacle} ${l.user?.username} ${l.user?.email} ${l.user?.linkedin || ''} ${l.user?.biodata?.linkedin || ''}`
+              `${l.activity} ${l.activityDetail} ${l.obstacle} ${l.user?.username} ${l.user?.email}`
             ).toLowerCase().includes(s)
           );
 
-          const dataToExport = filtered.map((log, index) => ({
-            No: index + 1,
-            Activity: log.activity || "-",
-            Details: log.activityDetail || "-",
-            Obstacle: log.obstacle || "-",
-            Documentation: log.documentation || "-",
-            Program: log.session?.weeks?.course?.name || "-",
-            User: log.user?.username || "-",
-            Email: log.user?.email || "-",
-            LinkedIn: log.user?.linkedin || log.user?.biodata?.linkedin || "-",
-            Date: this.formatDate(log.createdAt),
-          }));
-
-          const wb = XLSX.utils.book_new();
-          const ws = XLSX.utils.json_to_sheet(dataToExport);
-
-          ws["!cols"] = [
-            { wch: 5 },  // No
-            { wch: 30 }, // Activity
-            { wch: 50 }, // Details
-            { wch: 40 }, // Obstacle
-            { wch: 60 }, // Documentation
-            { wch: 25 }, // Program
-            { wch: 20 }, // User
-            { wch: 25 }, // Email
-            { wch: 30 }, // LinkedIn
-            { wch: 20 }  // Date
-          ];
-
-          XLSX.utils.book_append_sheet(wb, ws, "Logbook");
-          XLSX.writeFile(
-            wb,
-            `Logbook_Mentor_${new Date().toISOString().slice(0, 10)}.xlsx`
-          );
+          await exportRowsToExcel({
+            rows: filtered,
+            sheetName: 'Logbook Mentor',
+            filePrefix: 'Logbook_Mentor',
+            columns: [
+              { header: 'No', width: 5, value: (log, index) => index + 1 },
+              { header: 'Activity', width: 30, value: (log) => log.activity || '-' },
+              { header: 'Details', width: 50, value: (log) => log.activityDetail || '-' },
+              { header: 'Obstacle', width: 40, value: (log) => log.obstacle || '-' },
+              { header: 'Documentation', width: 28, value: (log) => log.documentation, isImage: true },
+              { header: 'Program', width: 25, value: (log) => log.session?.weeks?.course?.name || '-' },
+              { header: 'User', width: 20, value: (log) => log.user?.username || '-' },
+              { header: 'Email', width: 28, value: (log) => log.user?.email || '-' },
+              { header: 'Date', width: 20, value: (log) => this.formatDate(log.createdAt) },
+            ],
+          });
         } catch (error) {
           alert("Failed to export data to Excel");
+          console.error(error);
         }
       },
 

@@ -57,7 +57,7 @@
             checkedBind="isFinal"
             onChange="isFinal = $event.target.checked"
           }}
-          <span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold sm:whitespace-nowrap'>Jadikan pertemuan terakhir</span>
+          <span class='text-[14px]/[normal] text-[#171717] font-inter font-semibold sm:whitespace-nowrap'>Mark as final session</span>
           <input type='hidden' name='isFinal' :value="isFinal ? 'true' : 'false'" />
         </div>
 
@@ -129,7 +129,11 @@ function createSyllabusForm() {
 
     async handleSubmit(e) {
       if (!this.title.trim()) {
-        alert('Title is required');
+        if (typeof window.showErrorToast === 'function') {
+          window.showErrorToast('Title is required', 'Silakan masukkan judul silabus.');
+        } else {
+          alert('Title is required');
+        }
         return;
       }
 

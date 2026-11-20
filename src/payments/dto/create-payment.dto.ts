@@ -1,5 +1,6 @@
 import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ProcessStatus } from 'src/entities/types/process-status';
+import { CURRENT_STATUS_OPTIONS } from 'src/entities/payment.entity';
 
 export class CreatePaymentDto {
   @IsString()
@@ -37,6 +38,10 @@ export class CreatePaymentDto {
   ])
   @IsOptional()
   referalSource: string;
+
+  @IsEnum(CURRENT_STATUS_OPTIONS)
+  @IsOptional()
+  current_status: (typeof CURRENT_STATUS_OPTIONS)[number];
 
   @IsString()
   @IsOptional()

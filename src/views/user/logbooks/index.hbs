@@ -18,9 +18,7 @@
   </div>
 </div>
 
-<script
-  src='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
-></script>
+{{> components/ui/super_admin/table/export_excel }}
 
 <script>
   function logbookApp() {
@@ -99,42 +97,30 @@
 
       async exportToExcel() {
         try {
-          const dataToExport = this.filteredLogbooks.map((log, index) => ({
-            No: index + 1,
-            Activity: log.activity || "-",
-            "Activity Details": log.activityDetails || "-",
-            Issues: log.obstacles || "-",
-            Class: log.session?.weeks?.course?.name || "-",
-            Status:
-              log.process === "approved"
-                ? "Approved"
-                : log.process === "process"
-                ? "Process"
-                : "Rejected",
-            Date: this.formatDate(log.createdAt),
-            Documentation: log.documentation || "-",
-          }));
-
-          const wb = XLSX.utils.book_new();
-          const ws = XLSX.utils.json_to_sheet(dataToExport);
-
-          ws["!cols"] = [
-            { wch: 5 },
-            { wch: 30 },
-            { wch: 50 },
-            { wch: 40 },
-            { wch: 25 },
-            { wch: 12 },
-            { wch: 20 },
-            { wch: 60 },
-          ];
-
-          XLSX.utils.book_append_sheet(wb, ws, "Logbook");
-
-          XLSX.writeFile(
-            wb,
-            `Logbook_${new Date().toISOString().slice(0, 10)}.xlsx`
-          );
+          await exportRowsToExcel({
+            rows: this.filteredLogbooks,
+            sheetName: 'Logbook',
+            filePrefix: 'Logbook',
+            columns: [
+              { header: 'No', width: 5, value: (log, index) => index + 1 },
+              { header: 'Activity', width: 30, value: (log) => log.activity || '-' },
+              { header: 'Activity Details', width: 50, value: (log) => log.activityDetails || '-' },
+              { header: 'Issues', width: 40, value: (log) => log.obstacles || '-' },
+              { header: 'Class', width: 25, value: (log) => log.session?.weeks?.course?.name || '-' },
+              {
+                header: 'Status',
+                width: 15,
+                value: (log) =>
+                  log.process === 'approved'
+                    ? 'Approved'
+                    : log.process === 'process'
+                    ? 'Process'
+                    : 'Rejected',
+              },
+              { header: 'Date', width: 20, value: (log) => this.formatDate(log.createdAt) },
+              { header: 'Documentation', width: 28, value: (log) => log.documentation, isImage: true },
+            ],
+          });
         } catch (err) {
           showErrorToast('Export failed', 'The logbook could not be exported to Excel.');
           console.error(err);

@@ -76,7 +76,7 @@
                 <polyline points='10 9 9 9 8 9'></polyline>
               </svg>
               <span class='font-inter font-medium text-[14px] leading-[20px] text-[#737373]'>
-                Belum ada submission dari peserta.
+                No submissions from participants yet.
               </span>
             </div>
           </template>
@@ -232,7 +232,7 @@
 
         {{!-- Content Body: Render Content Saja --}}
         <div class='box-border w-full p-[20px] flex flex-col gap-[16px] bg-[#FFFFFF] min-h-[200px]'>
-          {{> components/ui/content-preview/index content=finalAssignment.content emptyMessage="Belum ada konten untuk Final Assignment ini."}}
+          {{> components/ui/content-preview/index content=finalAssignment.content emptyMessage="No content for this Final Assignment yet."}}
         </div>
 
       </div>
@@ -257,17 +257,17 @@ function detailFinalAssignmentData() {
         bootstrapSubmissions = parsed.map(s => ({
           id: s.id,
           studentName: s.user?.biodata?.fullName || s.user?.username || 'Student',
-          role: s.user?.role || 'Peserta',
+          role: s.user?.role || 'Student',
           status: s.status,
           fileName: s.filePath ? s.filePath.split('/').pop() : 'Submission_File.pdf',
           fileSize: 'PDF',
           courseTopic: 'Final Assignment',
           fileUrl: s.filePath ? (s.filePath.startsWith('http') ? s.filePath : '/' + s.filePath) : '#',
-          submittedDate: s.createdAt ? new Date(s.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-',
+          submittedDate: s.createdAt ? new Date(s.createdAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : '-',
           isOpen: false,
           newComment: '',
           comments: Array.isArray(s.commentHistory)
-            ? s.commentHistory.map(c => typeof c === 'string' ? c : (c.comment + (c.createdAt ? ' (' + new Date(c.createdAt).toLocaleDateString('id-ID') + ')' : '')))
+            ? s.commentHistory.map(c => typeof c === 'string' ? c : (c.comment + (c.createdAt ? ' (' + new Date(c.createdAt).toLocaleDateString('en-US') + ')' : '')))
             : (s.comment ? [s.comment] : []),
         }));
       }

@@ -25,12 +25,13 @@
       pageTitle=(t 'test.startLearning.myLogbook')
       back=false
       trail=(array
-        (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard')
-        (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning')
+        (obj 'label' (t 'test.common.home') 'href' '/users/profile?tab=dashboard' 'icon' 'ph ph-house')
+        (obj 'label' (t 'test.userSidebar.myLearning') 'href' '/users/profile?tab=learning' 'icon' 'ph ph-book-open')
         (obj
           'label' (t 'test.startLearning.startLearning')
-          'href' (concat '/program/myProgram/' user.id '?courseId=' logbook.session.weeks.course.id))
-        (obj 'label' (t 'test.startLearning.myLogbook')))}}
+          'href' (concat '/program/myProgram/' user.id '?courseId=' logbook.session.weeks.course.id)
+          'icon' 'ph ph-play-circle')
+        (obj 'label' (t 'test.startLearning.myLogbook') 'icon' 'ph ph-notebook'))}}
 <div class="w-full max-w-[1540px] mx-auto flex flex-col items-start px-[20px] sm:px-[50px] pt-[30px] sm:pt-[50px] pb-[40px] sm:pb-[80px] gap-[24px] sm:gap-[38px] font-inter">
 
   {{!-- Page Header --}}

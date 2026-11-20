@@ -28,7 +28,7 @@
   <form :action="{{#if deleteAction}}{{{deleteAction}}}{{else}}'/users/' + user.id + '?_method=DELETE'{{/if}}" method='post'>
     <button
       type='button'
-      onclick='openDeleteModal(this)'
+      onclick="openDeleteModal(this, 'Delete {{default entity "Item"}}?', 'Are you sure you want to delete this {{default entity "item"}}? This action will permanently remove it and cannot be undone.')"
       title='Delete {{default entity "user"}}'
       aria-label='Delete {{default entity "user"}}'
       class='flex h-10 w-10 items-center justify-center rounded-lg p-2.5 text-[#dc2626] transition-colors hover:bg-[#fef2f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dc2626]/40 active:bg-[#fee2e2]'

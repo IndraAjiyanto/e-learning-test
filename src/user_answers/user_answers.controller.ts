@@ -46,6 +46,19 @@ export class UserAnswersController {
   ) {
     void _createUserAnswerDto;
     try {
+      const isPassed = await this.quizService.isQuizPassed(
+        req.user!.id,
+        quizId,
+      );
+      if (isPassed) {
+        flashToast(
+          req,
+          'Quiz Already Completed',
+          'You have already passed this quiz and cannot take it again.',
+        );
+        return res.redirect(`/quiz/form/${quizId}`);
+      }
+
       const userAnswer = await this.userAnswersService.searchAnswerUser(
         quizId,
         req.user!.id,

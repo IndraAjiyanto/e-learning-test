@@ -86,7 +86,22 @@ export class AnswerTasksService {
   async findAllAssignmentAnswers(assignmentId: string) {
     return await this.assignmentAnswerRepository.find({
       where: { task: { id: assignmentId } },
-      relations: ['user', 'comment', 'task'],
+      relations: ['user', 'comment'],
+      select: {
+        id: true,
+        file: true,
+        process: true,
+        createdAt: true,
+        updatedAt: true,
+        user: {
+          id: true,
+          username: true,
+          email: true,
+          profile: true,
+        },
+        comment: true,
+      },
+      order: { createdAt: 'DESC' },
     });
   }
 

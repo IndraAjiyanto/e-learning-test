@@ -6,7 +6,7 @@
   Wraps a label + slot + error message in vertical layout.
 --}}
 <div class='flex flex-col gap-[6px] w-full {{class}}'>
-  {{> components/ui/admin/form/form-label text=label for=for}}
+  {{> components/ui/admin/form/form-label text=label for=for required=required}}
   {{> @partial-block}}
   {{#if errorId}}<div id='{{errorId}}' class='hidden text-red-500 text-xs mt-1'></div>{{/if}}
 </div>

@@ -2,12 +2,14 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { CreateCategoriesDto } from './dto/create-categories.dto';
 import { UpdateCategoriesDto } from './dto/update-categories.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from 'src/entities/category.entity';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Course } from 'src/entities/course.entity';
 import { CourseType } from 'src/entities/course_type.entity';
 import { Alumni } from 'src/entities/alumni.entity';
@@ -15,6 +17,7 @@ import { CategoryFaq } from 'src/entities/faqs.entity';
 import { BenefitCategory } from 'src/entities/benefit_category.entity';
 import { Gallery } from 'src/entities/gallery.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
+import { CoursesService } from 'src/courses/courses.service';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { imageSize } from 'image-size';
@@ -38,7 +41,59 @@ export class CategoriesService {
     private readonly galleryRepository: Repository<Gallery>,
     @InjectRepository(Portofolios)
     private readonly portfolioRepository: Repository<Portofolios>,
+    @Inject(forwardRef(() => CoursesService))
+    private readonly coursesService: CoursesService,
   ) {}
+
+  private parseCourseType(val: unknown, required: boolean): string[] {
+    let ids: string[] = [];
+    if (Array.isArray(val)) {
+      ids = val
+        .map(String)
+        .map((s) => s.trim())
+        .filter(Boolean);
+    } else if (typeof val === 'string' && val.trim().length > 0) {
+      ids = [val.trim()];
+    }
+    if (required && ids.length === 0) {
+      throw new BadRequestException('Please select at least one program type.');
+    }
+    return ids;
+  }
+
+  private validateCaption(text: unknown, required: boolean) {
+    if (!required) return;
+    if (!text) {
+      throw new BadRequestException('Caption is required.');
+    }
+    if (typeof text === 'object' && text !== null) {
+      const textObj = text as Record<string, unknown>;
+      for (const lang of ['id', 'en', 'ja']) {
+        const val =
+          typeof textObj[lang] === 'string' ? textObj[lang].trim() : '';
+        if (!val) {
+          const langLabel =
+            lang === 'id'
+              ? 'Indonesian'
+              : lang === 'en'
+                ? 'English'
+                : 'Japanese';
+          throw new BadRequestException(`Caption (${langLabel}) is required.`);
+        }
+      }
+    }
+  }
+
+  private validateContact(contact: unknown, required: boolean) {
+    if (!required) return;
+    const val = typeof contact === 'string' ? contact.trim() : '';
+    if (!val) {
+      throw new BadRequestException('Contact is required.');
+    }
+    if (!/^[0-9+\-\s]+$/.test(val)) {
+      throw new BadRequestException('Contact must be a valid phone number.');
+    }
+  }
 
   // Nomor urut (1..N) untuk mengurutkan kategori di navbar user. Nilainya
   // dikirim form sebagai string (multipart, tanpa global ValidationPipe), jadi
@@ -81,12 +136,59 @@ export class CategoriesService {
       .sort((a, b) => a - b);
   }
 
+  async getTakenCategoryNames(excludeId?: string): Promise<string[]> {
+    const qb = this.categoryRepository
+      .createQueryBuilder('c')
+      .select('c.name', 'name')
+      .where('c.name IS NOT NULL');
+    if (excludeId) {
+      qb.andWhere('c.id != :excludeId', { excludeId });
+    }
+    const rows: { name: string | null }[] = await qb.getRawMany<{
+      name: string | null;
+    }>();
+    return rows
+      .map((r) => r.name?.trim())
+      .filter((name): name is string => Boolean(name));
+  }
+
   async create(createCategoriesDto: CreateCategoriesDto) {
+    const rawCourseTypes =
+      createCategoriesDto.courseType ??
+      (createCategoriesDto as unknown as Record<string, unknown>)[
+        'courseType[]'
+      ];
+    const courseTypeIds = this.parseCourseType(rawCourseTypes, true);
+    this.validateCaption(createCategoriesDto.text, true);
+    this.validateContact(createCategoriesDto.contact, true);
+
     const {
-      courseType: courseTypeIds,
+      courseType: _ignoredCourseType,
       no,
       ...categoryData
     } = createCategoriesDto;
+
+    const rawName = (categoryData.name ?? '').trim();
+    const normalizedName = rawName.replace(/\s+/g, ' ');
+    if (!normalizedName) {
+      throw new BadRequestException('Category name is required.');
+    }
+
+    const existing = await this.categoryRepository
+      .createQueryBuilder('c')
+      .where(
+        `LOWER(REGEXP_REPLACE(TRIM(c.name), '\\s+', ' ', 'g')) = LOWER(:normalizedName)`,
+        { normalizedName },
+      )
+      .getOne();
+
+    if (existing) {
+      throw new BadRequestException(
+        `Category name "${normalizedName}" already exists.`,
+      );
+    }
+
+    categoryData.name = normalizedName;
     this.normalizeLangNames(categoryData);
     const targetNo = this.parseNo(no, true) as number;
 
@@ -126,7 +228,10 @@ export class CategoriesService {
   }
 
   async findCourseTypes() {
-    return await this.courseTypeRepository.find();
+    return await this.courseTypeRepository.find({
+      select: ['id', 'nameClassesType', 'icon'],
+      order: { nameClassesType: 'ASC' },
+    });
   }
 
   async findAll() {
@@ -159,33 +264,57 @@ export class CategoriesService {
    * kosong, section program dirender sebagai Coming Soon.
    */
   async findCourseByCategory(categoryId: string) {
-    return await this.courseRepository
+    const courses = await this.courseRepository
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.courseType', 'courseType')
       .leftJoinAndSelect('course.category', 'category')
-      .leftJoinAndSelect('course.userCourses', 'userCourses')
       .where('category.id = :categoryId', { categoryId })
       .andWhere('(course.launch = :launch OR course.status = :status)', {
         launch: true,
         status: 'launch',
       })
+      .orderBy('course.createdAt', 'DESC')
       .getMany();
+
+    await Promise.all(
+      courses.map(async (course) => {
+        try {
+          const count = await this.coursesService.sumStudent(course.id);
+          course.enrolledCount = count;
+        } catch {
+          course.enrolledCount = 0;
+        }
+      }),
+    );
+
+    return courses;
   }
 
   async findCourseByCategoryAll(categoryId: string) {
     return await this.courseRepository.find({
       where: { category: { id: categoryId } },
-      relations: ['courseType', 'category', 'userCourses'],
+      relations: [
+        'courseType',
+        'category',
+        'userCourses',
+        'mentorings',
+        'mentorings.user',
+        'mentors',
+      ],
       order: { launch: 'DESC' },
     });
   }
 
-  async findAlumniByCategory(categoryId: string) {
-    return await this.alumniRepository.find({
-      where: { course: { category: { id: categoryId } } },
-      relations: ['course', 'course.category'],
-      order: { createdAt: 'DESC' },
-      take: 6,
+  async findCourseByCourseType(typeId: string) {
+    return await this.courseRepository.find({
+      where: { courseType: { id: typeId } },
+      relations: ['category', 'courseType'],
+    });
+  }
+
+  async findBenefitByCategory(categoryId: string) {
+    return await this.benefitCategoryRepository.find({
+      where: { category: { id: categoryId } },
     });
   }
 
@@ -195,9 +324,10 @@ export class CategoriesService {
     });
   }
 
-  async findBenefitByCategory(categoryId: string) {
-    return await this.benefitCategoryRepository.find({
-      where: { category: { id: categoryId } },
+  async findAlumniByCategory(categoryId: string) {
+    return await this.alumniRepository.find({
+      where: { course: { category: { id: categoryId } } },
+      relations: ['course', 'course.category'],
     });
   }
 
@@ -237,11 +367,58 @@ export class CategoriesService {
       throw new NotFoundException('Category not found');
     }
 
+    const hasCourseTypeInPayload =
+      updateCategoriesDto.courseType !== undefined ||
+      (updateCategoriesDto as unknown as Record<string, unknown>)[
+        'courseType[]'
+      ] !== undefined;
+
+    const courseTypeIds = hasCourseTypeInPayload
+      ? this.parseCourseType(
+          updateCategoriesDto.courseType ??
+            (updateCategoriesDto as unknown as Record<string, unknown>)[
+              'courseType[]'
+            ],
+          true,
+        )
+      : undefined;
+
+    if (updateCategoriesDto.text !== undefined) {
+      this.validateCaption(updateCategoriesDto.text, true);
+    }
+    if (updateCategoriesDto.contact !== undefined) {
+      this.validateContact(updateCategoriesDto.contact, true);
+    }
+
     const {
-      courseType: courseTypeIds,
+      courseType: _ignoredCourseType,
       no,
       ...updateData
     } = updateCategoriesDto;
+
+    if (updateData.name !== undefined) {
+      const rawName = (updateData.name ?? '').trim();
+      const normalizedName = rawName.replace(/\s+/g, ' ');
+      if (!normalizedName) {
+        throw new BadRequestException('Category name cannot be empty.');
+      }
+      const existing = await this.categoryRepository
+        .createQueryBuilder('c')
+        .where(
+          `LOWER(REGEXP_REPLACE(TRIM(c.name), '\\s+', ' ', 'g')) = LOWER(:normalizedName)`,
+          { normalizedName },
+        )
+        .andWhere('c.id != :categoryId', { categoryId })
+        .getOne();
+
+      if (existing) {
+        throw new BadRequestException(
+          `Category name "${normalizedName}" already exists.`,
+        );
+      }
+      updateData.name = normalizedName;
+    }
+
     this.normalizeLangNames(updateData);
 
     const oldNo = category.no;
@@ -391,7 +568,7 @@ export class CategoriesService {
     const programCount = category.courses?.length || 0;
     if (programCount > 0) {
       throw new BadRequestException(
-        `Category "${category.name}" cannot be deleted because it still has ${programCount} program(s). Please move or delete the programs first.`,
+        `Category "${category.name}" cannot be deleted because it still contains ${programCount} program(s). Please move or delete the programs first.`,
       );
     }
     const removedNo = category.no;
@@ -406,5 +583,45 @@ export class CategoriesService {
       }
     });
     return { message: 'category successfully deleted' };
+  }
+
+  async removeMany(ids: string[]) {
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      throw new BadRequestException(
+        'Please select at least one category to delete.',
+      );
+    }
+
+    const categories = await this.categoryRepository.find({
+      where: { id: In(ids) },
+      relations: ['courses'],
+    });
+    if (!categories || categories.length === 0) {
+      throw new NotFoundException('Selected categories were not found.');
+    }
+
+    const withCourses = categories.filter((c) => (c.courses || []).length > 0);
+    if (withCourses.length > 0) {
+      if (withCourses.length === 1) {
+        throw new BadRequestException(
+          `Category "${withCourses[0].name}" cannot be deleted because it still contains ${withCourses[0].courses.length} program(s). Please delete or reassign the programs first.`,
+        );
+      } else {
+        const names = withCourses.map((c) => `"${c.name}"`).join(', ');
+        throw new BadRequestException(
+          `Categories ${names} cannot be deleted because they still contain related programs. Please delete or reassign the programs first.`,
+        );
+      }
+    }
+
+    for (const category of categories) {
+      if (category.icon) await this.deleteFile(category.icon);
+      if (category.hero_section_image) {
+        await this.deleteFile(category.hero_section_image);
+      }
+    }
+
+    await this.categoryRepository.remove(categories);
+    return { success: true, count: categories.length };
   }
 }

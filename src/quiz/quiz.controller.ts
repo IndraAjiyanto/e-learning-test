@@ -12,6 +12,7 @@ import {
   UsePipes,
   ValidationPipe,
   ParseUUIDPipe,
+  NotFoundException,
 } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
@@ -80,13 +81,14 @@ export class QuizController {
     if (quiz?.syllabus) {
       return res.redirect(`/syllabus/quiz/detail/${quiz.id}`);
     }
-    const scores = await this.quizService.findScore(quizId);
-    const questions = await this.quizService.findQuestions(quizId);
-    const isAttempted = (scores || []).length > 0;
+    const [scoreCount, questions] = await Promise.all([
+      this.quizService.countScores(quizId),
+      this.quizService.findQuestions(quizId),
+    ]);
+    const isAttempted = scoreCount > 0;
     res.render('admin/quiz/detail', {
       user: req.user,
       quiz,
-      scores,
       questions,
       isAttempted,
     });
@@ -111,6 +113,32 @@ export class QuizController {
     @Req() req: Request,
   ) {
     const quiz = await this.quizService.findOne(quizId);
+    if (!quiz) {
+      throw new NotFoundException('Quiz not found');
+    }
+
+    if (quiz.weeks) {
+      const isUnlocked = await this.quizService.isQuizUnlocked(
+        req.user!.id,
+        quizId,
+      );
+      if (!isUnlocked) {
+        req.flash(
+          'error',
+          'Complete the previous session before taking this quiz.',
+        );
+        const courseId = quiz.weeks.course?.id;
+        return res.redirect(
+          courseId
+            ? `/program/myProgram/${req.user!.id}?courseId=${courseId}`
+            : '/learning',
+        );
+      }
+    }
+
+    // Bersihkan sesi kuis usang jika ada saat user mengakses halaman ikhtisar
+    await this.quizService.resetQuizState(req.user!.id);
+
     const scores = await this.quizService.findUserScore(req.user!.id, quizId);
     const questions = await this.quizService.findQuestions(quizId);
 
@@ -152,33 +180,48 @@ export class QuizController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    const quiz = await this.quizService.findOne(quizId);
+    if (!quiz) {
+      throw new NotFoundException('Quiz not found');
+    }
+
+    if (quiz.weeks) {
+      const isUnlocked = await this.quizService.isQuizUnlocked(
+        req.user!.id,
+        quizId,
+      );
+      if (!isUnlocked) {
+        req.flash(
+          'error',
+          'Complete the previous session before taking this quiz.',
+        );
+        const courseId = quiz.weeks.course?.id;
+        return res.redirect(
+          courseId
+            ? `/program/myProgram/${req.user!.id}?courseId=${courseId}`
+            : '/learning',
+        );
+      }
+    }
+
+    // Jika nilai kuis sudah memenuhi batas minimum (passed), kuis tidak boleh dikerjakan lagi
+    const isPassed = await this.quizService.isQuizPassed(req.user!.id, quizId);
+    if (isPassed) {
+      flashToast(
+        req,
+        'Quiz Already Completed',
+        'You have already passed this quiz and cannot take it again.',
+      );
+      return res.redirect(`/quiz/form/${quizId}`);
+    }
+
     const check = await this.quizService.checkStartQuestion(
       req.user!.id,
       quizId,
     );
     const questions = await this.quizService.findQuestions(quizId);
-    const quiz = await this.quizService.findOne(quizId);
-    // const userWithCourses = await this.usersService.findWithCourses(
-    //   req.user!.id,
-    // );
-    // const logbooks = await this.usersService.findAllLogbooks(req.user!.id);
-    // const portfolio = await this.usersService.findPortfolio(req.user!.id);
-    // const activeCourse = userWithCourses?.userCourses.find(
-    //   (userCourse) => userCourse.course?.id === quiz?.weeks?.course?.id,
-    // )?.course;
 
     if (check) {
-      // res.render('user/user_profile/index', {
-      //   user: req.user,
-      //   userWithCourses,
-      //   logbooks,
-      //   portfolio,
-      //   activeCourse,
-      //   activeSection: 'quiz-start',
-      //   quizId,
-      //   questions,
-      //   check,
-      // });
       res.render('user/quiz/start', {
         user: req.user,
         quizId,
@@ -192,18 +235,6 @@ export class QuizController {
         req.user!.id,
         quizId,
       );
-      // res.render('user/user_profile/index', {
-      //   user: req.user,
-      //   userWithCourses,
-      //   logbooks,
-      //   portfolio,
-      //   activeCourse,
-      //   activeSection: 'quiz-start',
-      //   quizId,
-      //   questions,
-      //   remainingTime,
-      //   check,
-      // });
       res.render('user/quiz/start', {
         user: req.user,
         quizId,

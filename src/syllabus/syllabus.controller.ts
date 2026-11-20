@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { join } from 'path';
 import { existsSync } from 'fs';
+import axios from 'axios';
 import { SyllabusService } from './syllabus.service';
 import { CreateSyllabusDto } from './dto/create-syllabus.dto';
 import { UpdateSyllabusDto } from './dto/update-syllabus.dto';
@@ -83,21 +84,6 @@ export class SyllabusController {
     if (!syllabus) {
       req.flash('error', 'Syllabus not found');
       return res.redirect('/program');
-    }
-    const isCompleted = await this.syllabusService.isSyllabusCompleted(
-      syllabus.id,
-    );
-    if (isCompleted) {
-      flashToast(
-        req,
-        'Cannot Edit Syllabus',
-        'Syllabus cannot be edited because it has already been completed by a user.',
-      );
-      return res.redirect(
-        syllabus.course?.id
-          ? `/program/detail/program/admin/${syllabus.course.id}`
-          : '/program',
-      );
     }
     const maxSyllabus = await this.syllabusService.findCourseSyllabus(
       syllabus.course?.id,
@@ -348,11 +334,13 @@ export class SyllabusController {
       hasVideo: detail.hasVideo,
       videoEmbedUrl: detail.videoEmbedUrl,
       videoDuration: detail.videoDuration,
+      videoDurationFormatted: detail.videoDurationFormatted,
       videoTitle: detail.videoTitle,
       isYoutube: detail.isYoutube,
       videoMaterial: detail.videoMaterial,
       hasPdf: detail.hasPdf,
       hasPpt: detail.hasPpt,
+      hasDocMaterial: detail.hasDocMaterial,
       hasAnyMaterial: detail.hasAnyMaterial,
       bareShell: true,
     });
@@ -423,6 +411,75 @@ export class SyllabusController {
       return res.redirect(`/syllabus/learn/${syllabusId}`);
     }
 
+    const isPpt = material.fileType === 'ppt';
+
+    if (isPpt) {
+      let downloadUrl = material.downloadUrl?.trim();
+      if (!downloadUrl) {
+        req.flash(
+          'error',
+          'Tautan unduhan belum disediakan untuk materi slide ini.',
+        );
+        return res.redirect(`/syllabus/learn/${syllabusId}`);
+      }
+
+      const match = downloadUrl.match(/\/presentation\/d\/(?!e\/)([^/?#]+)/);
+      if (match && !downloadUrl.includes('/export/pptx')) {
+        downloadUrl = `https://docs.google.com/presentation/d/${match[1]}/export/pptx`;
+      }
+
+      const defaultBase = material.title || 'materi-silabus';
+      const safeFilename =
+        material.originalFileName && material.originalFileName.endsWith('.pptx')
+          ? material.originalFileName
+          : `${material.originalFileName || defaultBase}.pptx`;
+
+      if (
+        downloadUrl.startsWith('http://') ||
+        downloadUrl.startsWith('https://')
+      ) {
+        try {
+          const response = await axios.get<NodeJS.ReadableStream>(downloadUrl, {
+            responseType: 'stream',
+            timeout: 30000,
+          });
+
+          res.set({
+            'Content-Type':
+              'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'Content-Disposition': `attachment; filename="${encodeURIComponent(safeFilename)}"`,
+          });
+
+          response.data.pipe(res);
+          return;
+        } catch {
+          req.flash(
+            'error',
+            'Gagal mengunduh berkas presentasi dari tautan penyedia.',
+          );
+          return res.redirect(`/syllabus/learn/${syllabusId}`);
+        }
+      }
+
+      const rel = downloadUrl.startsWith('/')
+        ? downloadUrl.slice(1)
+        : downloadUrl;
+      const candidates = [
+        join(process.cwd(), rel),
+        join(process.cwd(), 'uploads', rel),
+        join(process.cwd(), 'public', rel),
+      ];
+
+      for (const filePath of candidates) {
+        if (existsSync(filePath)) {
+          return res.download(filePath, safeFilename);
+        }
+      }
+
+      req.flash('error', 'Berkas fisik tidak ditemukan di server.');
+      return res.redirect(`/syllabus/learn/${syllabusId}`);
+    }
+
     const fileUrl = material.file;
     const originalName = material.originalFileName || 'materi-silabus';
 
@@ -456,20 +513,17 @@ export class SyllabusController {
     @Res() res: Response,
   ) {
     try {
-      const syllabus = await this.syllabusService.findOne(syllabusId);
       await this.syllabusService.update(syllabusId, updateSyllabusDto);
       flashToast(
         req,
         'Changes Saved',
         'The syllabus information has been updated.',
       );
-      res.redirect(
-        `/program/detail/program/admin/${syllabus?.course?.id || ''}`,
-      );
+      res.redirect(`/syllabus/${syllabusId}`);
     } catch (error: unknown) {
       const err = error as Error;
       req.flash('error', err.message || 'Syllabus failed to update');
-      res.redirect('/program');
+      res.redirect(`/syllabus/${syllabusId}`);
     }
   }
 

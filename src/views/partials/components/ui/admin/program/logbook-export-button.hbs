@@ -4,20 +4,19 @@
   Dipakai: {{> components/ui/admin/program/logbook-export-button}} di dalam scope yang punya `exportToExcel()`
   (mis. logBookUserData, logBookMentorData)
 
-  w122 h44, bg #16A34A, outline 1px #86EFAC offset -0.5px, radius 8,
-  gap 8, p10 18, ikon Excel 20px, text Inter 16/600 white.
-  Ikon Excel dipertahankan dari implementasi lama (bukan ikon generik).
+  Konsisten dengan tombol Export di detail session (logbook user & mentor):
+  w122 h44, bg #16A34A, border #86EFAC, radius 8, shadow,
+  gap 8, p10 18, ikon download putih 20px, text Inter 16/600 white.
 --}}
 <button
   type='button'
   @click='exportToExcel()'
-  class='box-border w-[122px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#16A34A] [outline:1px_solid_#86EFAC] [outline-offset:-0.5px] rounded-[8px] hover:bg-[#15803D] transition-colors whitespace-nowrap'
+  class='box-border w-[122px] shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_18px] justify-center items-center bg-[#16A34A] border border-[#86EFAC] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] rounded-[8px] hover:bg-[#15803D] transition-colors cursor-pointer whitespace-nowrap'
 >
-  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' class='w-[20px] h-[20px] shrink-0 rounded shadow' aria-hidden='true'>
-    <path fill='#185C37' d='M42 6H14a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h28a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z' />
-    <path fill='#21A366' d='M14 6H8a2 2 0 0 0-2 2v32a2 2 0 0 0 2 2h6V6z' />
-    <path fill='#107C41' d='M22 14H8v20h14V14z' />
-    <path fill='#fff' d='M19 31h-2.1l-2.9-5-2.9 5H9l4.2-7-4.1-7h2.1l2.9 5 2.9-5H19l-4.2 7 4.2 7z' />
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px] shrink-0'>
+    <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
+    <polyline points='7 10 12 15 17 10' />
+    <line x1='12' x2='12' y1='15' y2='3' />
   </svg>
   <span class='text-[16px]/[normal] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Export</span>
 </button>

@@ -133,10 +133,7 @@
     </div>
   </div>
 
-<!-- SheetJS Library for Excel Export -->
-<script
-  src='https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
-></script>
+{{> components/ui/super_admin/table/export_excel }}
 
 <script>
 function logBookUserData() {
@@ -243,54 +240,30 @@ function logBookUserData() {
       return new Date(value).toLocaleDateString('id-ID', options);
     },
 
-    exportToExcel() {
+    async exportToExcel() {
       try {
-        const dataToExport = this.filteredData.map((l, index) => ({
-          No: index + 1,
-          User: l.user.username,
-          Email: l.user.email,
-          'Created At': new Date(l.createdAt).toLocaleDateString(),
-          'Meeting No': l.session.sessionOrder,
-          'Week No': l.session?.weeks?.weekNumber,
-          'Program Name': l.session?.weeks?.course?.name,
-          'Program Type': l.session?.weeks?.course?.courseType?.nameClassesType,
-          Category: l.session?.weeks?.course?.category?.name,
-          Mentor: l.session.weeks.course.mentors[0]?.name || '',
-          Activity: l.activity,
-          'Activity Details': l.activityDetails,
-          Documentation: l.documentation,
-          Status: l.process,
-          Issues: l.obstacles,
-          'Additional Documentation': l.otherDocumentation,
-        }));
-
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.json_to_sheet(dataToExport);
-
-        ws['!cols'] = [
-          { wch: 5 },
-          { wch: 20 },
-          { wch: 15 },
-          { wch: 10 },
-          { wch: 8 },
-          { wch: 25 },
-          { wch: 15 },
-          { wch: 15 },
-          { wch: 20 },
-          { wch: 30 },
-          { wch: 50 },
-          { wch: 60 },
-          { wch: 12 },
-          { wch: 40 },
-          { wch: 60 },
-        ];
-
-        XLSX.utils.book_append_sheet(wb, ws, 'Log Book User');
-
-        XLSX.writeFile(
-          wb,
-          `Log_Book_User_${new Date().toISOString().slice(0, 10)}.xlsx`,
-        );
+        await exportRowsToExcel({
+          rows: this.filteredData,
+          sheetName: 'Log Book User',
+          filePrefix: 'Log_Book_User',
+          columns: [
+            { header: 'No', width: 5, value: (l, index) => index + 1 },
+            { header: 'User', width: 20, value: (l) => l.user?.username || '' },
+            { header: 'Email', width: 28, value: (l) => l.user?.email || '' },
+            { header: 'Created At', width: 15, value: (l) => new Date(l.createdAt).toLocaleDateString('id-ID') },
+            { header: 'Meeting No', width: 10, value: (l) => l.session?.sessionOrder ?? '' },
+            { header: 'Week No', width: 8, value: (l) => l.session?.weeks?.weekNumber ?? '' },
+            { header: 'Program Name', width: 25, value: (l) => l.session?.weeks?.course?.name || '' },
+            { header: 'Program Type', width: 15, value: (l) => l.session?.weeks?.course?.courseType?.nameClassesType || '' },
+            { header: 'Category', width: 15, value: (l) => l.session?.weeks?.course?.category?.name || '' },
+            { header: 'Activity', width: 30, value: (l) => l.activity || '' },
+            { header: 'Activity Details', width: 50, value: (l) => l.activityDetails || '' },
+            { header: 'Documentation', width: 28, value: (l) => l.documentation, isImage: true },
+            { header: 'Status', width: 15, value: (l) => l.process || '' },
+            { header: 'Issues', width: 40, value: (l) => l.obstacles || '' },
+            { header: 'Additional Documentation', width: 28, value: (l) => l.otherDocumentation, isImage: true },
+          ],
+        });
       } catch (err) {
         alert('Failed to export data to Excel');
         console.error(err);

@@ -41,6 +41,7 @@
 
           {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
             <colgroup>
+              <template x-if='selectMode'><col class='w-[48px]' /></template>
               <col class='w-[266px]' />
               <col class='w-[257px]' />
               <col class='w-[308px]' />
@@ -48,6 +49,7 @@
             </colgroup>
             <thead>
               <tr>
+                {{> components/ui/super_admin/table/header_cell checkbox=true }}
                 {{> components/ui/super_admin/table/header_cell label='No' }}
                 {{> components/ui/super_admin/table/header_cell label='Category' }}
                 {{> components/ui/super_admin/table/header_cell label='Total Partner' }}
@@ -56,7 +58,11 @@
             </thead>
             <tbody>
               <template x-for='(row, index) in rows' :key='row.id'>
-                <tr class='transition-colors hover:bg-[#fafafa]'>
+                <tr
+                  class='transition-colors hover:bg-[#fafafa]'
+                  :class="selectedIds && selectedIds.some(id => String(id) === String(row.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+                >
+                  {{> components/ui/super_admin/table/cell checkbox=true }}
                   
                   {{> components/ui/super_admin/table/cell
                     text='String((currentPage - 1) * size + index + 1).padStart(2, "0")'
@@ -95,8 +101,8 @@
                             if ((row.partners || []).length > 0) {
                               window.dispatchEvent(new CustomEvent('toast:error', {
                                 detail: {
-                                  title: 'Gagal Menghapus Kategori',
-                                  description: 'Kategori &quot;' + row.category + '&quot; tidak dapat dihapus karena masih memiliki ' + (row.partners || []).length + ' data partnership. Hapus partnership tersebut terlebih dahulu.'
+                                  title: 'Failed to Delete Category',
+                                  description: 'Category &quot;' + row.category + '&quot; cannot be deleted because it still has ' + (row.partners || []).length + ' partnership(s). Please delete or reassign those partnerships first.'
                                 }
                               }));
                             } else {
@@ -122,7 +128,7 @@
                 </tr>
               </template>
 
-              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='4'}}
+              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='5'}}
                 No partner categories found.
               {{/components/ui/super_admin/table/message_row}}
             </tbody>

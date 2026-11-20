@@ -13,7 +13,7 @@ export class TranslationController {
     @Req() req: Request,
   ) {
     const allowed = ['id', 'en', 'ja'];
-    const selected = allowed.includes(lang) ? lang : 'id';
+    const selected = allowed.includes(lang) ? lang : 'en';
 
     res.cookie('lang', selected, {
       httpOnly: false,

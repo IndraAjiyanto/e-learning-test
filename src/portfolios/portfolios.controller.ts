@@ -207,13 +207,28 @@ export class PortfoliosController {
       ReturnType<PortfoliosService['findCourseForPortfolio']>
     > = null;
     if (courseId) {
+      if (userId) {
+        const existing =
+          await this.portfoliosService.findPortfolioByUserAndCourse(
+            userId,
+            String(courseId),
+          );
+        if (existing) {
+          return res.redirect(`/portfolio/formEdit/${existing.id}`);
+        }
+      }
       course = await this.portfoliosService.findCourseForPortfolio(
         String(courseId),
       );
     }
-    const courses = userId
-      ? await this.portfoliosService.findEnrolledCourses(userId)
-      : [];
+    // Hanya program yang benar-benar sudah diselesaikan DAN belum memiliki portfolio
+    // yang boleh dipilih saat create dari my portfolio.
+    const courses =
+      userId && !isFromCourse
+        ? await this.portfoliosService.findCompletedCoursesWithoutPortfolio(
+            userId,
+          )
+        : [];
 
     res.render('user/portofolios/create', {
       user: req.user,
@@ -300,20 +315,36 @@ export class PortfoliosController {
   }
 
   @Roles('user')
-  @Get(':portofolioId/:courseId')
+  @Get([
+    'detail/:portofolioId',
+    'detail/:portofolioId/:courseId',
+    ':portofolioId/:courseId',
+  ])
   async findOne(
     @Param('portofolioId') portofolioId: string,
-    @Param('courseId') courseId: string,
+    @Param('courseId') courseId: string | undefined,
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const portfolio = await this.portfoliosService.findOne(portofolioId);
-    res.render('user/portofolios/detail', {
-      user: req.user,
-      portfolio,
-      courseId,
-      bareShell: true,
-    });
+    try {
+      const portfolio = await this.portfoliosService.findOne(portofolioId);
+      const isFromCourse = Boolean(courseId);
+      const resolvedCourseId = courseId || portfolio.course?.id;
+      return res.render('user/portofolios/detail', {
+        user: req.user,
+        portfolio,
+        isFromCourse,
+        courseId: resolvedCourseId,
+        bareShell: true,
+      });
+    } catch {
+      flashToastError(
+        req,
+        'Portfolio not found',
+        'The requested portfolio could not be found.',
+      );
+      return res.redirect('/users/profile?tab=portfolio');
+    }
   }
 
   @Roles('user')

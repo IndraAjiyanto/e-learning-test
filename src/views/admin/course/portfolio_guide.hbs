@@ -109,7 +109,11 @@ function portfolioGuideForm() {
       }
       const plainText = contentHtml.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
       if (!plainText) {
-        alert('Content is required');
+        if (typeof window.showErrorToast === 'function') {
+          window.showErrorToast('Content is required', 'Silakan masukkan panduan portofolio.');
+        } else {
+          alert('Content is required');
+        }
         return;
       }
       const input = document.getElementById('portfolio_guide_content_input');

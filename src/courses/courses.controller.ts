@@ -205,6 +205,136 @@ export class CoursesController {
     });
   }
 
+  @Roles('super_admin')
+  @Post('delete-all')
+  async removeAllPost(
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const wantsJson =
+      req.xhr ||
+      (req.headers.accept &&
+        req.headers.accept.includes('application/json') &&
+        !req.headers.accept.includes('text/html'));
+
+    try {
+      const result = await this.coursesService.removeAll();
+      if (wantsJson) {
+        return res.json({
+          success: true,
+          message: `Successfully deleted all programs (${result.count} data).`,
+          count: result.count,
+        });
+      }
+      flashToast(
+        req,
+        'Deleted Successfully',
+        `Successfully deleted all programs (${result.count} data).`,
+      );
+      return res.redirect(redirectUrl || req.header('Referer') || '/program');
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Failed to delete all programs';
+      if (wantsJson) {
+        return res.status(400).json({
+          success: false,
+          message: msg,
+        });
+      }
+      flashToastError(req, 'Failed to Delete', msg);
+      return res.redirect(redirectUrl || req.header('Referer') || '/program');
+    }
+  }
+
+  @Roles('super_admin')
+  @Delete('delete-all')
+  async removeAllDelete(
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.removeAllPost(redirectUrl, req, res);
+  }
+
+  @Roles('super_admin')
+  @Post('bulk-delete')
+  async removeManyPost(
+    @Body('ids') rawIds: any,
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const wantsJson =
+      req.xhr ||
+      (req.headers.accept &&
+        req.headers.accept.includes('application/json') &&
+        !req.headers.accept.includes('text/html'));
+
+    let ids: string[] = [];
+    if (Array.isArray(rawIds)) {
+      ids = rawIds.map(String).filter(Boolean);
+    } else if (typeof rawIds === 'string' && rawIds.trim()) {
+      try {
+        const parsed = JSON.parse(rawIds);
+        if (Array.isArray(parsed)) ids = parsed.map(String).filter(Boolean);
+        else
+          ids = rawIds
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean);
+      } catch {
+        ids = rawIds
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+    }
+
+    try {
+      const result = await this.coursesService.removeMany(ids);
+      if (wantsJson) {
+        return res.json({
+          success: true,
+          message: `Successfully deleted ${result.count} selected program(s).`,
+          count: result.count,
+        });
+      }
+      flashToast(
+        req,
+        'Deleted Successfully',
+        `Successfully deleted ${result.count} selected program(s).`,
+      );
+      return res.redirect(redirectUrl || req.header('Referer') || '/program');
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Failed to delete selected programs';
+      if (wantsJson) {
+        return res.status(400).json({
+          success: false,
+          message: msg,
+        });
+      }
+      flashToastError(req, 'Failed to Delete', msg);
+      return res.redirect(redirectUrl || req.header('Referer') || '/program');
+    }
+  }
+
+  @Roles('super_admin')
+  @Delete('bulk-delete')
+  async removeManyDelete(
+    @Body('ids') rawIds: any,
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.removeManyPost(rawIds, redirectUrl, req, res);
+  }
+
   @Roles('admin', 'super_admin')
   @Post(':categoryId')
   @UseInterceptors(
@@ -224,7 +354,8 @@ export class CoursesController {
     @Body() body: Record<string, unknown>,
     @Res() res: Response,
     @Req() req: Request,
-    @Param('categoryId') categoryId: string,
+    @Param('categoryId', new ParseUUIDPipe({ optional: true }))
+    categoryId: string,
   ) {
     try {
       body.categoryId = categoryId;
@@ -307,17 +438,19 @@ export class CoursesController {
     @Query('search') search?: string,
     @Query('alphabet') alphabet?: string,
     @Query('status') status?: string,
+    @Query('process') process?: string,
     @Query('mentor') mentor?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
-    const currentPage = parseInt(page || '1', 10);
-    const itemsPerPage = parseInt(limit || '5', 10);
+    const currentPage = Math.max(1, parseInt(page || '1', 10) || 1);
+    const itemsPerPage = Math.min(100, Math.max(1, parseInt(limit || '5', 10) || 5));
 
     const result = await this.coursesService.findPaginatedCourses({
       search: search || undefined,
       alphabet: alphabet || undefined,
       status: status || undefined,
+      process: process || undefined,
       mentor:
         req.user!.role === 'super_admin' ? mentor || undefined : undefined,
       page: currentPage,
@@ -340,6 +473,7 @@ export class CoursesController {
     const courseType = await this.coursesService.findCourseTypes();
     const technologies = await this.coursesService.findTechnologies();
     const mentorings = await this.coursesService.findMentoring();
+
     return res.render('admin/course/create', {
       user: req.user,
       category,
@@ -354,12 +488,14 @@ export class CoursesController {
   async formCreateKelas(
     @Res() res: Response,
     @Req() req: Request,
-    @Param('categoryId') categoryId: string,
+    @Param('categoryId', new ParseUUIDPipe({ optional: true }))
+    categoryId: string,
   ) {
     const category = await this.coursesService.findCategory();
     const courseType = await this.coursesService.findCourseTypes();
     const technologies = await this.coursesService.findTechnologies();
     const mentorings = await this.coursesService.findMentoring();
+
     return res.render('admin/course/formCreate', {
       user: req.user,
       courseType,
@@ -416,16 +552,6 @@ export class CoursesController {
   ) {
     const course = await this.coursesService.findOne(courseId);
     const guide = await this.portfoliosService.getPortfolioGuide(courseId);
-    const locked =
-      !!guide && (await this.portfoliosService.hasPortfolioForCourse(courseId));
-    if (locked) {
-      flashToastError(
-        req,
-        'Cannot Edit Portfolio Guide',
-        'Portfolio guide cannot be edited because participants have already uploaded their portfolios.',
-      );
-      return res.redirect(`/program/portfolio-guide/detail/${courseId}`);
-    }
     return res.render('admin/course/portfolio_guide', {
       user: req.user,
       course,
@@ -468,14 +594,6 @@ export class CoursesController {
     @Res() res: Response,
   ) {
     try {
-      if (await this.portfoliosService.hasPortfolioForCourse(courseId)) {
-        flashToastError(
-          req,
-          'Cannot Edit Portfolio Guide',
-          'Portfolio guide cannot be edited because participants have already uploaded their portfolios.',
-        );
-        return res.redirect(`/program/portfolio-guide/detail/${courseId}`);
-      }
       await this.coursesService.updatePortfolioGuide(courseId, content);
       flashToast(
         req,
@@ -752,7 +870,8 @@ export class CoursesController {
   async formEdit(
     @Res() res: Response,
     @Param('courseId') courseId: string,
-    @Param('categoryId') categoryId: string,
+    @Param('categoryId', new ParseUUIDPipe({ optional: true }))
+    categoryId: string,
     @Req() req: Request,
   ) {
     const course = await this.coursesService.findOne(courseId);
@@ -761,26 +880,17 @@ export class CoursesController {
       return res.redirect('/program');
     }
 
-    const participantCount = course.userCourses?.length || 0;
-    if (participantCount > 0) {
-      flashToastError(
-        req,
-        'Gagal Mengedit Program',
-        `Program "${course.name}" tidak dapat diedit karena sudah memiliki ${participantCount} peserta.`,
-      );
-      req.flash(
-        'error',
-        `Program "${course.name}" tidak dapat diedit karena sudah memiliki ${participantCount} peserta.`,
-      );
-      return res.redirect(`/program/detail/program/admin/${courseId}`);
-    }
-
     const category = await this.coursesService.findCategory();
     const courseType = await this.coursesService.findCourseTypes();
     const technologies = await this.coursesService.findTechnologies();
     const mentorings = await this.coursesService.findMentoring();
 
+    const structureLock =
+      await this.coursesService.checkLearningStructureLock(courseId);
+
     return res.render('admin/course/edit', {
+      learningStructureLocked: structureLock.isLocked,
+      learningStructureLockHint: structureLock.hint || structureLock.reason,
       user: req.user,
       course,
       category,
@@ -1535,18 +1645,29 @@ export class CoursesController {
     let isUserInKelas = false;
     if (!req.user) {
       const course = await this.coursesService.findOneUserCourse(id);
-      const courseQuestions = await this.coursesService.findCourseQuestions(id);
+      const [
+        courseQuestions,
+        course_benefits,
+        technologies,
+        installments,
+        studentList,
+        mentors,
+        course_flows,
+      ] = await Promise.all([
+        this.coursesService.findCourseQuestions(id),
+        this.coursesService.findProgramBenefit(id),
+        this.coursesService.findCourseTechnologies(id),
+        this.coursesService.findCourseInstallments(id),
+        this.coursesService.sumStudent(course.id),
+        this.coursesService.findCourseMentors(course.id),
+        this.coursesService.findCourseFlows(id),
+      ]);
+
       const faqs = courseQuestions.map((cq) => ({
         question: cq.questions,
         answer: cq.answers,
       }));
-      const course_benefits = await this.coursesService.findProgramBenefit(id);
-      const technologies = await this.coursesService.findCourseTechnologies(id);
-      const installments = await this.coursesService.findCourseInstallments(id);
-      const userCourses = await this.coursesService.findCourseUsers(id);
-      const kelass = await this.coursesService.allClassExcept(course.id);
-      const studentList = await this.coursesService.sumStudent(course.id);
-      const mentors = await this.coursesService.findCourseMentors(course.id);
+
       const statusOptions = [
         'University Student',
         'Fresh Graduate',
@@ -1560,27 +1681,23 @@ export class CoursesController {
 
       if (course.checkPaid === false) {
         course.programBenefits = course_benefits;
-        const course_flows = await this.coursesService.findCourseFlows(id);
         res.render('detail_program/free_program/index', {
           course,
           course_flows,
           course_benefits,
-          kelass,
           studentList,
           technologies,
           installments,
           mentors,
-          userCourses,
           faqs,
           currentStatusOptions: statusOptions,
           referalSourceOptions,
         });
       } else {
-        const course_flows = await this.coursesService.findCourseFlows(id);
         res.render('detail_program/paid_program/index', {
           course,
+          userActivePayment: null,
           category: course.category,
-          kelass,
           studentList,
           courseQuestions,
           faqs,
@@ -1590,7 +1707,6 @@ export class CoursesController {
           technologies,
           installments,
           mentors,
-          userCourses,
         });
       }
     } else {
@@ -1613,23 +1729,34 @@ export class CoursesController {
         );
       } else {
         const course = await this.coursesService.findOneUserCourse(id);
-        const courseQuestions =
-          await this.coursesService.findCourseQuestions(id);
+        const [
+          courseQuestions,
+          course_benefits,
+          technologies,
+          installments,
+          studentList,
+          mentors,
+          course_flows,
+          userActivePayment,
+        ] = await Promise.all([
+          this.coursesService.findCourseQuestions(id),
+          this.coursesService.findProgramBenefit(id),
+          this.coursesService.findCourseTechnologies(id),
+          this.coursesService.findCourseInstallments(id),
+          this.coursesService.sumStudent(course.id),
+          this.coursesService.findCourseMentors(course.id),
+          this.coursesService.findCourseFlows(id),
+          req.user
+            ? this.coursesService.findUserActivePayment(req.user.id, id)
+            : Promise.resolve(null),
+        ]);
+
         const faqs = courseQuestions.map((cq) => ({
           question: cq.questions,
           answer: cq.answers,
         }));
-        const course_benefits =
-          await this.coursesService.findProgramBenefit(id);
         course.programBenefits = course_benefits;
-        const technologies =
-          await this.coursesService.findCourseTechnologies(id);
-        const installments =
-          await this.coursesService.findCourseInstallments(id);
-        const userCourses = await this.coursesService.findCourseUsers(id);
-        const kelass = await this.coursesService.allClassExcept(course.id);
-        const studentList = await this.coursesService.sumStudent(course.id);
-        const mentors = await this.coursesService.findCourseMentors(course.id);
+
         const statusOptions = [
           'University Student',
           'Fresh Graduate',
@@ -1642,16 +1769,13 @@ export class CoursesController {
         const referalSourceOptions = REFERAL_SOURCES;
 
         if (course.checkPaid === false) {
-          const course_flows = await this.coursesService.findCourseFlows(id);
           res.render('detail_program/free_program/index', {
             user: req.user,
             course,
             course_flows,
             course_benefits,
-            kelass,
             studentList,
             technologies,
-            userCourses,
             installments,
             mentors,
             faqs,
@@ -1659,12 +1783,11 @@ export class CoursesController {
             referalSourceOptions,
           });
         } else {
-          const course_flows = await this.coursesService.findCourseFlows(id);
           res.render('detail_program/paid_program/index', {
+            userActivePayment,
             user: req.user,
             course,
             category: course.category,
-            kelass,
             studentList,
             courseQuestions,
             faqs,
@@ -1672,7 +1795,6 @@ export class CoursesController {
             course_benefits,
             benefit_category: course.category?.benefit_category || [],
             technologies,
-            userCourses,
             installments,
             mentors,
           });
@@ -1886,6 +2008,30 @@ export class CoursesController {
       res.redirect(`/program/detail/program/admin/${courseId}`);
     }
   }
+  @Roles('super_admin')
+  @Delete(':courseId/json')
+  async removeJson(@Param('courseId') courseId: string, @Res() res: Response) {
+    try {
+      const course = await this.coursesService.findOne(courseId);
+      if (!course) {
+        return res
+          .status(404)
+          .json({ success: false, message: 'Program not found' });
+      }
+      await this.coursesService.remove(courseId, false);
+      await this.coursesService.deleteFile(course.image);
+      return res.json({
+        success: true,
+        message: 'Program has been successfully deleted.',
+      });
+    } catch (error: unknown) {
+      return res.status(400).json({
+        success: false,
+        message:
+          error instanceof Error ? error.message : 'Failed to delete program',
+      });
+    }
+  }
 
   @Roles('admin', 'super_admin')
   @Delete(':courseId')
@@ -1917,6 +2063,101 @@ export class CoursesController {
         previous || `/program/detail/program/admin/${courseId}`,
       );
     }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Post('removeStudents/:courseId')
+  async removeStudentsFromCourse(
+    @Param('courseId') courseId: string,
+    @Body('userIds') rawUserIds: any,
+    @Body('ids') rawIds: any,
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const wantsJson =
+      req.xhr ||
+      (req.headers.accept &&
+        req.headers.accept.includes('application/json') &&
+        !req.headers.accept.includes('text/html'));
+
+    let userIds: string[] = [];
+    const source = rawUserIds ?? rawIds;
+    if (Array.isArray(source)) {
+      userIds = source.map(String).filter(Boolean);
+    } else if (typeof source === 'string' && source.trim()) {
+      try {
+        const parsed = JSON.parse(source);
+        if (Array.isArray(parsed)) userIds = parsed.map(String).filter(Boolean);
+        else
+          userIds = source
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean);
+      } catch {
+        userIds = source
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+    }
+
+    try {
+      const count = await this.coursesService.removeMultipleCourseUsers(
+        userIds,
+        courseId,
+      );
+      if (wantsJson) {
+        return res.json({
+          success: true,
+          count,
+          message: `Successfully removed ${count} student(s) from the program.`,
+        });
+      }
+      flashToast(
+        req,
+        'Removed Successfully',
+        `Successfully removed ${count} student(s) from the program.`,
+      );
+      return res.redirect(
+        redirectUrl || req.header('Referer') || `/program/addUser/${courseId}`,
+      );
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Failed to remove students from program';
+      if (wantsJson) {
+        return res.status(400).json({
+          success: false,
+          message: msg,
+        });
+      }
+      flashToastError(req, 'Failed to Remove', msg);
+      return res.redirect(
+        redirectUrl || req.header('Referer') || `/program/addUser/${courseId}`,
+      );
+    }
+  }
+
+  @Roles('admin', 'super_admin')
+  @Delete('removeStudents/:courseId')
+  async removeStudentsFromCourseDelete(
+    @Param('courseId') courseId: string,
+    @Body('userIds') rawUserIds: any,
+    @Body('ids') rawIds: any,
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.removeStudentsFromCourse(
+      courseId,
+      rawUserIds,
+      rawIds,
+      redirectUrl,
+      req,
+      res,
+    );
   }
 
   @Roles('admin', 'super_admin')

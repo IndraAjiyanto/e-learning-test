@@ -50,8 +50,20 @@ export class MentorLogbookController {
       createMentorLogbookDto.documentation =
         (req.body as { uploadedImageUrls?: string[] })
           ?.uploadedImageUrls?.[0] || '';
-      createMentorLogbookDto.userId = req.user!.id;
       createMentorLogbookDto.sessionId = sessionId;
+
+      if (req.user!.role === 'super_admin') {
+        const sessionWithCourse =
+          await this.mentorLogbookService.findSessionWithCourseAndMentors(
+            sessionId,
+          );
+        const courseMentorId =
+          sessionWithCourse?.weeks?.course?.mentorings?.[0]?.user?.id;
+        createMentorLogbookDto.userId = courseMentorId || req.user!.id;
+      } else {
+        createMentorLogbookDto.userId = req.user!.id;
+      }
+
       await this.mentorLogbookService.create(createMentorLogbookDto);
       flashToast(
         req,
@@ -129,6 +141,20 @@ export class MentorLogbookController {
         updateMentorLogbookDto.documentation =
           (req.body as { uploadedImageUrls?: string[] })
             ?.uploadedImageUrls?.[0] || '';
+      }
+      if (
+        req.user!.role === 'super_admin' &&
+        logbooks.user?.role === 'super_admin'
+      ) {
+        const sessionWithCourse =
+          await this.mentorLogbookService.findSessionWithCourseAndMentors(
+            logbooks.session.id,
+          );
+        const courseMentorId =
+          sessionWithCourse?.weeks?.course?.mentorings?.[0]?.user?.id;
+        if (courseMentorId) {
+          updateMentorLogbookDto.userId = courseMentorId;
+        }
       }
       await this.mentorLogbookService.update(
         mentor_logbookId,

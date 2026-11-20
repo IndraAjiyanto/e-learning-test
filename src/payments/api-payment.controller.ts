@@ -14,6 +14,10 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { PaymentsService } from './payments.service';
 import { PaymentSettingsService } from 'src/payment-settings/payment-settings.service';
 import { isReferalSource } from 'src/entities/types/referal-source';
+import {
+  CURRENT_STATUS_OPTIONS,
+  currentStatus,
+} from 'src/entities/payment.entity';
 
 @UseGuards(AuthenticatedGuard)
 @Roles('user')
@@ -46,11 +50,23 @@ export class ApiPaymentController {
   @Roles('super_admin')
   @Patch('settings')
   async updateSettings(
-    @Body() body: { manualEnabled?: boolean; gatewayEnabled?: boolean },
+    @Body()
+    body: {
+      manualEnabled?: boolean;
+      gatewayEnabled?: boolean;
+      gateway_enabled?: boolean;
+    },
     @Res() res: Response,
   ) {
-    const manualEnabled = body?.manualEnabled;
-    const gatewayEnabled = body?.gatewayEnabled;
+    const manualEnabled = body?.manualEnabled ?? (body as any)?.manual_enabled;
+    const gatewayEnabled = body?.gatewayEnabled ?? body?.gateway_enabled;
+
+    if (manualEnabled === true || (body as any)?.manual_enabled === true) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Metode pembayaran manual sedang dinonaktifkan sementara.',
+      });
+    }
 
     if (
       typeof manualEnabled !== 'boolean' &&
@@ -62,8 +78,6 @@ export class ApiPaymentController {
       });
     }
 
-    // Penjaga bila endpoint dipanggil langsung (UI sudah menonaktifkan pilihan
-    // ini): gateway tidak bisa dinyalakan tanpa kunci Xendit.
     if (gatewayEnabled === true && !process.env.XENDIT_SECRET_KEY) {
       return res.status(400).json({
         status: 'error',
@@ -75,12 +89,8 @@ export class ApiPaymentController {
     const patch: Partial<
       import('../entities/payment-settings.entity').PaymentSettings
     > = {};
-    if (typeof manualEnabled === 'boolean') {
-      patch.manual_enabled = manualEnabled;
-    }
-    if (typeof gatewayEnabled === 'boolean') {
-      patch.gateway_enabled = gatewayEnabled;
-    }
+    patch.manual_enabled = false;
+    patch.gateway_enabled = true;
 
     await this.paymentSettingsService.update(patch);
     const data = await this.paymentSettingsService.effective();
@@ -107,6 +117,7 @@ export class ApiPaymentController {
         email?: string;
         whatsappNumber?: string;
         source?: string;
+        currentStatus?: string;
       };
     },
     @Res() res: Response,
@@ -146,6 +157,11 @@ export class ApiPaymentController {
             referal_source: isReferalSource(formData.source)
               ? formData.source
               : null,
+            current_status: CURRENT_STATUS_OPTIONS.includes(
+              formData.currentStatus as currentStatus,
+            )
+              ? (formData.currentStatus as currentStatus)
+              : undefined,
           }
         : undefined;
 
@@ -210,11 +226,27 @@ export class ApiPaymentController {
           .json({ status: 'error', message: 'Data tidak lengkap' });
       }
 
+      const parent = await this.paymentsService.getPaymentById(paymentId);
+      const isXenditContract =
+        parent &&
+        Boolean(
+          parent.invoice?.xendit_invoice_id ||
+          parent.invoice?.xendit_invoice_url ||
+          parent.invoice?.xendit_payment_channel,
+        );
+
       const { gateway_enabled } = await this.paymentSettingsService.effective();
-      if (!gateway_enabled) {
+      if (!gateway_enabled && !isXenditContract) {
         return res.status(400).json({
           status: 'error',
           message: 'Metode pembayaran gateway sedang nonaktif.',
+        });
+      }
+
+      if (!process.env.XENDIT_SECRET_KEY) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Xendit Payment Gateway tidak dikonfigurasi.',
         });
       }
 

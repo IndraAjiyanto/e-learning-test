@@ -1,4 +1,4 @@
-import { IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateMentorLogbookDto {
   @IsString()
@@ -13,9 +13,11 @@ export class CreateMentorLogbookDto {
   @IsString()
   obstacle: string;
 
+  @IsOptional()
   @IsUUID()
-  userId: string;
+  userId?: string;
 
+  @IsOptional()
   @IsUUID()
-  sessionId: string;
+  sessionId?: string;
 }

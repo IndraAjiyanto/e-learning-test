@@ -215,13 +215,6 @@ export class WeeksService {
       throw new NotFoundException('week not found');
     }
 
-    const isCompleted = await this.hasCompletedUser(id);
-    if (isCompleted) {
-      throw new BadRequestException(
-        'Week cannot be edited because it has already been completed by user',
-      );
-    }
-
     const finalWeek = await this.weeksRepository.findOne({
       where: { course: { id: weeks.course.id }, isFinal: true },
     });

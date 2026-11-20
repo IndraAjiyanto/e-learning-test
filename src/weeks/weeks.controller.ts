@@ -83,15 +83,6 @@ export class WeeksController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const isCompleted = await this.weeksService.hasCompletedUser(weeksId);
-    if (isCompleted) {
-      req.flash(
-        'error',
-        'Week cannot be edited because it has already been completed by user',
-      );
-      return res.redirect(`/week/${weeksId}`);
-    }
-
     const weeks = await this.weeksService.findOne(weeksId);
     let lastWeek = false;
     let maxWeek = 0;

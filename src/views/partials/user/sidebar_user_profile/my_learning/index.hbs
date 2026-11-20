@@ -57,7 +57,8 @@
     methods: [
       { value: 'all', title: '{{t "test.mycourse.allMethods"}}' },
       { value: 'online', title: '{{t "test.home.programSection.online"}}' },
-      { value: 'offline', title: '{{t "test.home.programSection.offline"}}' }
+      { value: 'offline', title: '{{t "test.home.programSection.offline"}}' },
+      { value: 'hybrid', title: '{{t "test.home.programSection.hybrid"}}' }
     ],
     // Nilai 'done'/'ongoing' bukan true/false supaya tidak pernah ikut ke
     // query string sebagai teks yang selalu dianggap benar di sisi server.
@@ -419,29 +420,33 @@
 
             <p class="line-clamp-1 font-inter text-xs text-[#64748B]" x-text="getByLang(course.description, lang)"></p>
 
-            {{! Kuota + bar kemajuan }}
-            <div class="rounded-lg bg-[#F8FAFC] p-3">
-              <div class="mb-2 flex items-center justify-between gap-2">
-                <span class="inline-flex items-center gap-1.5 font-inter text-xs text-[#64748B]">
+            {{! Informasi Kuota / Kapasitas Kelas }}
+            <div class="flex items-center justify-between rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="flex size-7 shrink-0 items-center justify-center rounded-md bg-[#003060]/10 text-[#003060]">
                   <i class="fa-solid fa-users text-xs"></i>
-                  {{t "test.home.programSection.kuota"}}
-                </span>
-                <span class="font-inter text-xs font-bold text-[#0F172A]">
-                  <span x-text="enrolled(course)"></span>
-                  /
-                  <span x-text="course.quota || 0"></span>
-                  {{t "test.home.programSection.student"}}
-                </span>
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <span class="font-inter text-[11px] font-medium leading-none text-[#64748B]">{{t "test.paidProgram.hero.quickStats.classCapacity"}}</span>
+                  <div class="mt-1 flex items-baseline gap-1 truncate">
+                    <span class="font-inter text-xs font-bold text-[#0F172A]">
+                      <span x-text="enrolled(course)"></span>/<span x-text="course.quota || 0"></span>
+                    </span>
+                    <span class="font-inter text-[11px] text-[#64748B]">{{t "test.paidProgram.hero.quickStats.students"}}</span>
+                  </div>
+                </div>
               </div>
-              <div
-                class="h-1.5 w-full overflow-hidden rounded-full bg-[#E2E8F0]"
-                role="progressbar"
-                aria-label="{{t 'test.home.programSection.kuota'}}"
-                :aria-valuenow="quotaPercent(course)"
-                aria-valuemin="0"
-                aria-valuemax="100"
-              >
-                <div class="h-full rounded-full bg-[#22C55E] transition-all duration-500" :style="'width: ' + quotaPercent(course) + '%'"></div>
+              <div class="flex items-center shrink-0">
+                <template x-if="course.quota && enrolled(course) >= course.quota">
+                  <span class="rounded-full bg-red-100 px-2 py-0.5 font-inter text-[11px] font-bold text-red-700">
+                    {{default (t 'test.paidProgram.hero.quickStats.full') 'Penuh'}}
+                  </span>
+                </template>
+                <template x-if="course.quota && enrolled(course) < course.quota">
+                  <span class="rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 font-inter text-[11px] font-medium text-emerald-700">
+                    <span x-text="(course.quota - enrolled(course))"></span> {{default (t 'test.freeProgram.schedule.slotsLeft') 'sisa'}}
+                  </span>
+                </template>
               </div>
             </div>
 

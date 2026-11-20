@@ -15,8 +15,9 @@
     - Item 5: Lokasi (Location icon, table course column locations / locationLink)
 
   Props:
-  - course : object (course data)
-  - lang   : string
+  - course      : object (course data)
+  - studentList : number (total enrolled)
+  - lang        : string
 --}}
 
 <section 
@@ -76,6 +77,13 @@
           label=(default (t 'test.detailProgram.infoProgram.location') 'Lokasi')
           value=(default (getByLang course.locations lang) (default course.method '-'))
           link=course.locationLink
+      }}
+
+      {{!-- Item 6: Kapasitas Kelas --}}
+      {{> components/ui/card/schedule_item/index
+          iconType="users"
+          label=(default (t 'test.paidProgram.hero.quickStats.classCapacity') 'Kapasitas Kelas')
+          value=(concat (coalesce studentList 0) " / " (default course.quota 8) (ternary (and course.quota (gte (coalesce studentList 0) course.quota)) (concat " (" (default (t 'test.paidProgram.hero.quickStats.full') 'Penuh') ")") (concat " " (default (t 'test.paidProgram.hero.quickStats.students') 'Siswa'))))
       }}
 
     </div>

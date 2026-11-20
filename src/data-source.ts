@@ -19,6 +19,12 @@ export const dataSourceOptions: DataSourceOptions = {
   // Peringatan: menyala = TypeORM menyejajarkan seluruh skema dengan entity
   // (menambah sekaligus menghapus kolom/tabel yang tidak ada di entity).
   synchronize: process.env.SYNCHRONIZE?.toLowerCase() === 'true',
+  extra: {
+    max: parseInt(process.env.DB_POOL_MAX || '20', 10),
+    min: parseInt(process.env.DB_POOL_MIN || '2', 10),
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 5000,
+  },
 };
 
 const dataSource = new DataSource(dataSourceOptions);

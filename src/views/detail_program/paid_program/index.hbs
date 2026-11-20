@@ -1,7 +1,7 @@
 {{!-- PAID PROGRAM DETAIL PAGE --}}
 
 {{!-- Section 1: Hero Section (Order 0) --}}
-{{> components/ui/sections/paid_detail_hero/index course=course category=course.category lang=lang}}
+{{> components/ui/sections/paid_detail_hero/index course=course category=course.category studentList=studentList lang=lang}}
 
 {{!-- Section 2: Key Advantages / Why Choose (Order 1) --}}
 {{> components/ui/sections/paid_advantage/index course=course course_benefits=course_benefits benefit_category=benefit_category lang=lang}}
@@ -16,10 +16,10 @@
 {{> components/ui/sections/paid_tools/index course=course technologies=technologies portfolio=portfolio lang=lang}}
 
 {{!-- Section 5: Schedule / Informasi Jadwal (Order 4) --}}
-{{> components/ui/sections/paid_schedule/index course=course lang=lang}}
+{{> components/ui/sections/paid_schedule/index course=course studentList=studentList lang=lang}}
 
 {{!-- Section 6: Pricing / Informasi Investasi (Order 5) --}}
-{{> components/ui/sections/paid_pricing/index course=course category=course.category installments=installments lang=lang}}
+{{> components/ui/sections/paid_pricing/index course=course category=course.category installments=installments userActivePayment=userActivePayment studentList=studentList user=user lang=lang}}
 
 
 

@@ -7,6 +7,7 @@ import { CreateCoursesDto } from './dto/create-courses.dto';
 import { UpdateCoursesDto } from './dto/update-courses.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
+import { isValidHttpUrl, isMapsLocationUrl } from 'src/common/utils/url.util';
 import { In, IsNull, Not, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Session } from 'src/entities/session.entity';
@@ -44,6 +45,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Portofolios } from 'src/entities/portofolios.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
+import { FinalAssignment } from 'src/entities/final_assignment.entity';
 import { PortfolioGuide } from 'src/entities/portfolio-guide.entity';
 import { dateHelpers } from 'src/common/helpers/date.helpers';
 
@@ -100,6 +102,10 @@ export class CoursesService {
     private readonly sessionRepository: Repository<Session>,
     @InjectRepository(Portofolios)
     private readonly portfolioRepository: Repository<Portofolios>,
+    @InjectRepository(Syllabus)
+    private readonly syllabusRepository: Repository<Syllabus>,
+    @InjectRepository(FinalAssignment)
+    private readonly finalAssignmentRepository: Repository<FinalAssignment>,
   ) {}
 
   async findOneCategory(categoryId: string) {
@@ -131,17 +137,15 @@ export class CoursesService {
     ) {
       throw new BadRequestException('Program quota must be greater than 0');
     }
-    if (createCourseDto.group) {
-      try {
-        const u = new URL(createCourseDto.group);
-        if (u.protocol !== 'http:' && u.protocol !== 'https:') {
-          throw new BadRequestException(
-            'Group link must be a valid URL (http/https)',
-          );
-        }
-      } catch {
+    if (createCourseDto.group && !isValidHttpUrl(createCourseDto.group)) {
+      throw new BadRequestException(
+        'Group link must be a valid URL (http/https)',
+      );
+    }
+    if (createCourseDto.locationLink) {
+      if (!isMapsLocationUrl(createCourseDto.locationLink)) {
         throw new BadRequestException(
-          'Group link must be a valid URL (http/https)',
+          'Link location must be a valid Maps URL (Google Maps, OpenStreetMap, Waze, Apple Maps)',
         );
       }
     }
@@ -308,16 +312,22 @@ export class CoursesService {
     }
 
     if (course.checkPaid === true) {
-      const daftar = await this.paymentRepository.find({
-        where: { course: { id: courseId }, process: 'process' },
-      });
+      const [daftarCount, gabungCount] = await Promise.all([
+        this.paymentRepository.count({
+          where: { course: { id: courseId }, process: 'process' },
+        }),
+        this.userCourseRepository.count({
+          where: { course: { id: courseId } },
+        }),
+      ]);
+      const totalUsers = daftarCount + gabungCount;
 
-      const gabung = await this.userRepository.find({
-        where: { userCourses: { course: { id: courseId } } },
-      });
-      const totalUsers = daftar.length + gabung.length;
-
-      if (totalUsers >= course.quota) {
+      if (
+        course.quota !== null &&
+        course.quota !== undefined &&
+        course.quota > 0 &&
+        totalUsers >= course.quota
+      ) {
         throw new BadRequestException('The program is currently full');
       }
 
@@ -405,16 +415,22 @@ export class CoursesService {
         }
       }
     } else {
-      const daftar = await this.registrationRepository.find({
-        where: { course: { id: courseId }, process: 'process' },
-      });
+      const [daftarCount, gabungCount] = await Promise.all([
+        this.registrationRepository.count({
+          where: { course: { id: courseId }, process: 'process' },
+        }),
+        this.userCourseRepository.count({
+          where: { course: { id: courseId } },
+        }),
+      ]);
+      const totalUsers = daftarCount + gabungCount;
 
-      const gabung = await this.userRepository.find({
-        where: { userCourses: { course: { id: courseId } } },
-      });
-      const totalUsers = daftar.length + gabung.length;
-
-      if (totalUsers >= course.quota) {
+      if (
+        course.quota !== null &&
+        course.quota !== undefined &&
+        course.quota > 0 &&
+        totalUsers >= course.quota
+      ) {
         throw new BadRequestException('The program is currently full');
       }
 
@@ -504,26 +520,48 @@ export class CoursesService {
   }
 
   async sumStudent(courseId: string) {
-    const course = await this.findOne(courseId);
+    const course = await this.courseRepository.findOne({
+      select: ['id', 'checkPaid'],
+      where: { id: courseId },
+    });
+    if (!course) return 0;
+
     if (course.checkPaid === true) {
-      const daftar = await this.paymentRepository.find({
-        where: { course: { id: courseId }, process: 'process' },
-      });
-      const gabung = await this.userCourseRepository.find({
-        where: { course: { id: courseId } },
-      });
-      const totalUsers = daftar.length + gabung.length;
-      return totalUsers;
+      const [daftarCount, gabungCount] = await Promise.all([
+        this.paymentRepository.count({
+          where: { course: { id: courseId }, process: 'process' },
+        }),
+        this.userCourseRepository.count({
+          where: { course: { id: courseId } },
+        }),
+      ]);
+      return daftarCount + gabungCount;
     } else {
-      const daftar = await this.registrationRepository.find({
-        where: { course: { id: courseId }, process: 'process' },
-      });
-      const gabung = await this.userCourseRepository.find({
-        where: { course: { id: courseId } },
-      });
-      const totalUsers = daftar.length + gabung.length;
-      return totalUsers;
+      const [daftarCount, gabungCount] = await Promise.all([
+        this.registrationRepository.count({
+          where: { course: { id: courseId }, process: 'process' },
+        }),
+        this.userCourseRepository.count({
+          where: { course: { id: courseId } },
+        }),
+      ]);
+      return daftarCount + gabungCount;
     }
+  }
+
+  async findUserActivePayment(
+    userId: string,
+    courseId: string,
+  ): Promise<Payment | null> {
+    return this.paymentRepository.findOne({
+      where: {
+        user: { id: userId },
+        course: { id: courseId },
+        process: In(['process', 'approved']),
+      },
+      order: { createdAt: 'DESC' },
+      relations: ['installment', 'invoice'],
+    });
   }
 
   async findMyCourse(userId: string) {
@@ -672,12 +710,39 @@ export class CoursesService {
     // `attendance`. Panel Start Learning memakai arti yang sama, jadi aturan di
     // sini sengaja disamakan dengannya - kalau tidak, panel menampilkan sesi
     // sebagai terbuka sementara halamannya menolak membukanya.
-    const unlocked = current.sessionProgress?.[0]?.isAttended === true;
+    let previous: (typeof siblings)[0] | null = null;
+    previous = index > 0 ? siblings[index - 1] : null;
+    const prevLogbookDone = previous
+      ? previous.sessionProgress?.[0]?.logbook === true ||
+        previous.logbooks?.[0]?.process === 'approved'
+      : false;
+    const unlocked =
+      index === 0 ||
+      current.sessionProgress?.[0]?.isAttended === true ||
+      prevLogbookDone;
+
+    if (unlocked && current.sessionProgress?.[0]?.isAttended !== true) {
+      const existing = await this.sessionProgressRepository.findOne({
+        where: { user: { id: userId }, session: { id: current.id } },
+      });
+      if (existing) {
+        await this.sessionProgressRepository.update(existing.id, {
+          isAttended: true,
+        });
+      } else {
+        await this.sessionProgressRepository.save({
+          user: { id: userId },
+          session: { id: current.id },
+          isAttended: true,
+          logbook: false,
+        });
+      }
+    }
     const attended = (current.attendances?.length ?? 0) > 0;
     const logbookDone =
       current.sessionProgress?.[0]?.logbook === true ||
       current.logbooks?.[0]?.process === 'approved';
-    const previous = index > 0 ? siblings[index - 1] : null;
+    previous = index > 0 ? siblings[index - 1] : null;
 
     return {
       session: current,
@@ -1229,17 +1294,22 @@ export class CoursesService {
     search?: string;
     alphabet?: string;
     status?: string;
+    process?: string;
     mentor?: string;
     page: number;
     limit: number;
     userId?: string; // kalau ada = admin, kalau tidak = super_admin
   }) {
+    const page = Math.max(1, Number(params.page) || 1);
+    const limit = Math.min(100, Math.max(1, Number(params.limit) || 10));
+
     const query = this.courseRepository
       .createQueryBuilder('course')
       .leftJoinAndSelect('course.category', 'category')
       .leftJoinAndSelect('course.userCourses', 'userCourses')
       .leftJoinAndSelect('course.mentorings', 'mentorings')
-      .leftJoinAndSelect('mentorings.user', 'mentorUser')
+      .leftJoin('mentorings.user', 'mentorUser')
+      .addSelect(['mentorUser.id', 'mentorUser.username', 'mentorUser.profile'])
       .orderBy('course.createdAt', 'DESC');
 
     // Filter by mentor (admin only)
@@ -1271,11 +1341,80 @@ export class CoursesService {
       });
     }
 
-    if (params.status) {
-      query.andWhere('course.status = :status', { status: params.status });
+    if (params.process) {
+      if (params.process === 'accepted' || params.process === 'approved') {
+        query.andWhere('course.process = :courseProcess', {
+          courseProcess: 'approved',
+        });
+      } else if (params.process === 'pending' || params.process === 'process') {
+        query.andWhere(
+          '(course.process != :notApprovedProcess OR course.process IS NULL)',
+          { notApprovedProcess: 'approved' },
+        );
+      } else {
+        query.andWhere('course.process = :courseProcess', {
+          courseProcess: params.process,
+        });
+      }
     }
 
-    query.skip((params.page - 1) * params.limit).take(params.limit);
+    if (params.status) {
+      if (params.status === 'accepted' || params.status === 'approved') {
+        query.andWhere('course.process = :statusProcess', {
+          statusProcess: 'approved',
+        });
+        query.andWhere(
+          '(course.status != :excludeCompletedStatus OR course.status IS NULL)',
+          { excludeCompletedStatus: 'done' },
+        );
+      } else if (params.status === 'pending' || params.status === 'process') {
+        query.andWhere(
+          '(course.process != :notApprovedStatusProcess OR course.process IS NULL)',
+          { notApprovedStatusProcess: 'approved' },
+        );
+        query.andWhere(
+          '(course.status != :excludeCompletedStatus OR course.status IS NULL)',
+          { excludeCompletedStatus: 'done' },
+        );
+      } else {
+        const statusList = params.status
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => Boolean(s) && s !== '__none__');
+
+        if (statusList.length === 1) {
+          if (statusList[0] === 'unlaunch') {
+            query.andWhere(
+              '(course.status = :status OR course.status IS NULL)',
+              { status: 'unlaunch' },
+            );
+          } else {
+            query.andWhere('course.status = :status', {
+              status: statusList[0],
+            });
+          }
+        } else if (statusList.length > 1) {
+          if (statusList.includes('unlaunch')) {
+            query.andWhere(
+              '(course.status IN (:...statusList) OR course.status IS NULL)',
+              { statusList },
+            );
+          } else {
+            query.andWhere('course.status IN (:...statusList)', { statusList });
+          }
+        } else {
+          query.andWhere('1 = 0');
+        }
+      }
+    } else {
+      // Default: sembunyikan program berstatus 'done' (Completed) dari list
+      query.andWhere(
+        '(course.status != :excludeCompletedStatus OR course.status IS NULL)',
+        { excludeCompletedStatus: 'done' },
+      );
+    }
+
+    query.skip((page - 1) * limit).take(limit);
 
     const [data, total] = await query.getManyAndCount();
     return { data, total };
@@ -1558,7 +1697,42 @@ export class CoursesService {
   async findCourseRegistrations(courseId: string) {
     return await this.registrationRepository.find({
       where: { course: { id: courseId } },
-      relations: ['user', 'course'],
+      relations: [
+        'user',
+        'course',
+        'payment',
+        'payment.invoice',
+      ],
+      select: {
+        id: true,
+        user_fullname: true,
+        user_email: true,
+        user_no: true,
+        attend_program: true,
+        current_status: true,
+        referal_source: true,
+        process: true,
+        createdAt: true,
+        user: {
+          id: true,
+          username: true,
+          email: true,
+          profile: true,
+        },
+        course: {
+          id: true,
+          name: true,
+        },
+        payment: {
+          id: true,
+          process: true,
+          invoice: {
+            id: true,
+            invoice_number: true,
+          },
+        },
+      },
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -1568,16 +1742,60 @@ export class CoursesService {
       relations: [
         'user',
         'course',
-        'course.category',
         'installment',
         'invoice',
         'installmentPayments',
       ],
+      select: {
+        id: true,
+        user_no: true,
+        process: true,
+        createdAt: true,
+        user: {
+          id: true,
+          username: true,
+          email: true,
+          profile: true,
+        },
+        course: {
+          id: true,
+          name: true,
+        },
+        installment: {
+          id: true,
+          month: true,
+          dueDates: true,
+        },
+        invoice: {
+          id: true,
+          invoice_number: true,
+        },
+        installmentPayments: {
+          id: true,
+          amount: true,
+          status: true,
+          paidAt: true,
+        },
+      },
       order: { createdAt: 'DESC' },
     });
   }
 
   async findCourseInstallments(courseId: string) {
+    const installments = await this.installmentsRepository.find({
+      where: { course: { id: courseId } },
+      relations: ['payment'],
+      order: { month: 'ASC' },
+    });
+
+    return installments.map((i) => ({
+      ...i,
+      hasPayment: (i.payment || []).length > 0,
+      dueDates: dateHelpers.toDateOnlyArray(i.dueDates),
+    }));
+  }
+
+  async _unusedFindCourseInstallments(courseId: string) {
     const installments = await this.installmentsRepository.find({
       where: { course: { id: courseId } },
       order: { month: 'ASC' },
@@ -1749,10 +1967,121 @@ export class CoursesService {
     }
   }
 
+  async checkLearningStructureLock(courseId: string): Promise<{
+    isLocked: boolean;
+    reason?: string;
+    hint?: string;
+    hasWeeks: boolean;
+    hasPortfolioGuide: boolean;
+    hasFinalAssignment: boolean;
+    hasSyllabus: boolean;
+  }> {
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+      select: ['id', 'programType'],
+    });
+
+    if (!course) {
+      throw new NotFoundException('Program not found');
+    }
+
+    const [
+      weeksCount,
+      portfolioGuideCount,
+      finalAssignmentCount,
+      syllabusCount,
+    ] = await Promise.all([
+      this.weeksRepository.count({ where: { course: { id: courseId } } }),
+      this.portfolioGuideRepository.count({
+        where: { course: { id: courseId } },
+      }),
+      this.finalAssignmentRepository.count({ where: { courseId } }),
+      this.syllabusRepository.count({ where: { course: { id: courseId } } }),
+    ]);
+
+    const hasWeeks = weeksCount > 0;
+    const hasPortfolioGuide = portfolioGuideCount > 0;
+    const hasFinalAssignment = finalAssignmentCount > 0;
+    const hasSyllabus = syllabusCount > 0;
+
+    const programType = course.programType || 'bootcamp';
+
+    if (programType === 'non_bootcamp') {
+      const isLocked = hasSyllabus || hasPortfolioGuide;
+      const components: string[] = [];
+      const componentsEn: string[] = [];
+      if (hasSyllabus) {
+        components.push('silabus');
+        componentsEn.push('syllabus');
+      }
+      if (hasPortfolioGuide) {
+        components.push('portfolio guide');
+        componentsEn.push('portfolio guide');
+      }
+
+      return {
+        isLocked,
+        hasWeeks,
+        hasPortfolioGuide,
+        hasFinalAssignment,
+        hasSyllabus,
+        reason: isLocked
+          ? `Learning structure tidak dapat diubah karena program sudah memiliki ${components.join(' dan ')}.`
+          : undefined,
+        hint: isLocked
+          ? `Learning structure cannot be edited because this program already has ${componentsEn.join(' and ')}.`
+          : undefined,
+      };
+    } else {
+      const isLocked = hasWeeks || hasPortfolioGuide || hasFinalAssignment;
+      const components: string[] = [];
+      const componentsEn: string[] = [];
+      if (hasWeeks) {
+        components.push('week');
+        componentsEn.push('week');
+      }
+      if (hasPortfolioGuide) {
+        components.push('portfolio guide');
+        componentsEn.push('portfolio guide');
+      }
+      if (hasFinalAssignment) {
+        components.push('final assignment');
+        componentsEn.push('final assignment');
+      }
+
+      return {
+        isLocked,
+        hasWeeks,
+        hasPortfolioGuide,
+        hasFinalAssignment,
+        hasSyllabus,
+        reason: isLocked
+          ? `Learning structure tidak dapat diubah karena program sudah memiliki ${components.join(', ')}.`
+          : undefined,
+        hint: isLocked
+          ? `Learning structure cannot be edited because this program already has ${componentsEn.join(', ')}.`
+          : undefined,
+      };
+    }
+  }
+
   async update(id: string, updateCourseDto: UpdateCoursesDto) {
     const course = await this.findOne(id);
     if (!course) {
       throw new NotFoundException(`Program not found`);
+    }
+
+    const currentProgramType = course.programType || 'bootcamp';
+    if (
+      updateCourseDto.programType !== undefined &&
+      updateCourseDto.programType !== currentProgramType
+    ) {
+      const lockInfo = await this.checkLearningStructureLock(id);
+      if (lockInfo.isLocked) {
+        throw new BadRequestException(
+          lockInfo.reason || 'Learning structure tidak dapat diubah.',
+        );
+      }
     }
     if (
       updateCourseDto.quota !== undefined &&
@@ -1761,17 +2090,15 @@ export class CoursesService {
     ) {
       throw new BadRequestException('Program quota must be greater than 0');
     }
-    if (updateCourseDto.group) {
-      try {
-        const u = new URL(updateCourseDto.group);
-        if (u.protocol !== 'http:' && u.protocol !== 'https:') {
-          throw new BadRequestException(
-            'Group link must be a valid URL (http/https)',
-          );
-        }
-      } catch {
+    if (updateCourseDto.group && !isValidHttpUrl(updateCourseDto.group)) {
+      throw new BadRequestException(
+        'Group link must be a valid URL (http/https)',
+      );
+    }
+    if (updateCourseDto.locationLink) {
+      if (!isMapsLocationUrl(updateCourseDto.locationLink)) {
         throw new BadRequestException(
-          'Group link must be a valid URL (http/https)',
+          'Link location must be a valid Maps URL (Google Maps, OpenStreetMap, Waze, Apple Maps)',
         );
       }
     }
@@ -1846,20 +2173,105 @@ export class CoursesService {
     return saved;
   }
 
-  async remove(id: string) {
+  async remove(id: string, force: boolean = false) {
     const course = await this.findOne(id);
     if (!course) {
       throw new NotFoundException('Program not found');
     }
 
     const participantCount = course.userCourses?.length || 0;
-    if (participantCount > 0) {
+    if (participantCount > 0 && !force) {
       throw new BadRequestException(
-        `program "${course.name}" tidak dapat dihapus karena masih memiliki ${participantCount} peserta. Hapus peserta tersebut terlebih dahulu.`,
+        `Program "${course.name}" cannot be deleted because it already has ${participantCount} enrolled participant(s). Please remove the participants first.`,
       );
     }
 
     return await this.courseRepository.remove(course);
+  }
+
+  async removeMany(ids: string[]) {
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      throw new BadRequestException(
+        'Please select at least one program to delete.',
+      );
+    }
+
+    const courses = await this.courseRepository.find({
+      where: { id: In(ids) },
+      relations: ['userCourses'],
+    });
+    if (!courses || courses.length === 0) {
+      throw new NotFoundException('Selected programs were not found.');
+    }
+
+    const withParticipants = courses.filter(
+      (c) => (c.userCourses || []).length > 0,
+    );
+    if (withParticipants.length > 0) {
+      if (withParticipants.length === 1) {
+        throw new BadRequestException(
+          `Program "${withParticipants[0].name}" cannot be deleted because it already has ${withParticipants[0].userCourses.length} enrolled participant(s).`,
+        );
+      } else {
+        const names = withParticipants.map((c) => `"${c.name}"`).join(', ');
+        throw new BadRequestException(
+          `Programs ${names} cannot be deleted because they already have enrolled participants.`,
+        );
+      }
+    }
+
+    for (const course of courses) {
+      if (course.image) {
+        await this.deleteFile(course.image);
+      }
+    }
+
+    await this.courseRepository.remove(courses);
+    return { success: true, count: courses.length };
+  }
+
+  async removeAll() {
+    const courses = await this.courseRepository.find({
+      relations: ['userCourses'],
+    });
+    if (!courses || courses.length === 0) {
+      return { success: true, count: 0 };
+    }
+
+    const withParticipants = courses.filter(
+      (c) => (c.userCourses || []).length > 0,
+    );
+    if (withParticipants.length > 0) {
+      const names = withParticipants.map((c) => `"${c.name}"`).join(', ');
+      throw new BadRequestException(
+        `Cannot delete all programs because the following program(s) still have enrolled participants: ${names}.`,
+      );
+    }
+
+    for (const course of courses) {
+      if (course.image) {
+        await this.deleteFile(course.image);
+      }
+    }
+
+    await this.courseRepository.remove(courses);
+    return { success: true, count: courses.length };
+  }
+
+  async removeMultipleCourseUsers(userIds: string[], courseId: string) {
+    if (!userIds || userIds.length === 0) {
+      return 0;
+    }
+    const userCourses = await this.userCourseRepository.find({
+      where: {
+        user: { id: In(userIds) },
+        course: { id: courseId },
+      },
+    });
+    if (userCourses.length > 0) {
+      await this.userCourseRepository.remove(userCourses);
+    }
+    return userCourses.length;
   }
 
   async removeCourseUser(userId: string, courseId: string) {
@@ -1868,24 +2280,6 @@ export class CoursesService {
     });
     if (!userCourses) {
       throw new NotFoundException('User not found');
-    }
-
-    const hasPayment = await this.paymentRepository.findOne({
-      where: { user: { id: userId }, course: { id: courseId } },
-    });
-    if (hasPayment) {
-      throw new BadRequestException(
-        'User tidak dapat dihapus dari program karena sudah memiliki riwayat pembayaran.',
-      );
-    }
-
-    const hasRegistration = await this.registrationRepository.findOne({
-      where: { user: { id: userId }, course: { id: courseId } },
-    });
-    if (hasRegistration) {
-      throw new BadRequestException(
-        'User tidak dapat dihapus dari program karena sudah memiliki riwayat registration.',
-      );
     }
 
     return await this.userCourseRepository.remove(userCourses);
@@ -1965,10 +2359,11 @@ export class CoursesService {
       const isUnlocked = idx === 0 || previousPassed;
       const isPassed = quiz
         ? bestScore !== null && bestScore >= minScore
-        : true;
+        : false;
       const prevMinScore =
         idx > 0 ? (syllabuses[idx - 1].quiz?.[0]?.minScore ?? 80) : null;
-      previousPassed = isPassed;
+      const canUnlockNext = quiz ? isPassed : true;
+      previousPassed = canUnlockNext;
 
       return {
         id: s.id,
@@ -1981,6 +2376,7 @@ export class CoursesService {
         hasAttempt,
         isUnlocked,
         isPassed,
+        isCompleted: isPassed,
         prevMinScore,
       };
     });

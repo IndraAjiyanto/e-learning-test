@@ -34,6 +34,7 @@ import { CourseFlow } from 'src/entities/course_flow.entity';
 import { Alumni } from 'src/entities/alumni.entity';
 import { Portofolios } from 'src/entities/portofolios.entity';
 import { Syllabus } from 'src/entities/syllabus.entity';
+import { FinalAssignment } from 'src/entities/final_assignment.entity';
 import { PaymentSettingsModule } from 'src/payment-settings/payment-settings.module';
 import { QuestionsModule } from 'src/questions/questions.module';
 import { FinalAssignmentModule } from 'src/final_assignment/final_assignment.module';
@@ -76,6 +77,7 @@ import { PortfoliosModule } from 'src/portfolios/portfolios.module';
       Alumni,
       Portofolios,
       PortfolioGuide,
+      FinalAssignment,
     ]),
     QuestionsModule,
     UserAnswersModule,

@@ -14,6 +14,8 @@ import { SessionProgress } from 'src/entities/session_progress.entity';
 import { WeekProgress } from 'src/entities/week_progress.entity';
 import { Assignment } from 'src/entities/assignment.entity';
 import { AnswerTask } from 'src/entities/answer_task.entity';
+import { Attendance } from 'src/entities/attendance.entity';
+import { Score } from 'src/entities/score.entity';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { AnswerTask } from 'src/entities/answer_task.entity';
       WeekProgress,
       Assignment,
       AnswerTask,
+      Attendance,
+      Score,
     ]),
     MaterialsModule,
   ],

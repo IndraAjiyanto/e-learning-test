@@ -8,7 +8,7 @@ import { PDFDocument, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import * as fs from 'fs';
 import * as path from 'path';
-import { chromium } from 'playwright';
+import { chromium as playwrightChromium, Browser } from 'playwright';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from 'src/entities/course.entity';
 import { Repository } from 'typeorm';
@@ -35,18 +35,35 @@ export class CertificatesService {
   ) {}
 
   private async nextCertificateNumber(): Promise<string> {
-    const certificates = await this.certificatesRepository.find({
-      select: { noCertificate: true },
-    });
-    const highestNumber = certificates.reduce((highest, certificate) => {
-      const match = certificate.noCertificate?.match(/(\d+)$/);
-      return Math.max(highest, match ? Number(match[1]) : 0);
-    }, 0);
-    return `KSA-KC-${String(highestNumber + 1).padStart(4, '0')}`;
+    try {
+      const raw = await this.certificatesRepository
+        .createQueryBuilder('c')
+        .select(
+          `MAX(NULLIF(SUBSTRING("c"."no_certificate" FROM '(\\d+)$'), '')::int)`,
+          'maxNumber',
+        )
+        .getRawOne<{ maxNumber: number | string | null }>();
+
+      const highestNumber = raw?.maxNumber ? Number(raw.maxNumber) : 0;
+      return `KSA-KC-${String(highestNumber + 1).padStart(4, '0')}`;
+    } catch {
+      // Fallback aman jika syntax regex tidak didukung
+      const certificates = await this.certificatesRepository.find({
+        select: { noCertificate: true },
+        take: 100,
+        order: { createdAt: 'DESC' },
+      });
+      const highestNumber = certificates.reduce((highest, certificate) => {
+        const match = certificate.noCertificate?.match(/(\d+)$/);
+        return Math.max(highest, match ? Number(match[1]) : 0);
+      }, 0);
+      return `KSA-KC-${String(highestNumber + 1).padStart(4, '0')}`;
+    }
   }
 
-  private escapeHtml(value: string): string {
-    return value.replace(/[&<>'"]/g, (character) => {
+  private escapeHtml(value?: string | null): string {
+    if (!value) return '';
+    return String(value).replace(/[&<>'"]/g, (character) => {
       const entities: Record<string, string> = {
         '&': '&amp;',
         '<': '&lt;',
@@ -58,16 +75,19 @@ export class CertificatesService {
     });
   }
 
-  private formatCategoryName(value: string): string {
-    return this.escapeHtml(value).replace(/\s+/g, '<br>');
+  private formatCategoryName(value?: string | null): string {
+    return this.escapeHtml(value || 'Program').replace(/\s+/g, '<br>');
   }
 
-  private formatDate(date: Date): string {
+  private formatDate(date?: Date | string | null): string {
+    if (!date) return '';
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return '';
     return new Intl.DateTimeFormat('en-GB', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
-    }).format(date);
+    }).format(d);
   }
 
   async getPreviewHtml(courseId: string, userId: string): Promise<string> {
@@ -126,14 +146,19 @@ export class CertificatesService {
     const certificateDate = this.formatDate(certificate.createdAt);
     const certificateStartDate = this.formatDate(course.startDate);
     const certificateEndDate = this.formatDate(course.startEnd);
-    const certificateDateRange = `${certificateStartDate} - ${certificateEndDate}`;
+    const certificateDateRange =
+      certificateStartDate && certificateEndDate
+        ? `${certificateStartDate} - ${certificateEndDate}`
+        : certificateDate;
     const categoryName = this.formatCategoryName(
       course.category?.name || 'Program',
     );
-    const categoryNameDesc = this.escapeHtml(course.category.name);
-    const categoryType = this.escapeHtml(course.category?.type);
-    const courseMethod = this.escapeHtml(course.method);
-    const courseName = this.escapeHtml(course.name);
+    const categoryNameDesc = this.escapeHtml(
+      course.category?.name || 'Program',
+    );
+    const categoryType = this.escapeHtml(course.category?.type || 'Bootcamp');
+    const courseMethod = this.escapeHtml(course.method || 'Online');
+    const courseName = this.escapeHtml(course.name || 'Program');
     const classType = this.escapeHtml(
       course.courseType?.nameClassesType || 'Excellent',
     );
@@ -173,22 +198,185 @@ export class CertificatesService {
     return html;
   }
 
+  private async launchChromium(): Promise<Browser> {
+    const commonArgs = [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--no-first-run',
+      '--no-zygote',
+      '--single-process',
+      '--hide-scrollbars',
+      '--mute-audio',
+    ];
+
+    // 1. Explicit env path (server configuration)
+    const envPath =
+      process.env.CHROMIUM_PATH ||
+      process.env.PUPPETEER_EXECUTABLE_PATH ||
+      process.env.CHROME_BIN ||
+      process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
+    if (envPath && fs.existsSync(envPath)) {
+      try {
+        return await playwrightChromium.launch({
+          executablePath: envPath,
+          args: commonArgs,
+          headless: true,
+        });
+      } catch (err) {
+        console.warn(
+          '[CertificatesService] Failed to launch Chromium from envPath:',
+          envPath,
+          err instanceof Error ? err.message : err,
+        );
+      }
+    }
+
+    // 2. Linux well-known system binary paths (apt/dnf installed chromium or chrome)
+    if (process.platform === 'linux') {
+      const knownLinuxPaths = [
+        '/usr/bin/chromium',
+        '/usr/bin/chromium-browser',
+        '/usr/bin/google-chrome',
+        '/usr/bin/google-chrome-stable',
+        '/usr/local/bin/chromium',
+        '/usr/local/bin/google-chrome',
+        '/snap/bin/chromium',
+      ];
+      for (const binPath of knownLinuxPaths) {
+        if (fs.existsSync(binPath)) {
+          try {
+            return await playwrightChromium.launch({
+              executablePath: binPath,
+              args: commonArgs,
+              headless: true,
+            });
+          } catch (err) {
+            console.warn(
+              '[CertificatesService] Failed to launch system Chromium at',
+              binPath,
+              err instanceof Error ? err.message : err,
+            );
+          }
+        }
+      }
+
+      // 3. Try @sparticuz/chromium (for Lambda or Linux environments with sparticuz package)
+      try {
+        const sparticuz: unknown = await import('@sparticuz/chromium');
+        type SparticuzModule = {
+          executablePath?: () => Promise<string>;
+          args?: string[];
+        };
+        type SparticuzExport = SparticuzModule & {
+          default?: SparticuzModule;
+        };
+        const typedSparticuz = sparticuz as SparticuzExport;
+        const sparticuzModule = typedSparticuz.default || typedSparticuz;
+        if (typeof sparticuzModule.executablePath === 'function') {
+          const sparticuzPath = await sparticuzModule.executablePath();
+          if (sparticuzPath && fs.existsSync(sparticuzPath)) {
+            return await playwrightChromium.launch({
+              executablePath: sparticuzPath,
+              args: [...(sparticuzModule.args || []), ...commonArgs],
+              headless: true,
+            });
+          }
+        }
+      } catch (err) {
+        console.warn(
+          '[CertificatesService] Sparticuz Chromium launch failed on Linux:',
+          err instanceof Error ? err.message : err,
+        );
+      }
+    }
+
+    // 4. Default Playwright managed chromium
+    try {
+      return await playwrightChromium.launch({
+        args: commonArgs,
+        headless: true,
+      });
+    } catch (err) {
+      console.warn(
+        '[CertificatesService] Default Playwright Chromium launch failed:',
+        err instanceof Error ? err.message : err,
+      );
+    }
+
+    // 5. Try system chrome channel (installed Google Chrome)
+    try {
+      return await playwrightChromium.launch({
+        channel: 'chrome',
+        args: commonArgs,
+        headless: true,
+      });
+    } catch (err) {
+      console.warn(
+        '[CertificatesService] System chrome channel launch failed:',
+        err instanceof Error ? err.message : err,
+      );
+    }
+
+    // 6. Try system msedge channel (Edge is available on Windows and Linux)
+    try {
+      return await playwrightChromium.launch({
+        channel: 'msedge',
+        args: commonArgs,
+        headless: true,
+      });
+    } catch (err) {
+      console.warn(
+        '[CertificatesService] System msedge channel launch failed:',
+        err instanceof Error ? err.message : err,
+      );
+    }
+
+    // 7. Auto-install Playwright chromium as last resort on Linux/Windows
+    try {
+      console.log(
+        '[CertificatesService] Attempting to auto-install Playwright Chromium...',
+      );
+      const { exec } = await import('child_process');
+      const { promisify } = await import('util');
+      const execAsync = promisify(exec);
+      await execAsync('npx playwright install chromium', {
+        timeout: 120000,
+      });
+      return await playwrightChromium.launch({
+        args: commonArgs,
+        headless: true,
+      });
+    } catch (err) {
+      console.error(
+        '[CertificatesService] Auto-install Playwright Chromium failed:',
+        err instanceof Error ? err.message : err,
+      );
+    }
+
+    throw new Error(
+      'Tidak dapat menemukan atau menjalankan browser Chromium di sistem ini. ' +
+        'Pastikan Chromium atau Google Chrome terinstall di server (misal: "apt-get install -y chromium-browser" atau "npx playwright install chromium").',
+    );
+  }
+
   async renderCertificatePdf(html: string): Promise<Buffer> {
-    const browser = await chromium.launch({ headless: true });
+    const browser = await this.launchChromium();
     try {
       const page = await browser.newPage();
-      await page.setContent(html, { waitUntil: 'networkidle' });
-      return Buffer.from(
-        await page.pdf({
-          format: 'A4',
-          landscape: true,
-          printBackground: true,
-          preferCSSPageSize: true,
-          margin: { top: '0', right: '0', bottom: '0', left: '0' },
-        }),
-      );
+      await page.setContent(html, { waitUntil: 'load' });
+      await page.evaluate(() => document.fonts?.ready).catch(() => undefined);
+      const pdf = await page.pdf({
+        format: 'A4',
+        landscape: true,
+        printBackground: true,
+        preferCSSPageSize: true,
+        margin: { top: '0', right: '0', bottom: '0', left: '0' },
+      });
+      return Buffer.from(pdf);
     } finally {
-      await browser.close();
+      await browser.close().catch(() => undefined);
     }
   }
 

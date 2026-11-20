@@ -14,6 +14,7 @@ import { Course } from './course.entity';
 import { Installment } from './installment.entity';
 import { Invoice } from './invoice.entity';
 import { InstallmentPayment } from './installment-payment.entity';
+import { Registration } from './registration.entity';
 import { Exclude } from 'class-transformer';
 import { ProcessStatus } from './types/process-status';
 import { REFERAL_SOURCES } from './types/referal-source';
@@ -26,6 +27,16 @@ export type currentStatus =
   | 'Freelancer'
   | 'Entrepreneur'
   | 'Other';
+
+export const CURRENT_STATUS_OPTIONS = [
+  'University Student',
+  'Fresh Graduate',
+  'Job Seeker',
+  'Employee',
+  'Freelancer',
+  'Entrepreneur',
+  'Other',
+] as const;
 
 @Entity('payments')
 export class Payment {
@@ -57,15 +68,7 @@ export class Payment {
 
   @Column({
     type: 'enum',
-    enum: [
-      'University Student',
-      'Fresh Graduate',
-      'Job Seeker',
-      'Employee',
-      'Freelancer',
-      'Entrepreneur',
-      'Other',
-    ],
+    enum: CURRENT_STATUS_OPTIONS,
     nullable: true,
   })
   current_status: currentStatus;
@@ -81,6 +84,15 @@ export class Payment {
 
   @Column({ nullable: true })
   attend_program: boolean;
+
+  @Column({ type: 'varchar', nullable: true })
+  voucher_code: string | null;
+
+  @Column({ type: 'decimal', precision: 12, scale: 2, nullable: true })
+  voucher_discount_total: number | null;
+
+  @Column({ type: 'jsonb', nullable: true })
+  pricing_snapshot: Record<string, unknown> | null;
 
   @Column({ type: 'timestamp', nullable: true })
   dpPaidAt: Date;
@@ -117,4 +129,10 @@ export class Payment {
     (installmentPayment) => installmentPayment.payment,
   )
   installmentPayments: InstallmentPayment[];
+
+  @OneToOne(() => Registration, (registration) => registration.payment, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  registration: Registration;
 }

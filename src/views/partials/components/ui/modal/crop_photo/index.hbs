@@ -23,10 +23,10 @@
 --}}
 
 <div
-  x-show="showCropModal"
+  x-show="$data && $data.showCropModal"
   x-cloak
   class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 {{wrapperClass}}"
-  @click.self="closeCropModal()"
+  @click.self="$data && typeof closeCropModal === 'function' && closeCropModal()"
 >
   <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
     <div class="p-6 border-b border-gray-200">
@@ -39,12 +39,12 @@
     <div class="p-6 border-t border-gray-200 flex justify-end gap-3">
       <button type="button"
         class="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
-        @click="closeCropModal()">
+        @click="$data && typeof closeCropModal === 'function' && closeCropModal()">
         {{default cancelLabel 'Batal'}}
       </button>
       <button type="button"
         class="px-6 py-2 rounded-lg {{default applyBtnClass 'bg-[#003060] text-white hover:bg-[#0B3A68]'}} transition"
-        @click="applyCrop()">
+        @click="$data && typeof applyCrop === 'function' && applyCrop()">
         {{default applyLabel 'Apply Crop'}}
       </button>
     </div>

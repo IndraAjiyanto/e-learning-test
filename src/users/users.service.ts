@@ -166,8 +166,20 @@ export class UsersService {
     page: number;
     limit: number;
   }) {
+    const page = Math.max(1, Number(params.page) || 1);
+    const limit = Math.min(100, Math.max(1, Number(params.limit) || 10));
+
     const query = this.userRepository
       .createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.profile',
+        'user.role',
+        'user.isVerified',
+        'user.createdAt',
+      ])
       .orderBy('user.createdAt', 'DESC');
 
     if (params.search) {
@@ -181,10 +193,10 @@ export class UsersService {
       query.andWhere('user.role = :role', { role: params.role });
     }
 
-    query.skip((params.page - 1) * params.limit).take(params.limit);
+    query.skip((page - 1) * limit).take(limit);
 
     const [data, total] = await query.getManyAndCount();
-    return { data, total };
+    return { data, total, page, limit };
   }
 
   async findWithCourses(userId: string): Promise<User | null> {
@@ -206,23 +218,49 @@ export class UsersService {
     return await this.portfolioRepository.find({
       where: { user: { id: userId } },
       relations: [
-        'user',
         'course',
         'course.courseType',
         'course.category',
         'course.technologies',
       ],
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        link: true,
+        image: true,
+        createdAt: true,
+        course: {
+          id: true,
+          name: true,
+          courseType: {
+            id: true,
+            nameClassesType: true,
+          },
+          category: {
+            id: true,
+            name: true,
+          },
+          technologies: {
+            id: true,
+            name: true,
+            svg: true,
+            imgUrl: true,
+          },
+        },
+      },
       order: { createdAt: 'DESC' },
     });
   }
 
   async findCertificateCourseIds(userId: string): Promise<string[]> {
-    const certificates = await this.certificateRepository.find({
-      where: { user: { id: userId } },
-      relations: ['course'],
-    });
-    return certificates
-      .map((certificate) => certificate.course?.id)
+    const raw = await this.certificateRepository
+      .createQueryBuilder('c')
+      .select('c.courseId', 'courseId')
+      .where('c.userId = :userId', { userId })
+      .getRawMany<{ courseId: string | null }>();
+    return raw
+      .map((r) => r.courseId)
       .filter((courseId): courseId is string => Boolean(courseId));
   }
 
@@ -250,7 +288,27 @@ export class UsersService {
   async findAllLogbooks(userId: string) {
     return await this.logbookRepository.find({
       where: { user: { id: userId } },
-      relations: ['user', 'session', 'session.weeks', 'session.weeks.course'],
+      relations: ['session', 'session.weeks', 'session.weeks.course'],
+      select: {
+        id: true,
+        activity: true,
+        activityDetails: true,
+        obstacles: true,
+        documentation: true,
+        process: true,
+        createdAt: true,
+        session: {
+          id: true,
+          weeks: {
+            id: true,
+            course: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+      order: { createdAt: 'DESC' },
     });
   }
 

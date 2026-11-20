@@ -49,6 +49,7 @@
 
           {{#> components/ui/super_admin/table/card tableClass='min-w-[1010px]'}}
             <colgroup>
+              <template x-if='selectMode'><col class='w-[48px]' /></template>
               <col class='w-[90px]' />
               <col class='w-[340px]' />
               <col class='w-[464px]' />
@@ -56,6 +57,7 @@
             </colgroup>
             <thead>
               <tr>
+                {{> components/ui/super_admin/table/header_cell checkbox=true }}
                 {{> components/ui/super_admin/table/header_cell label='Order' }}
                 {{> components/ui/super_admin/table/header_cell label='Mission Title' }}
                 {{> components/ui/super_admin/table/header_cell label='Mission Description' }}
@@ -64,7 +66,11 @@
             </thead>
             <tbody>
               <template x-for='row in rows' :key='row.id'>
-                <tr class='transition-colors hover:bg-[#fafafa]'>
+                <tr
+                  class='transition-colors hover:bg-[#fafafa]'
+                  :class="selectedIds && selectedIds.some(id => String(id) === String(row.id)) ? 'bg-[#FEF2F2]/60 hover:bg-[#FEF2F2]' : ''"
+                >
+                  {{> components/ui/super_admin/table/cell checkbox=true }}
 
                   {{#> components/ui/super_admin/table/cell}}
                     {{> components/ui/super_admin/badge/index
@@ -98,7 +104,7 @@
                 </tr>
               </template>
 
-              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='4'}}
+              {{#> components/ui/super_admin/table/message_row show='rows.length === 0' colspan='5'}}
                 No misi found.
               {{/components/ui/super_admin/table/message_row}}
             </tbody>

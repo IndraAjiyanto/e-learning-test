@@ -63,31 +63,22 @@
   </span>
 
   <div class="flex flex-col sm:flex-row gap-3">
-    <!-- Manual Payment -->
-    <button
-      type="button"
-      @click="select('manual')"
-      :aria-pressed="channel === 'manual'"
-      :disabled="saving"
-      class="flex flex-1 items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left font-sans transition-colors cursor-pointer disabled:cursor-wait disabled:opacity-60"
-      :class="channelCardClass('manual')"
+    <!-- Manual Payment (Dinonaktifkan sementara sesuai permintaan client, jangan dihapus) -->
+    <div
+      class="flex flex-1 items-center justify-between gap-3 rounded-xl border border-[#E5E7EB] px-4 py-3 text-left font-sans bg-[#F9FAFB] opacity-80 cursor-not-allowed"
     >
       <span class="flex flex-col gap-0.5">
-        <span class="font-inter text-sm font-semibold leading-5 text-[#171717]">
+        <span class="font-inter text-sm font-semibold leading-5 text-[#6B7280]">
           Manual Payment (Bank Transfer)
         </span>
-        <span class="font-inter text-xs leading-[18px] text-[#737373]">
+        <span class="font-inter text-xs leading-[18px] text-[#9CA3AF]">
           User uploads transfer proof, admin verifies.
         </span>
       </span>
-      <span
-        x-show="channel === 'manual'"
-        x-cloak
-        class="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#DCFCE7] px-2 py-0.5 text-[11px] font-semibold text-[#15803D]"
-      >
-        <i class="fa-solid fa-circle-check text-[10px]"></i> Active
+      <span class="inline-flex shrink-0 items-center rounded-full bg-[#F3F4F6] px-2 py-0.5 text-[11px] font-medium text-[#6B7280]">
+        Dinonaktifkan sementara
       </span>
-    </button>
+    </div>
 
     <!-- Gateway -->
     <button
@@ -115,28 +106,19 @@
       </span>
     </button>
   </div>
-
-  <p
-    x-show="gatewayHidden"
-    x-cloak
-    class="font-inter text-[11px] leading-4 text-[#B45309]"
-  >
-    XENDIT_SECRET_KEY belum dikonfigurasi — gateway otomatis nonaktif dan
-    pembayaran berjalan lewat kanal Manual.
-  </p>
 </div>
 
 <script>
   function paymentSettingsPanel(initial) {
     return {
-      manualEnabled: !!initial?.manualEnabled,
-      gatewayEnabled: !!initial?.gatewayEnabled,
+      manualEnabled: false,
+      gatewayEnabled: true,
       gatewayHidden: !!initial?.gatewayHidden,
       saving: false,
-      channel: '',
+      channel: 'gateway',
 
       init() {
-        this.channel = this.gatewayEnabled ? 'gateway' : 'manual';
+        this.channel = 'gateway';
       },
 
       // Warna kartu + affordance hover, dipakai oleh kedua kartu di template.
@@ -152,14 +134,18 @@
         return 'bg-white border-[#D9D9D9] hover:border-[#003060] hover:bg-[#F8FAFC]';
       },
 
-      // Ganti kanal berarti mengubah pembayaran untuk SETIUP program, jadi
+      // Ganti kanal berarti mengubah pembayaran untuk SETIAP program, jadi
       // selalu lewat modal konfirmasi dulu — panel ini tidak pernah langsung
       // menyimpan. Satu kanal saja yang boleh aktif: memilih kanal yang sama
       // tetap no-op supaya tidak ada request sia-sia.
       select(next) {
         if (this.saving) return;
+        if (next === 'manual') {
+          showWarningToast('Manual Payment Unavailable', 'Metode pembayaran manual sedang dinonaktifkan sementara.');
+          return;
+        }
         if (next === 'gateway' && this.gatewayHidden) {
-          showWarningToast('Gateway belum tersedia', 'XENDIT_SECRET_KEY belum dikonfigurasi — gateway tidak bisa diaktifkan.');
+          showWarningToast('Gateway Unavailable', 'XENDIT_SECRET_KEY is not configured — gateway cannot be activated.');
           return;
         }
         if (next === this.channel) return;
@@ -213,7 +199,7 @@
           });
           const json = await res.json();
           if (!res.ok || json.status !== 'success') {
-            showErrorToast('Gagal menyimpan', json.message || 'Gagal menyimpan pengaturan pembayaran.');
+            showErrorToast('Failed to Save', json.message || 'Failed to save payment settings.');
             await this.refresh();
             return;
           }
@@ -223,13 +209,13 @@
           // kontrak komponen ui/admin/toast/success.
           window.dispatchEvent(new CustomEvent('toast:success', {
             detail: {
-              title: 'Pengaturan tersimpan',
-              description: 'Kanal pembayaran aktif: ' + (this.channel === 'gateway' ? 'Gateway (Xendit)' : 'Manual (Bank Transfer)') + '.',
+              title: 'Settings Saved',
+              description: 'Active payment channel: ' + (this.channel === 'gateway' ? 'Gateway (Xendit)' : 'Manual (Bank Transfer)') + '.',
             },
           }));
         } catch (err) {
           console.error('Update payment settings error:', err);
-          showErrorToast('Gagal menyimpan', 'Terjadi kesalahan saat menyimpan pengaturan pembayaran.');
+          showErrorToast('Failed to Save', 'An error occurred while saving payment settings.');
           await this.refresh();
         } finally {
           this.saving = false;
@@ -239,10 +225,10 @@
       // Cerminkan state tersimpan (sumber kebenaran) kembali ke tampilan.
       apply(data) {
         if (!data) return;
-        this.manualEnabled = !!data.manual_enabled;
-        this.gatewayEnabled = !!data.gateway_enabled;
+        this.manualEnabled = false;
+        this.gatewayEnabled = true;
         this.gatewayHidden = !!data.gateway_hidden_because_key_missing;
-        this.channel = this.gatewayEnabled ? 'gateway' : 'manual';
+        this.channel = 'gateway';
       },
 
       async refresh() {

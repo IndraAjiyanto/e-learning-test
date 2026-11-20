@@ -79,7 +79,7 @@
                   }
                 }
               }"
-              class='border border-gray-200 rounded-xl shadow-md bg-white overflow-hidden hover:shadow-lg transition-all duration-300'
+              class='border {{#if (or weekProgresses.[0].quiz progres_minggu.[0].quiz)}}border-2 border-[#22C55E]{{else}}border-gray-200{{/if}} rounded-xl shadow-md bg-white overflow-hidden hover:shadow-lg transition-all duration-300'
               x-init='init()'
             >
 {{> program_detail/right_content/week/button_week}}

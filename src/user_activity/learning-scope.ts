@@ -28,7 +28,7 @@ export interface ScopeResolution {
 export interface LearningScopeRule {
   name: string;
   method: 'GET' | 'POST' | 'ALL';
-  /** Regex path. Group names (sessionId/quizId/weeksId/courseId/logbookId/id) dipakai untuk extract id. */
+  /** Regex path. Group names (sessionId/quizId/weeksId/courseId/logbookId/id) are used to extract id. */
   match: RegExp;
   resolve: (
     ids: Record<string, string>,
@@ -78,7 +78,7 @@ async function resolveWeeks(
     relations: ['course'],
   });
   const courseId = week?.course?.id;
-  return courseId ? { courseId, label: 'Belajar' } : null;
+  return courseId ? { courseId, label: 'Learning' } : null;
 }
 
 async function resolveMaterial(
@@ -92,7 +92,7 @@ async function resolveMaterial(
     relations: ['session', 'session.weeks', 'session.weeks.course'],
   });
   const courseId = material?.session?.weeks?.course?.id;
-  return courseId ? { courseId, label: 'Materi' } : null;
+  return courseId ? { courseId, label: 'Material' } : null;
 }
 
 async function resolveLogbook(
@@ -124,12 +124,6 @@ async function resolveSyllabus(
   return courseId ? { courseId, label } : null;
 }
 
-/**
- * Final assignment tidak punya sesi maupun minggu di belakangnya, jadi
- * courseId-nya diambil langsung dari relasinya. Tanpa aturan ini, membuka
- * halaman final assignment akan menghitung student sebagai "tidak belajar",
- * padahal mereka sedang mengerjakan tugas program itu.
- */
 async function resolveFinalAssignment(
   ids: Record<string, string>,
   ctx: ScopeContext,
@@ -141,31 +135,21 @@ async function resolveFinalAssignment(
     relations: ['course'],
   });
   const courseId = finalAssignment?.courseId;
-  return courseId ? { courseId, label: 'Tugas Akhir' } : null;
+  return courseId ? { courseId, label: 'Final Assignment' } : null;
 }
 
-/**
- * Daftar endpoint yang dianggap berada dalam "scope proses pembelajaran".
- * Selama user (role 'user') membuka endpoint ini, dia dihitung sebagai
- * "sedang belajar <course>" (disimpan di user_activity.currentCourseId).
- * Saat user membuka endpoint di luar daftar ini, status belajar di-reset.
- *
- * Catatan: middleware ini global (app.use), jadi req.params tidak tersedia
- * (routing belum berjalan). Semua extract id dilakukan dari req.path via
- * named group pada `match`.
- */
 export const LEARNING_SCOPE: LearningScopeRule[] = [
   {
     name: 'syllabus-detail',
     method: 'GET',
     match: /^\/syllabus\/learn\/(?<syllabusId>[^/]+)$/,
-    resolve: (ids, _req, ctx) => resolveSyllabus(ids, ctx, 'Silabus'),
+    resolve: (ids, _req, ctx) => resolveSyllabus(ids, ctx, 'Syllabus'),
   },
   {
     name: 'material-viewer',
     method: 'GET',
     match: /^\/learning-material\/(?:video|pdf|ppt)\/(?<sessionId>[^/]+)$/,
-    resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Materi'),
+    resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Material'),
   },
   {
     name: 'material-detail',
@@ -201,19 +185,19 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     name: 'answer-assigment',
     method: 'ALL',
     match: /^\/answer-assigment\/(?<sessionId>[^/]+)(?:\/[^/]+)?$/,
-    resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Tugas'),
+    resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Assignment'),
   },
   {
     name: 'direct-session',
     method: 'GET',
     match: /^\/session\/(?<sessionId>[^/]+)$/,
-    resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Materi Sesi'),
+    resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Session Material'),
   },
   {
     name: 'attendance-form',
     method: 'GET',
     match: /^\/attendance\/(?:form|create)\/(?<id>[^/]+)$/,
-    resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Absensi'),
+    resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Attendance'),
   },
   {
     name: 'attendance-create',
@@ -221,7 +205,7 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     match: /^\/attendance\/(?<sessionId>[^/]+)\/[^/]+\/(?<courseId>[^/]+)$/,
     resolve: (ids) =>
       Promise.resolve(
-        ids.courseId ? { courseId: ids.courseId, label: 'Absensi' } : null,
+        ids.courseId ? { courseId: ids.courseId, label: 'Attendance' } : null,
       ),
   },
   {
@@ -237,7 +221,7 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     name: 'program-session-detail',
     method: 'GET',
     match: /^\/program\/session\/detail\/(?<sessionId>[^/]+)$/,
-    resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Materi Sesi'),
+    resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Session Material'),
   },
   {
     name: 'program-course-detail',
@@ -247,7 +231,7 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     resolve: (ids) =>
       Promise.resolve(
         ids.courseId
-          ? { courseId: ids.courseId, label: 'Melihat Program' }
+          ? { courseId: ids.courseId, label: 'Viewing Program' }
           : null,
       ),
   },
@@ -271,7 +255,7 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
       const byQuery = req.query?.courseId;
       const courseId = Array.isArray(byQuery) ? byQuery[0] : byQuery;
       if (typeof courseId === 'string' && courseId) {
-        return { courseId, label: 'Belajar' };
+        return { courseId, label: 'Learning' };
       }
       if (!ids.userId) return null;
       const uc = await ctx.userCourseRepo.findOne({
@@ -279,7 +263,7 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
         relations: ['course'],
       });
       return uc?.course?.id
-        ? { courseId: uc.course.id, label: 'Belajar' }
+        ? { courseId: uc.course.id, label: 'Learning' }
         : null;
     },
   },
@@ -308,16 +292,12 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
     resolve: (ids, _req, ctx) => resolveLogbook(ids, ctx),
   },
   {
-    // Submit form isi logbook (POST /logbooks/:sessionId). Diletakkan SEBELUM
-    // logbook-detail yang method-nya ALL, agar POST ini tidak tertelan rule detail.
     name: 'logbook-create',
     method: 'POST',
     match: /^\/logbooks\/(?<sessionId>[^/]+)$/,
     resolve: (ids, _req, ctx) => resolveSession(ids, ctx, 'Logbook'),
   },
   {
-    // ALL agar update logbook (POST ?_method=PATCH /logbooks/:logbookId) ikut
-    // terdeteksi, bukan hanya GET detail.
     name: 'logbook-detail',
     method: 'ALL',
     match: /^\/logbooks\/(?<logbookId>[^/]+)$/,
@@ -344,7 +324,7 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
       const courseId = Array.isArray(byQuery) ? byQuery[0] : byQuery;
       const user = req.user;
       if (typeof courseId === 'string' && courseId) {
-        return { courseId, label: 'Belajar' };
+        return { courseId, label: 'Learning' };
       }
       if (!user?.id) return null;
       const uc = await ctx.userCourseRepo.findOne({
@@ -352,18 +332,12 @@ export const LEARNING_SCOPE: LearningScopeRule[] = [
         relations: ['course'],
       });
       return uc?.course?.id
-        ? { courseId: uc.course.id, label: 'Belajar' }
+        ? { courseId: uc.course.id, label: 'Learning' }
         : null;
     },
   },
 ];
 
-/**
- * Menentukan apakah path merupakan request asset/static (CSS/JS/gambar/favicon/dll).
- * Request semacam ini hanya memperbarui lastSeenAt dan TIDAK memengaruhi status belajar
- * (tidak reset currentCourseId), agar status "sedang belajar" tidak hilang seketika saat
- * browser memuat asset halaman belajar.
- */
 export function isAssetPath(path: string): boolean {
   return (
     path.startsWith('/public/') ||
@@ -374,13 +348,6 @@ export function isAssetPath(path: string): boolean {
   );
 }
 
-/**
- * Menentukan apakah request ini berupa navigasi halaman (buka link / refresh /
- * redirect), BUKAN request latar seperti fetch/XHR/API. Status belajar hanya
- * boleh di-reset saat user benar-benar berpindah halaman. Fetch latar (mis.
- * navbar memanggil /dashboard/api/category saat halaman selesai dimuat) tidak
- * boleh menghapus status "sedang belajar".
- */
 export function isNavigationRequest(req: Request): boolean {
   const dest = req.headers['sec-fetch-dest'];
   if (typeof dest === 'string') return dest === 'document';
@@ -393,7 +360,6 @@ export function isNavigationRequest(req: Request): boolean {
   );
 }
 
-/** Mengembalikan rule scope yang cocok dengan method + path, atau null jika di luar scope. */
 export function matchLearningScope(
   method: string,
   path: string,

@@ -168,18 +168,21 @@ export class AlumniService {
     // Order by ID descending
     query = query.orderBy('alumni.createdAt', 'DESC');
 
+    const safePage = Math.max(1, Number(page) || 1);
+    const safeLimit = Math.min(50, Math.max(1, Number(limit) || 6));
+
     // Pagination
-    const skip = (page - 1) * limit;
-    query = query.skip(skip).take(limit);
+    const skip = (safePage - 1) * safeLimit;
+    query = query.skip(skip).take(safeLimit);
 
     const [data, total] = await query.getManyAndCount();
 
     return {
       data,
       total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
+      page: safePage,
+      limit: safeLimit,
+      totalPages: Math.ceil(total / safeLimit),
     };
   }
 }

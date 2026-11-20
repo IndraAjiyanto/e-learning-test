@@ -10,6 +10,7 @@ import {
   Req,
   UseInterceptors,
   UseFilters,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoriesDto } from './dto/create-categories.dto';
@@ -117,11 +118,14 @@ export class CategoriesController {
     const count = await this.categoriesService.count();
     const noNumbers = Array.from({ length: count + 1 }, (_, i) => i + 1);
     const takenNumbers = await this.categoriesService.getTakenNumbers();
+    const takenCategoryNames =
+      await this.categoriesService.getTakenCategoryNames();
     res.render('super_admin/category/create', {
       user: req.user,
       courseTypes,
       noNumbers,
       takenNumbers,
+      takenCategoryNames,
     });
   }
 
@@ -141,19 +145,27 @@ export class CategoriesController {
   ) {
     const category = await this.categoriesService.findOneCategory(categoryName);
     category.contact = category.contact?.replace(/^0/, '62');
-    const benefit_category = await this.categoriesService.findBenefitByCategory(
-      category.id,
-    );
-    const gallery = await this.categoriesService.findGalleryByCategory(
-      category.id,
-    );
-    const faqs = await this.categoriesService.findFaqByCategory(category.id);
-    const alumni = await this.categoriesService.findAlumniByCategory(
-      category.id,
-    );
-    const courses = await this.categoriesService.findCourseByCategory(
-      category.id,
-    );
+
+    const [
+      benefit_category,
+      gallery,
+      faqs,
+      alumni,
+      courses,
+      courseTypes,
+      portfolio,
+    ] = await Promise.all([
+      this.categoriesService.findBenefitByCategory(category.id),
+      this.categoriesService.findGalleryByCategory(category.id),
+      this.categoriesService.findFaqByCategory(category.id),
+      this.categoriesService.findAlumniByCategory(category.id),
+      this.categoriesService.findCourseByCategory(category.id),
+      this.categoriesService.findCourseTypes(),
+      category?.type === 'Paid Program'
+        ? this.categoriesService.findPortfolioByCategory(category.id)
+        : Promise.resolve(null),
+    ]);
+
     if (category?.type === 'Special Program') {
       const isJapan = Boolean(
         category.name &&
@@ -164,6 +176,7 @@ export class CategoriesController {
         category,
         user: req.user,
         courses,
+        courseTypes,
         alumni,
         benefit_category,
         faqs,
@@ -171,13 +184,11 @@ export class CategoriesController {
         isJapan,
       });
     } else if (category?.type === 'Paid Program') {
-      const portfolio = await this.categoriesService.findPortfolioByCategory(
-        category.id,
-      );
       res.render('paid_program', {
         category,
         user: req.user,
         courses,
+        courseTypes,
         alumni,
         portfolio,
         benefit_category,
@@ -189,6 +200,7 @@ export class CategoriesController {
         category,
         user: req.user,
         courses,
+        courseTypes,
         benefit_category,
         alumni,
         gallery,
@@ -241,9 +253,114 @@ export class CategoriesController {
   }
 
   @Roles('super_admin')
+  @Post('bulk-delete')
+  async removeManyPost(
+    @Body('ids') rawIds: any,
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const wantsJson =
+      req.xhr ||
+      (req.headers.accept &&
+        req.headers.accept.includes('application/json') &&
+        !req.headers.accept.includes('text/html'));
+
+    let ids: string[] = [];
+    if (Array.isArray(rawIds)) {
+      const flattened = rawIds.flatMap((item) =>
+        typeof item === 'string' && item.includes(',') ? item.split(',') : item,
+      );
+      ids = Array.from(
+        new Set(
+          flattened.map((s) => String(s).trim()).filter((s) => s.length > 0),
+        ),
+      );
+    } else if (typeof rawIds === 'string' && rawIds.trim()) {
+      try {
+        const parsed = JSON.parse(rawIds);
+        if (Array.isArray(parsed)) {
+          const flattened = parsed.flatMap((item) =>
+            typeof item === 'string' && item.includes(',')
+              ? item.split(',')
+              : item,
+          );
+          ids = Array.from(
+            new Set(
+              flattened
+                .map((s) => String(s).trim())
+                .filter((s) => s.length > 0),
+            ),
+          );
+        } else {
+          ids = Array.from(
+            new Set(
+              rawIds
+                .split(',')
+                .map((s) => s.trim())
+                .filter((s) => s.length > 0),
+            ),
+          );
+        }
+      } catch {
+        ids = Array.from(
+          new Set(
+            rawIds
+              .split(',')
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0),
+          ),
+        );
+      }
+    }
+
+    try {
+      const result = await this.categoriesService.removeMany(ids);
+      if (wantsJson) {
+        return res.json({
+          success: true,
+          message: `Successfully deleted ${result.count} selected category(ies).`,
+          count: result.count,
+        });
+      }
+      flashToast(
+        req,
+        'Deleted Successfully',
+        `Successfully deleted ${result.count} selected category(ies).`,
+      );
+      return res.redirect(redirectUrl || req.header('Referer') || '/category');
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Failed to delete selected categories';
+      if (wantsJson) {
+        return res.status(400).json({
+          success: false,
+          message: msg,
+        });
+      }
+      flashToastError(req, 'Failed to Delete', msg);
+      return res.redirect(redirectUrl || req.header('Referer') || '/category');
+    }
+  }
+
+  @Roles('super_admin')
+  @Delete('bulk-delete')
+  async removeManyDelete(
+    @Body('ids') rawIds: any,
+    @Body('redirectUrl') redirectUrl: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.removeManyPost(rawIds, redirectUrl, req, res);
+  }
+
+  @Roles('super_admin')
   @Get(':categoryId')
   async findOne(
-    @Param('categoryId') categoryId: string,
+    @Param('categoryId', new ParseUUIDPipe({ optional: true }))
+    categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -258,7 +375,8 @@ export class CategoriesController {
   @Roles('super_admin')
   @Get('formEdit/:categoryId')
   async formEdit(
-    @Param('categoryId') categoryId: string,
+    @Param('categoryId', new ParseUUIDPipe({ optional: true }))
+    categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -272,12 +390,15 @@ export class CategoriesController {
     );
     const takenNumbers =
       await this.categoriesService.getTakenNumbers(categoryId);
+    const takenCategoryNames =
+      await this.categoriesService.getTakenCategoryNames(categoryId);
     res.render('super_admin/category/edit', {
       user: req.user,
       category,
       courseTypes,
       noNumbers,
       takenNumbers,
+      takenCategoryNames,
     });
   }
 
@@ -293,7 +414,8 @@ export class CategoriesController {
     ),
   )
   async update(
-    @Param('categoryId') categoryId: string,
+    @Param('categoryId', new ParseUUIDPipe({ optional: true }))
+    categoryId: string,
     @Body() updateCategoriesDto: UpdateCategoriesDto,
     @Res() res: Response,
     @Req() req: Request,
@@ -376,16 +498,28 @@ export class CategoriesController {
   @Roles('super_admin')
   @Delete(':categoryId')
   async remove(
-    @Param('categoryId') categoryId: string,
+    @Param('categoryId', new ParseUUIDPipe({ optional: true }))
+    categoryId: string,
     @Res() res: Response,
     @Req() req: Request,
   ) {
+    const isJson =
+      Boolean(req.xhr) ||
+      req.headers.accept?.includes('application/json') ||
+      req.headers['content-type']?.includes('application/json');
+
     try {
       const category = await this.categoriesService.findOne(categoryId);
       await this.categoriesService.remove(categoryId);
       if (category.icon) await this.categoriesService.deleteFile(category.icon);
       if (category.hero_section_image) {
         await this.categoriesService.deleteFile(category.hero_section_image);
+      }
+      if (isJson) {
+        return res.json({
+          success: true,
+          message: 'Category has been permanently removed.',
+        });
       }
       flashToast(
         req,
@@ -396,6 +530,12 @@ export class CategoriesController {
     } catch (error: unknown) {
       const err = error as Error;
       const errorMessage = err.message || 'category failed to delete';
+      if (isJson) {
+        return res.status(400).json({
+          success: false,
+          message: errorMessage,
+        });
+      }
       flashToastError(req, 'Gagal Menghapus Kategori', errorMessage);
       req.flash('error', errorMessage);
       res.redirect('/category');

@@ -22,6 +22,8 @@ export class Category {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  // Nama kategori unik (Skenario A). Dijaga di level database lewat unique index
+  // IDX_category_name_unique_lower (LOWER(REGEXP_REPLACE(TRIM(name), '\s+', ' ', 'g'))).
   @Column({ nullable: true })
   name: string;
 

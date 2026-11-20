@@ -25,25 +25,64 @@
     <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[14px] justify-start items-stretch'>
 
       {{!-- Toolbar --}}
-      <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[12px] justify-between items-stretch sm:h-[44px] sm:flex-row sm:items-center'>
-        <div class='flex flex-col sm:flex-row gap-[12px] items-stretch sm:items-center flex-1'>
-          {{> components/ui/admin/form/search-input placeholder='Search program...' value='searchInput'}}
+      <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[12px] justify-start items-stretch'>
+        {{!-- Top Row: Search & Actions --}}
+        <div class='box-border w-full h-fit shrink-0 flex flex-col gap-[12px] justify-between items-stretch sm:h-[44px] sm:flex-row sm:items-center'>
+          <div class='w-full sm:max-w-[420px]'>
+            {{> components/ui/admin/form/search-input placeholder='Search program...' value='searchInput' widthClass='w-full'}}
+          </div>
 
-          {{!-- Status Filter Dropdown --}}
-          <div class='relative w-full sm:w-[200px] shrink-0' x-data='{ openStatus: false }' @click.outside='openStatus = false'>
+          <div class='flex flex-row items-center gap-[10px] shrink-0 self-end sm:self-auto'>
+            {{#if isSuperAdmin}}
             <button
               type='button'
-              @click='openStatus = !openStatus'
+              @click='toggleSelectMode()'
+              class='box-border h-[44px] flex flex-row items-center rounded-[8px] font-inter text-[14px] font-semibold transition-all shadow-[0px_1px_2px_rgba(0,0,0,0.05)] cursor-pointer'
+              :class="selectMode ? 'bg-[#F5F5F5] border border-[#D4D4D4] hover:bg-[#E5E5E5] text-[#404040] w-11 px-0 justify-center' : 'bg-white border border-[#D4D4D4] hover:border-[#DC2626] hover:bg-[#FEF2F2] text-[#404040] hover:text-[#DC2626] px-[16px]'"
+              :title="selectMode ? 'Close' : 'Manage Delete'"
+              :aria-label="selectMode ? 'Close' : 'Manage Delete'"
+            >
+              <template x-if='!selectMode'>
+                <div class='flex items-center gap-2'>
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#DC2626]'>
+                    <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+                  </svg>
+                  <span>Manage Delete</span>
+                </div>
+              </template>
+              <template x-if='selectMode'>
+                <div class='flex items-center justify-center'>
+                  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4 text-[#525252]'>
+                    <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
+                  </svg>
+                </div>
+              </template>
+            </button>
+            {{/if}}
+
+            <div class='w-[158px] shrink-0'>
+              {{> components/ui/admin/button/primary-button text='Create Program' href='/program/create'}}
+            </div>
+          </div>
+        </div>
+
+        {{!-- Bottom Row: Filters (di bawah search) --}}
+        <div class='box-border w-full h-fit shrink-0 flex flex-wrap items-center gap-[10px]'>
+          {{!-- Status (Approval) Filter Dropdown: Accepted & Pending --}}
+          <div class='relative w-full sm:w-[180px] shrink-0' x-data='{ openProcess: false }' @click.outside='openProcess = false'>
+            <button
+              type='button'
+              @click='openProcess = !openProcess'
               class='box-border flex flex-row justify-between items-center px-[16px] py-[10px] w-full h-[42px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] focus:outline-none transition-colors cursor-pointer text-left'
             >
               <span
                 class='flex-1 truncate font-inter text-[14px] leading-[20px] font-normal'
-                :class="selectedStatus ? 'text-[#1A202C]' : 'text-[#718096]'"
-                x-text="statusOptions.find(o => o.value === selectedStatus)?.label || 'All Status'"
+                :class="selectedProcess ? 'text-[#1A202C]' : 'text-[#718096]'"
+                x-text="processOptions.find(o => o.value === selectedProcess)?.label || 'All Status'"
               ></span>
               <svg
                 class='w-[10px] h-[5px] shrink-0 ml-2 transition-transform duration-200'
-                :class="openStatus ? 'rotate-180' : ''"
+                :class="openProcess ? 'rotate-180' : ''"
                 viewBox='0 0 10 5'
                 fill='none'
                 xmlns='http://www.w3.org/2000/svg'
@@ -54,7 +93,7 @@
 
             {{!-- Dropdown Menu Options --}}
             <div
-              x-show='openStatus'
+              x-show='openProcess'
               x-transition:enter='transition ease-out duration-100'
               x-transition:enter-start='transform opacity-0 scale-95'
               x-transition:enter-end='transform opacity-100 scale-100'
@@ -66,25 +105,124 @@
             >
               <button
                 type='button'
-                @click="filterStatus(''); openStatus = false"
+                @click="filterProcess(''); openProcess = false"
                 class='w-full px-[16px] py-[10px] text-left font-inter text-[14px] leading-[20px] hover:bg-[#F7FAFC] flex items-center justify-between transition-colors'
-                :class="!selectedStatus ? 'bg-[#EDF2F7] text-[#1A202C] font-medium' : 'text-[#4A5568]'"
+                :class="!selectedProcess ? 'bg-[#EDF2F7] text-[#1A202C] font-medium' : 'text-[#4A5568]'"
               >
                 <span>All Status</span>
-                <i x-show='!selectedStatus' class='fas fa-check text-xs text-[#2B6CB0]'></i>
+                <i x-show='!selectedProcess' class='fas fa-check text-xs text-[#2B6CB0]'></i>
               </button>
 
-              <template x-for='option in statusOptions' :key='option.value'>
+              <template x-for='option in processOptions' :key='option.value'>
                 <button
                   type='button'
-                  @click="filterStatus(option.value); openStatus = false"
+                  @click="filterProcess(option.value); openProcess = false"
                   class='w-full px-[16px] py-[10px] text-left font-inter text-[14px] leading-[20px] hover:bg-[#F7FAFC] flex items-center justify-between transition-colors'
-                  :class="selectedStatus === option.value ? 'bg-[#EDF2F7] text-[#1A202C] font-medium' : 'text-[#4A5568]'"
+                  :class="selectedProcess === option.value ? 'bg-[#EDF2F7] text-[#1A202C] font-medium' : 'text-[#4A5568]'"
                 >
                   <span x-text='option.label'></span>
-                  <i x-show='selectedStatus === option.value' class='fas fa-check text-xs text-[#2B6CB0]'></i>
+                  <i x-show='selectedProcess === option.value' class='fas fa-check text-xs text-[#2B6CB0]'></i>
                 </button>
               </template>
+            </div>
+          </div>
+
+          {{!-- Status Program (Lifecycle) Filter Checklist Dropdown --}}
+          <div class='relative w-full sm:w-[220px] shrink-0' x-data='{ openStatus: false }' @click.outside='openStatus = false'>
+            <button
+              type='button'
+              @click='openStatus = !openStatus'
+              class='box-border flex flex-row justify-between items-center px-[16px] py-[10px] w-full h-[42px] bg-[#FFFFFF] border border-[#D9D9D9] rounded-[8px] focus:outline-none transition-colors cursor-pointer text-left shadow-[0px_1px_2px_rgba(0,0,0,0.05)]'
+            >
+              <div class='flex items-center gap-1.5 flex-1 min-w-0'>
+                <span
+                  class='truncate font-inter text-[14px] leading-[20px] font-normal text-[#1A202C]'
+                  x-text='statusFilterLabel'
+                ></span>
+              </div>
+              <div class='flex items-center gap-1.5 shrink-0 ml-1'>
+                <span
+                  class='px-1.5 py-0.5 text-[11px] font-semibold rounded-full'
+                  :class="isStatusDefault ? 'bg-[#F1F5F9] text-[#64748B]' : 'bg-[#EFF6FF] text-[#2563EB]'"
+                  x-text='selectedStatuses.length'
+                ></span>
+                <svg
+                  class='w-[10px] h-[5px] transition-transform duration-200'
+                  :class="openStatus ? 'rotate-180' : ''"
+                  viewBox='0 0 10 5'
+                  fill='none'
+                  xmlns='http://www.w3.org/2000/svg'
+                >
+                  <path d='M1 1L5 4L9 1' stroke='#718096' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/>
+                </svg>
+              </div>
+            </button>
+
+            {{!-- Dropdown Checklist Menu --}}
+            <div
+              x-show='openStatus'
+              x-cloak
+              x-transition:enter='transition ease-out duration-100'
+              x-transition:enter-start='transform opacity-0 scale-95'
+              x-transition:enter-end='transform opacity-100 scale-100'
+              x-transition:leave='transition ease-in duration-75'
+              x-transition:leave-start='transform opacity-100 scale-100'
+              x-transition:leave-end='transform opacity-0 scale-95'
+              class='absolute left-0 mt-1 w-full sm:w-[260px] bg-white rounded-[8px] border border-[#D9D9D9] shadow-lg z-50 overflow-hidden'
+              style='display: none;'
+            >
+              {{!-- Header Action Bar --}}
+              <div class='px-3 py-2 border-b border-[#E2E8F0] flex items-center justify-between text-[12px] bg-[#F8FAFC]'>
+                <span class='font-medium text-[#475569]'>Filter Status</span>
+                <div class='flex items-center gap-1.5 text-[11px]'>
+                  <button
+                    type='button'
+                    @click='resetToDefaultStatuses()'
+                    class='text-[#2563EB] hover:text-[#1D4ED8] font-medium hover:underline cursor-pointer'
+                    title='Reset to Unpublished, Published, Learning'
+                  >
+                    Default (3)
+                  </button>
+                  <span class='text-gray-300'>|</span>
+                  <button
+                    type='button'
+                    @click='toggleAllStatuses()'
+                    class='text-[#2563EB] hover:text-[#1D4ED8] font-medium hover:underline cursor-pointer'
+                    x-text="selectedStatuses.length === statusOptions.length ? 'Clear All' : 'Select All'"
+                  ></button>
+                </div>
+              </div>
+
+              {{!-- Checklist Options --}}
+              <div class='py-1 divide-y divide-[#F8FAFC]'>
+                <template x-for='option in statusOptions' :key='option.value'>
+                  <label
+                    class='w-full px-3 py-2 hover:bg-[#F8FAFC] flex items-center gap-2.5 cursor-pointer select-none transition-colors'
+                    :class="selectedStatuses.includes(option.value) ? 'bg-[#F0FDF4]/30' : ''"
+                  >
+                    <input
+                      type='checkbox'
+                      :value='option.value'
+                      :checked='selectedStatuses.includes(option.value)'
+                      @change='toggleStatus(option.value)'
+                      class='w-4 h-4 rounded border-[#CBD5E1] text-[#2563EB] focus:ring-[#2563EB] cursor-pointer accent-[#2563EB]'
+                    />
+                    <div class='flex items-center gap-2 flex-1 min-w-0'>
+                      <span class='w-2 h-2 rounded-full shrink-0' :class='getStatusDotClass(option.value)'></span>
+                      <span class='font-inter text-[13px] text-[#1E293B] truncate' x-text='option.label'></span>
+                    </div>
+                    <template x-if="option.value === 'done'">
+                      <span class='text-[10px] font-semibold text-[#7E22CE] bg-[#F3E8FF] px-1.5 py-0.5 rounded shrink-0'>Selesai</span>
+                    </template>
+                  </label>
+                </template>
+              </div>
+
+              {{!-- Tip Footer --}}
+              <div class='px-3 py-1.5 bg-[#F8FAFC] border-t border-[#E2E8F0] text-[11px] text-[#64748B] flex items-center gap-1.5'>
+                <i class='fas fa-info-circle text-[10px] text-[#94A3B8]'></i>
+                <span>Default menyembunyikan <strong>Completed</strong></span>
+              </div>
             </div>
           </div>
 
@@ -100,12 +238,97 @@
             wrapperClass='w-full sm:w-[200px] shrink-0'
           }}
           {{/if}}
-        </div>
 
-        <div class='w-[158px] shrink-0 self-end sm:self-auto'>
-          {{> components/ui/admin/button/primary-button text='Create Program' href='/program/create'}}
+          {{!-- Reset Filters Button --}}
+          <button
+            type='button'
+            x-show='selectedProcess || !isStatusDefault || selectedMentor'
+            x-cloak
+            @click='resetFilters()'
+            class='h-[42px] px-3.5 flex items-center gap-1.5 text-[13px] text-[#DC2626] bg-white hover:bg-[#FEF2F2] rounded-[8px] border border-[#FCA5A5] transition-colors cursor-pointer font-medium shrink-0'
+            title='Reset Filters'
+          >
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-3.5 h-3.5'>
+              <path d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'/>
+              <path d='M3 3v5h5'/>
+            </svg>
+            <span>Reset Filter</span>
+          </button>
         </div>
       </div>
+
+      {{#if isSuperAdmin}}
+      {{!-- Bulk Selection Action Bar --}}
+      <div
+        x-show='selectMode'
+        x-cloak
+        x-transition:enter='transition ease-out duration-150'
+        x-transition:enter-start='opacity-0 -translate-y-2'
+        x-transition:enter-end='opacity-100 translate-y-0'
+        x-transition:leave='transition ease-in duration-100'
+        x-transition:leave-start='opacity-100 translate-y-0'
+        x-transition:leave-end='opacity-0 -translate-y-2'
+        class='box-border w-full flex flex-col sm:flex-row justify-between items-center px-4 py-2.5 bg-[#FEF2F2] border border-[#FCA5A5] rounded-[10px] gap-2.5 shadow-sm'
+        style='display: none;'
+      >
+        <div class='flex flex-wrap items-center gap-2 text-[14px] text-[#991B1B] font-inter font-medium'>
+          <svg class='w-5 h-5 text-[#DC2626] shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/>
+          </svg>
+          <span>
+            <strong x-text='selectedCourses.length'></strong> of <span x-text='totalItems'></span> programs selected
+          </span>
+
+          <span class='text-[#FCA5A5] mx-1'>•</span>
+
+          <button
+            type='button'
+            @click='toggleSelectAllOnPage()'
+            class='text-xs text-[#DC2626] hover:underline font-semibold cursor-pointer'
+            x-text="isAllSelected() ? 'Deselect Page' : 'Select All on Page'"
+          ></button>
+
+          <template x-if='selectedCourses.length > 0'>
+            <button
+              type='button'
+              @click='clearSelection()'
+              class='text-xs text-[#7F1D1D] hover:underline font-normal cursor-pointer ml-1'
+            >
+              (Clear Selection)
+            </button>
+          </template>
+        </div>
+
+        <div class='flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end'>
+          {{!-- Tombol Hapus Terpilih --}}
+          <button
+            type='button'
+            @click='confirmDeleteSelected()'
+            :disabled='selectedCourses.length === 0'
+            :class="selectedCourses.length === 0 ? 'opacity-50 cursor-not-allowed bg-gray-400' : 'bg-[#DC2626] hover:bg-[#B91C1C] cursor-pointer'"
+            class='box-border h-[38px] px-3.5 flex flex-row items-center gap-2 text-white rounded-[8px] font-inter text-[13px] font-semibold transition-colors shadow-sm'
+          >
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+              <path d='M3 6h18'/><path d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/><path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/><line x1='10' x2='10' y1='11' y2='17'/><line x1='14' x2='14' y1='11' y2='17'/>
+            </svg>
+            <span>Delete Selected (<span x-text='selectedCourses.length'></span>)</span>
+          </button>
+
+          {{!-- Tombol Tutup (Tanda X) --}}
+          <button
+            type='button'
+            @click='toggleSelectMode()'
+            class='box-border h-[38px] w-[38px] flex items-center justify-center bg-white hover:bg-[#F5F5F5] text-[#525252] hover:text-[#171717] border border-[#D4D4D4] rounded-[8px] transition-colors shadow-sm cursor-pointer'
+            title='Close'
+            aria-label='Close'
+          >
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-4 h-4'>
+              <line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      {{/if}}
 
       {{!-- Table (1 komponen) --}}
       {{> components/ui/admin/program/table isSuperAdmin=isSuperAdmin}}
@@ -117,23 +340,12 @@
        confirmStatusChange() di kelasTable()) dan perpindahan kanal pembayaran
        (select() di paymentSettingsPanel()) --}}
   {{> components/ui/admin/modal/confirm_action/index}}
+  {{> components/ui/admin/modal/delete_confirm/index}}
 </div>
 
 <script>
   function confirmDelete(el, name) {
-    Swal.fire({
-      title: 'Delete Program',
-      text: 'Are you sure you want to delete "' + name + '"?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#DC2626',
-      cancelButtonColor: '#525252',
-      confirmButtonText: 'Delete'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        el.closest('form').submit();
-      }
-    });
+    openDeleteModal(el, 'Delete Program', 'Are you sure you want to delete "' + name + '"?');
   }
 </script>
 
@@ -142,17 +354,24 @@ function kelasTable() {
   return {
     isSuperAdmin: {{#if isSuperAdmin}}true{{else}}false{{/if}},
     kelasList: [],
+    selectMode: false,
+    selectedCourses: [],
     searchInput: '',
-    selectedStatus: '',
+    selectedProcess: '',
+    selectedStatuses: ['unlaunch', 'launch', 'learning'],
     selectedMentor: '',
     mentorOptions: [
       { value: '', label: 'All Mentor' },
       ...({{#if mentorings}}{{{json mentorings}}}{{else}}[]{{/if}}).map(m => ({ value: m.id, label: m.username })),
     ],
+    processOptions: [
+      { value: 'approved', label: 'Approved' },
+      { value: 'process', label: 'Pending' },
+    ],
     statusOptions: [
       { value: 'unlaunch', label: 'Unpublished' },
       { value: 'launch', label: 'Published' },
-      { value: 'learning', label: 'Learning in progress' },
+      { value: 'learning', label: 'Learning' },
       { value: 'done', label: 'Completed' },
     ],
     currentPage: 1,
@@ -162,7 +381,189 @@ function kelasTable() {
     loading: false,
     searchTimeout: null,
 
+    get isStatusDefault() {
+      if (!this.selectedStatuses || this.selectedStatuses.length !== 3) return false;
+      return (
+        this.selectedStatuses.includes('unlaunch') &&
+        this.selectedStatuses.includes('launch') &&
+        this.selectedStatuses.includes('learning')
+      );
+    },
+
+    get statusFilterLabel() {
+      if (!this.selectedStatuses || this.selectedStatuses.length === 0) {
+        return 'No Status';
+      }
+      if (this.selectedStatuses.length === this.statusOptions.length) {
+        return 'All Status (4)';
+      }
+      if (this.isStatusDefault) {
+        return 'Active Programs (3)';
+      }
+      if (this.selectedStatuses.length === 1) {
+        const found = this.statusOptions.find(o => o.value === this.selectedStatuses[0]);
+        return found ? found.label : this.selectedStatuses[0];
+      }
+      return `${this.selectedStatuses.length} Status Selected`;
+    },
+
+    toggleSelectMode() {
+      this.selectMode = !this.selectMode;
+      if (!this.selectMode) {
+        this.selectedCourses = [];
+      }
+    },
+
+    isCourseDisabled(course) {
+      return Boolean(course && course.userCourses && course.userCourses.length > 0);
+    },
+
+    get deletableCoursesOnPage() {
+      return (this.kelasList || []).filter(c => !this.isCourseDisabled(c));
+    },
+
+    isAllSelected() {
+      const list = this.deletableCoursesOnPage;
+      if (!list || list.length === 0) return false;
+      return list.every(c => this.selectedCourses.includes(c.id));
+    },
+
+    toggleSelectAll(event) {
+      const list = this.deletableCoursesOnPage;
+      if (event.target.checked) {
+        const currentIds = list.map(c => c.id);
+        this.selectedCourses = Array.from(new Set([...this.selectedCourses, ...currentIds]));
+      } else {
+        const currentIds = new Set(list.map(c => c.id));
+        this.selectedCourses = this.selectedCourses.filter(id => !currentIds.has(id));
+      }
+    },
+
+    toggleSelectAllOnPage() {
+      const list = this.deletableCoursesOnPage;
+      if (this.isAllSelected()) {
+        const currentIds = new Set(list.map(c => c.id));
+        this.selectedCourses = this.selectedCourses.filter(id => !currentIds.has(id));
+      } else {
+        const currentIds = list.map(c => c.id);
+        this.selectedCourses = Array.from(new Set([...this.selectedCourses, ...currentIds]));
+      }
+    },
+
+    clearSelection() {
+      this.selectedCourses = [];
+    },
+
+    confirmDeleteSelected() {
+      const count = this.selectedCourses.length;
+      if (count === 0) return;
+
+      openDeleteModal({
+        title: `Delete ${count} Selected Programs?`,
+        description: `Are you sure you want to delete ${count} selected programs? This action is permanent and cannot be undone.`,
+        confirmLabel: `Delete (${count})`,
+        cancelLabel: 'Cancel',
+        onConfirm: async () => {
+          await this.executeBulkDelete();
+        },
+      });
+    },
+
+    executeBulkDelete() {
+      submitDeleteForm('/program/bulk-delete', { ids: this.selectedCourses });
+    },
+
+    confirmDeleteAll() {
+      if (this.totalItems === 0) return;
+
+      openDeleteModal({
+        title: 'Delete ALL Programs?',
+        description: `WARNING: You are about to delete ALL programs (${this.totalItems} programs). This action is permanent and cannot be undone!`,
+        confirmLabel: 'Yes, Delete ALL Programs',
+        cancelLabel: 'Cancel',
+        onConfirm: async () => {
+          await this.executeDeleteAll();
+        },
+      });
+    },
+
+    executeDeleteAll() {
+      submitDeleteForm('/program/delete-all', {});
+    },
+
+    confirmDeleteSingle(courseId, name) {
+      const course = (this.kelasList || []).find(c => String(c.id) === String(courseId));
+      if (course && this.isCourseDisabled(course)) {
+        window.dispatchEvent(
+          new CustomEvent('toast:error', {
+            detail: {
+              title: 'Cannot Delete Program',
+              description: `Program "${name}" cannot be deleted because it already has ${course.userCourses.length} enrolled participant(s).`,
+            },
+          }),
+        );
+        return;
+      }
+
+      openDeleteModal({
+        title: 'Delete Program?',
+        description: `Are you sure you want to delete program "${name}"? Program data will be permanently deleted.`,
+        confirmLabel: 'Delete',
+        cancelLabel: 'Cancel',
+        onConfirm: async () => {
+          await this.executeDeleteSingle(courseId);
+        },
+      });
+    },
+
+    async executeDeleteSingle(courseId) {
+      try {
+        const res = await fetch(`/program/${courseId}/json`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        const json = await res.json().catch(() => null);
+
+        if (json && json.success) {
+          this.selectedCourses = this.selectedCourses.filter(id => id !== courseId);
+          window.dispatchEvent(
+            new CustomEvent('toast:success', {
+              detail: {
+                title: 'Deleted Successfully',
+                description: json.message || 'Program has been deleted successfully.',
+              },
+            }),
+          );
+          await this.fetchKelas();
+        } else {
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Failed to Delete',
+                description: json.message || 'Failed to delete program.',
+              },
+            }),
+          );
+        }
+      } catch (err) {
+        window.dispatchEvent(
+          new CustomEvent('toast:error', {
+            detail: {
+              title: 'Error',
+              description: 'A network or server error occurred.',
+            },
+          }),
+        );
+      }
+    },
+
     init() {
+      this.$watch('selectedProcess', () => {
+        this.currentPage = 1;
+        this.fetchKelas();
+      });
       this.$watch('selectedMentor', () => {
         this.currentPage = 1;
         this.fetchKelas();
@@ -175,20 +576,24 @@ function kelasTable() {
       try {
         const params = new URLSearchParams();
         if (this.searchInput.trim()) params.set('search', this.searchInput.trim());
-        if (this.selectedStatus) params.set('status', this.selectedStatus);
+        if (this.selectedProcess) params.set('process', this.selectedProcess);
+        if (this.selectedStatuses && this.selectedStatuses.length > 0) {
+          params.set('status', this.selectedStatuses.join(','));
+        } else {
+          params.set('status', '__none__');
+        }
         if (this.selectedMentor) params.set('mentor', this.selectedMentor);
         params.set('page', this.currentPage);
         params.set('limit', this.size);
 
         const res = await fetch(`/program/filter?${params.toString()}`);
-        const json = await res.json();
+        const json = await res.json().catch(() => null);
 
         this.kelasList = json.data;
         this.totalItems = json.totalItems;
         this.totalPages = json.totalPages;
         this.currentPage = json.currentPage;
       } catch (err) {
-        console.error('Fetch course error:', err);
       } finally {
         this.loading = false;
       }
@@ -202,8 +607,42 @@ function kelasTable() {
       }, 300);
     },
 
-    filterStatus(status) {
-      this.selectedStatus = status || '';
+    filterProcess(process) {
+      this.selectedProcess = process || '';
+      this.currentPage = 1;
+      this.fetchKelas();
+    },
+
+    resetFilters() {
+      this.selectedProcess = '';
+      this.selectedStatuses = ['unlaunch', 'launch', 'learning'];
+      this.selectedMentor = '';
+      this.currentPage = 1;
+      this.fetchKelas();
+    },
+
+    toggleStatus(val) {
+      if (this.selectedStatuses.includes(val)) {
+        this.selectedStatuses = this.selectedStatuses.filter(s => s !== val);
+      } else {
+        this.selectedStatuses = [...this.selectedStatuses, val];
+      }
+      this.currentPage = 1;
+      this.fetchKelas();
+    },
+
+    toggleAllStatuses() {
+      if (this.selectedStatuses.length === this.statusOptions.length) {
+        this.selectedStatuses = [];
+      } else {
+        this.selectedStatuses = this.statusOptions.map(o => o.value);
+      }
+      this.currentPage = 1;
+      this.fetchKelas();
+    },
+
+    resetToDefaultStatuses() {
+      this.selectedStatuses = ['unlaunch', 'launch', 'learning'];
       this.currentPage = 1;
       this.fetchKelas();
     },
@@ -233,7 +672,7 @@ function kelasTable() {
       const s = status || 'unlaunch';
       switch (s) {
         case 'launch': return 'Published';
-        case 'learning': return 'Learning in progress';
+        case 'learning': return 'Learning';
         case 'done': return 'Completed';
         default: return 'Unpublished';
       }
@@ -337,30 +776,48 @@ function kelasTable() {
           },
           body: JSON.stringify({ status: targetStatus }),
         });
-        const json = await res.json();
+        const json = await res.json().catch(() => null);
 
-        if (json.success) {
-          this.kelasList[index].status = json.status;
-          this.kelasList[index].launch = json.launch;
-        } else {
-          console.error('Update status failed:', json.message);
-          if (typeof Swal !== 'undefined') {
-            Swal.fire({
-              icon: 'error',
-              title: 'Failed',
-              text: json.message || 'Failed to update program status',
-            });
+        if (json && json.success) {
+          const courseName = this.kelasList[index]?.name;
+          const statusLabel = this.getStatusLabel(json.status);
+          window.dispatchEvent(
+            new CustomEvent('toast:success', {
+              detail: {
+                title: 'Status Updated',
+                description: courseName
+                  ? `Program "${courseName}" status changed to ${statusLabel}.`
+                  : `Program status changed to ${statusLabel}.`,
+              },
+            }),
+          );
+
+          if (json.status === 'done' && (!this.selectedStatuses || !this.selectedStatuses.includes('done'))) {
+            // Ketika status program berubah menjadi complete / done, program otomatis menghilang dari list jika 'done' tidak dipilih
+            await this.fetchKelas();
+          } else {
+            this.kelasList[index].status = json.status;
+            this.kelasList[index].launch = json.launch;
           }
+        } else {
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Failed',
+                description: json.message || 'Failed to update program status',
+              },
+            }),
+          );
         }
       } catch (err) {
-        console.error('Update status error:', err);
-        if (typeof Swal !== 'undefined') {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Network or server error while updating status',
-          });
-        }
+        window.dispatchEvent(
+          new CustomEvent('toast:error', {
+            detail: {
+              title: 'Error',
+              description: 'Network or server error while updating status',
+            },
+          }),
+        );
       }
     },
 
@@ -390,18 +847,45 @@ function kelasTable() {
             'Content-Type': 'application/json',
           },
         });
-        const json = await res.json();
+        const json = await res.json().catch(() => null);
 
-        if (json.success) {
+        if (json && json.success) {
           this.kelasList[index].launch = json.launch;
           if (json.status) this.kelasList[index].status = json.status;
+
+          const courseName = this.kelasList[index]?.name;
+          const isLaunched = json.launch;
+          window.dispatchEvent(
+            new CustomEvent('toast:success', {
+              detail: {
+                title: isLaunched ? 'Program Published' : 'Program Unpublished',
+                description: courseName
+                  ? `Program "${courseName}" has been ${isLaunched ? 'published' : 'unpublished'}.`
+                  : `Program has been ${isLaunched ? 'published' : 'unpublished'}.`,
+              },
+            }),
+          );
         } else {
           this.kelasList[index].launch = prev;
-          console.error('Toggle launch failed:', json.message);
+          window.dispatchEvent(
+            new CustomEvent('toast:error', {
+              detail: {
+                title: 'Failed',
+                description: json?.message || 'Failed to toggle program launch status.',
+              },
+            }),
+          );
         }
       } catch (err) {
         this.kelasList[index].launch = prev;
-        console.error('Toggle launch error:', err);
+        window.dispatchEvent(
+          new CustomEvent('toast:error', {
+            detail: {
+              title: 'Error',
+              description: 'Network or server error while toggling program launch status.',
+            },
+          }),
+        );
       }
     },
   }
