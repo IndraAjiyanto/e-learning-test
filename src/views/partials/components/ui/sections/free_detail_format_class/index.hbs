@@ -183,7 +183,7 @@
         </div>
 
         <!-- Detail Item 7 - Lokasi -->
-        {{#if course.locations}}
+        {{#if (or (getByLang course.locations lang) course.locationLink)}}
         <div class="box-border w-full max-w-[552px] min-h-[110px] md:min-h-[132px] bg-white border border-[#E2E8F0] shadow-[0px_4px_12px_rgba(11,31,59,0.07)] rounded-[16px] p-5 md:p-[20px] flex flex-row items-center gap-4 md:gap-[16px] transition-shadow duration-200 hover:shadow-[0px_6px_16px_rgba(11,31,59,0.1)] md:col-span-2">
           <!-- Icon Circle -->
           <div class="w-12 h-12 shrink-0 rounded-full bg-[#003060]/[0.07] flex items-center justify-center">
@@ -199,9 +199,9 @@
             </span>
             <span class="font-inter font-bold text-[17px] md:text-[18px] leading-[22px] text-[#0B1F3B] truncate w-full">
               {{#if course.locationLink}}
-                <a href="{{course.locationLink}}" target="_blank" rel="noopener noreferrer" class="underline decoration-[#003060]/40 hover:text-[#003060]">{{default (getByLang course.locations lang) course.method}}</a>
+                <a href="{{course.locationLink}}" target="_blank" rel="noopener noreferrer" class="underline decoration-[#003060]/40 hover:text-[#003060]">{{default (getByLang course.locations lang) course.locationLink}}</a>
               {{else}}
-                {{default (getByLang course.locations lang) (default course.method '-')}}
+                {{getByLang course.locations lang}}
               {{/if}}
             </span>
           </div>

@@ -79,12 +79,14 @@
       }}
 
       {{!-- Item 6: Lokasi --}}
+      {{#if (or (getByLang course.locations lang) course.locationLink)}}
       {{> components/ui/card/schedule_item/index
           iconType="location"
           label=(default (t 'test.detailProgram.infoProgram.location') 'Lokasi')
-          value=(default (getByLang course.locations lang) (default course.method '-'))
+          value=(default (getByLang course.locations lang) course.locationLink)
           link=course.locationLink
       }}
+      {{/if}}
 
       {{!-- Item 7: Kapasitas Kelas --}}
       {{> components/ui/card/schedule_item/index
