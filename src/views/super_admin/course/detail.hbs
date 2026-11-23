@@ -199,7 +199,7 @@
       {{/if}}
       <div x-show="tab === 'benefit'">
         <template x-if="loaded['benefit']">
-          <div>{{> components/ui/super_admin/program/benefit_tab/index courseId=course.id }}</div>
+          <div>{{> components/ui/super_admin/program/benefit_tab/index courseId=course.id categoryId=null }}</div>
         </template>
       </div>
       <div x-show="tab === 'participants'">
@@ -214,7 +214,7 @@
       </div>
       <div x-show="tab === 'FAQs'">
         <template x-if="loaded['FAQs']">
-          <div>{{> components/ui/super_admin/program/faq_tab/index courseId=course.id }}</div>
+          <div>{{> components/ui/super_admin/program/faq_tab/index courseId=course.id categoryId=null }}</div>
         </template>
       </div>
       {{#if course.checkPaid}}
@@ -238,7 +238,7 @@
       {{#unless (eq course.category.type 'Free Program')}}
       <div x-show="tab === 'alumni'">
         <template x-if="loaded['alumni']">
-          <div>{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id }}</div>
+          <div>{{> components/ui/super_admin/program/alumni_tab/index courseId=course.id categoryId=null }}</div>
         </template>
       </div>
       {{/unless}}
