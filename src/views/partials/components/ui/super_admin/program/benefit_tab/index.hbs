@@ -27,17 +27,17 @@
 --}}
 <div
   class='flex flex-col gap-3.5'
-  {{#if categoryId}}
-    x-data='clientTable({ url: "/category/benefit/" + {{json categoryId}}, sortKey: "createdAt", searchKeys: ["title.id", "title.en", "title.ja", "description.id", "description.en", "description.ja"], entityName: "benefit", deleteEntity: "benefit_category" })'
-  {{else}}
+  {{#if courseId}}
     x-data='clientTable({ url: "/program/benefit/" + {{json courseId}}, sortKey: "createdAt", searchKeys: ["benefit.id", "benefit.en", "benefit.ja", "description.id", "description.en", "description.ja"], entityName: "benefit", deleteEntity: "course_benefit" })'
+  {{else}}
+    x-data='clientTable({ url: "/category/benefit/" + {{json categoryId}}, sortKey: "createdAt", searchKeys: ["title.id", "title.en", "title.ja", "description.id", "description.en", "description.ja"], entityName: "benefit", deleteEntity: "benefit_category" })'
   {{/if}}
   x-init='load()'
 >
   {{> components/ui/super_admin/table/toolbar
     placeholder='Search benefit..'
     searchLabel='Search program benefit'
-    createHref=(ternary categoryId (concat '/benefit_category/formCreate/' categoryId) (concat '/benefit-program/formCreate/' courseId))
+    createHref=(ternary courseId (concat '/benefit-program/formCreate/' courseId) (concat '/benefit_category/formCreate/' categoryId))
     createLabel='Add Benefit'
 
     fullWidth=true
@@ -47,10 +47,10 @@
        yang dirender mentah; json menghasilkan literal yang aman di dalam atribut. --}}
   <div
     class='flex flex-col gap-5'
-    {{#if categoryId}}
-      x-data='{ lang: "id", parentId: {{json categoryId}}, titleKey: "title" }'
-    {{else}}
+    {{#if courseId}}
       x-data='{ lang: "id", parentId: {{json courseId}}, titleKey: "benefit" }'
+    {{else}}
+      x-data='{ lang: "id", parentId: {{json categoryId}}, titleKey: "title" }'
     {{/if}}
   >
     {{> components/ui/super_admin/tabs/language/index ariaLabel='Program benefit language' }}
@@ -103,17 +103,17 @@
             {{/components/ui/super_admin/table/cell}}
 
             {{#> components/ui/super_admin/table/cell variant='action'}}
-              {{#if categoryId}}
-                {{> components/ui/super_admin/table/row_actions
-                  entity='benefit'
-                  deleteAction="'/benefit_category/' + row.id + '/' + parentId + '?_method=DELETE'"
-                  editHref="'/benefit_category/formEdit/' + row.id"
-                }}
-              {{else}}
+              {{#if courseId}}
                 {{> components/ui/super_admin/table/row_actions
                   entity='benefit'
                   deleteAction="'/benefit-program/' + row.id + '/' + parentId + '?_method=DELETE'"
                   editHref="'/benefit-program/formEdit/' + row.id"
+                }}
+              {{else}}
+                {{> components/ui/super_admin/table/row_actions
+                  entity='benefit'
+                  deleteAction="'/benefit_category/' + row.id + '/' + parentId + '?_method=DELETE'"
+                  editHref="'/benefit_category/formEdit/' + row.id"
                 }}
               {{/if}}
             {{/components/ui/super_admin/table/cell}}

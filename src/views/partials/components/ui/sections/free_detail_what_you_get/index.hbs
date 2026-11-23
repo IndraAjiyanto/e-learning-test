@@ -17,6 +17,7 @@
   - lang            : string (opsional, kode bahasa)
 --}}
 
+{{#if (or course.programBenefits.length course_benefits.length)}}
 <section 
   id="what-you-get" 
   class="relative w-full overflow-hidden py-[50px] lg:py-[60px]"
@@ -197,56 +198,10 @@
               lang=../lang
           }}
         {{/each}}
-
-      {{else if benefit_category.length}}
-        {{!-- Dynamic Benefit Data dari Backend (table benefit_category) --}}
-        {{#each benefit_category}}
-          {{> components/ui/card/advantage_card/index
-              icon=this.icon
-              title=this.title
-              description=this.description
-              lang=../lang
-          }}
-        {{/each}}
-
-      {{else}}
-        {{!-- Fallback 4 Cards (persis paid_advantage) --}}
-
-        {{!-- Card 1: 1-on-1 Mentoring --}}
-        {{> components/ui/card/advantage_card/index
-            iconType="mentoring"
-            title=(default (t 'test.freeProgram.whatYouGet.card1Title') '1-on-1 Mentoring')
-            description=(default (t 'test.freeProgram.whatYouGet.card1Desc') 'Weekly private sessions with expert mentors from the tech industry for an in-depth review of your portfolio.')
-            lang=lang
-        }}
-
-        {{!-- Card 2: Real-World Portfolio --}}
-        {{> components/ui/card/advantage_card/index
-            iconType="portfolio"
-            title=(default (t 'test.freeProgram.whatYouGet.card2Title') 'Real-World Portfolio')
-            description=(default (t 'test.freeProgram.whatYouGet.card2Desc') 'Complete 3 comprehensive capstone projects ranging from user research to interactive prototypes.')
-            lang=lang
-        }}
-
-        {{!-- Card 3: Career Support --}}
-        {{> components/ui/card/advantage_card/index
-            iconType="career"
-            title=(default (t 'test.freeProgram.whatYouGet.card3Title') 'Career Support')
-            description=(default (t 'test.freeProgram.whatYouGet.card3Desc') "CV building, interview preparation, and exclusive access to Kesatria Academy's hiring partner network.")
-            lang=lang
-        }}
-
-        {{!-- Card 4: Competency Certificate --}}
-        {{> components/ui/card/advantage_card/index
-            iconType="certificate"
-            title=(default (t 'test.freeProgram.whatYouGet.card4Title') 'Competency Certificate')
-            description=(default (t 'test.freeProgram.whatYouGet.card4Desc') 'Earn an official graduation certificate to prove your practical skills to recruiters.')
-            lang=lang
-        }}
-
       {{/if}}
 
     </div>
 
   </div>
 </section>
+{{/if}}

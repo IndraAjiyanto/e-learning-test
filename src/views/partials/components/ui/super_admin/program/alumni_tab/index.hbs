@@ -27,13 +27,13 @@
 --}}
 <div
   class='flex flex-col gap-3.5'
-  x-data='clientTable({ url: {{#if categoryId}}"/category/alumni/" + {{json categoryId}}{{else}}"/program/alumni/" + {{json courseId}}{{/if}}, sortKey: "createdAt", searchKeys: ["name.id", "name.en", "name.ja", "currentPosition.id", "currentPosition.en", "currentPosition.ja", "message.id", "message.en", "message.ja", "course.name"], entityName: "alumni", deleteEntity: "alumni" })'
+  x-data='clientTable({ url: {{#if courseId}}"/program/alumni/" + {{json courseId}}{{else}}"/category/alumni/" + {{json categoryId}}{{/if}}, sortKey: "createdAt", searchKeys: ["name.id", "name.en", "name.ja", "currentPosition.id", "currentPosition.en", "currentPosition.ja", "message.id", "message.en", "message.ja", "course.name"], entityName: "alumni", deleteEntity: "alumni" })'
   x-init='load()'
 >
   {{> components/ui/super_admin/table/toolbar
     placeholder='Search alumni..'
     searchLabel='Search program alumni'
-    createHref=(ternary categoryId (concat '/alumni/category/formCreate/' categoryId) (concat '/alumni/formCreate/' courseId))
+    createHref=(ternary courseId (concat '/alumni/formCreate/' courseId) (concat '/alumni/category/formCreate/' categoryId))
     createLabel='Add Alumni'
 
     fullWidth=true
@@ -41,10 +41,10 @@
 
   {{!-- parentId masuk lewat state Alpine, bukan ditempel ke prop :action row_actions
        yang dirender mentah; json menghasilkan literal yang aman di dalam atribut. --}}
-  <div class='flex flex-col gap-5' x-data='{ lang: "id", parentId: {{#if categoryId}}{{json categoryId}}{{else}}{{json courseId}}{{/if}} }'>
+  <div class='flex flex-col gap-5' x-data='{ lang: "id", parentId: {{#if courseId}}{{json courseId}}{{else}}{{json categoryId}}{{/if}} }'>
     {{> components/ui/super_admin/tabs/language/index ariaLabel='Program alumni language' }}
 
-    {{#> components/ui/super_admin/table/card tableClass=(ternary categoryId 'min-w-[1104px]' 'min-w-[944px]')}}
+    {{#> components/ui/super_admin/table/card tableClass=(ternary courseId 'min-w-[944px]' 'min-w-[1104px]')}}
       <colgroup>
         <template x-if='selectMode'><col class='w-[48px]' /></template>
         <col class='w-[73px]' />
@@ -101,22 +101,22 @@
               ></span>
             {{/components/ui/super_admin/table/cell}}
 
-            {{#if categoryId}}
+            {{#unless courseId}}
               {{> components/ui/super_admin/table/cell text='(row.course && row.course.name) || "—"' }}
-            {{/if}}
+            {{/unless}}
 
             {{#> components/ui/super_admin/table/cell variant='action'}}
-              {{#if categoryId}}
-                {{> components/ui/super_admin/table/row_actions
-                  entity='alumni'
-                  deleteAction="'/alumni/category/' + row.id + '/' + parentId + '?_method=DELETE'"
-                  editHref="'/alumni/category/formEdit/' + row.id"
-                }}
-              {{else}}
+              {{#if courseId}}
                 {{> components/ui/super_admin/table/row_actions
                   entity='alumni'
                   deleteAction="'/alumni/' + row.id + '/' + parentId + '?_method=DELETE'"
                   editHref="'/alumni/formEdit/' + row.id"
+                }}
+              {{else}}
+                {{> components/ui/super_admin/table/row_actions
+                  entity='alumni'
+                  deleteAction="'/alumni/category/' + row.id + '/' + parentId + '?_method=DELETE'"
+                  editHref="'/alumni/category/formEdit/' + row.id"
                 }}
               {{/if}}
             {{/components/ui/super_admin/table/cell}}
