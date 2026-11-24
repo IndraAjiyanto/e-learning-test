@@ -10,7 +10,7 @@
 <div class='py-10 px-6'>
   <div class='max-w-[1100px] mx-auto'
     x-data='{ ...programData("edit"), ...formDirtyGate() }'
-    x-init='paidClass = {{#if course.checkPaid}}true{{else}}false{{/if}}; formData.programType = "{{default course.programType 'bootcamp'}}"; logbookEnabled = {{#if (eq course.logbookEnabled false)}}false{{else}}true{{/if}}; method = "{{default course.method 'online'}}"; methodOnline = {{#if (eq course.method 'offline')}}false{{else}}true{{/if}}; formData.description = {{#if course.description}}{{json course.description}}{{else}}{ id: "", en: "", ja: "" }{{/if}}; formData.location = {{#if course.locations}}{{json course.locations}}{{else}}{ id: "", en: "", ja: "" }{{/if}}; formData.locationLink = {{#if course.locationLink}}"{{course.locationLink}}"{{else}}""{{/if}}; $nextTick(() => { scheduleUpdate(); initScrollObserver(); }); setTimeout(() => scheduleUpdate(), 400);; $nextTick(() => captureBaseline())'
+    x-init='paidClass = {{#if course.checkPaid}}true{{else}}false{{/if}}; formData.programType = "{{default course.programType 'bootcamp'}}"; logbookEnabled = {{#if (eq course.logbookEnabled false)}}false{{else}}true{{/if}}; method = "{{default course.method 'online'}}"; methodOnline = {{#if (eq course.method 'offline')}}false{{else}}true{{/if}}; formData.description = {{#if course.description}}{{json course.description}}{{else}}{ id: "", en: "", ja: "" }{{/if}}; formData.location = {{#if course.locations}}{{json course.locations}}{{else}}{ id: "", en: "", ja: "" }{{/if}}; formData.locationLink = {{#if course.locationLink}}"{{course.locationLink}}"{{else}}""{{/if}}; $nextTick(() => { scheduleUpdate(); initScrollObserver(); }); setTimeout(() => scheduleUpdate(), 400); setTimeout(() => scheduleUpdate(), 800); $nextTick(() => captureBaseline())'
     @input='recomputeDirty()'
     @change='recomputeDirty()'
   >
@@ -26,6 +26,7 @@
       method='POST'
       action='/program/{{course.id}}?_method=PATCH'
       enctype='multipart/form-data'
+      novalidate
       @submit.prevent="if (canSubmit()) { loading = true; $el.submit(); } else { submitAttempted = true; updateCompleteness(); }"
       @input.capture="onInputCapture($event)"
       @change="updateCompleteness()"
@@ -60,8 +61,8 @@
               <span class='text-[16px]/[24px] text-[#003060] font-inter font-semibold whitespace-nowrap'>Cancel</span>
             </a>
             <button type='submit'
-              :disabled='!formComplete || loading'
-              :class="!formComplete || loading ? 'bg-[#003060] opacity-50 cursor-not-allowed' : 'bg-[#003060] hover:bg-[#00254a]'"
+              :disabled='loading || (submitAttempted && !formComplete)'
+              :class="loading || (submitAttempted && !formComplete) ? 'bg-[#003060] opacity-50 cursor-not-allowed' : 'bg-[#003060] hover:bg-[#00254a]'"
               class='box-border w-[158px] shrink-0 h-[44px] flex flex-row gap-0 p-[10px_18px] justify-center items-center [outline:1px_solid_#003060] [outline-offset:-0.5px] rounded-[8px] transition-colors'>
               <span x-show='loading' class='loading loading-spinner loading-sm'></span>
               <span x-show='!loading' class='text-[16px]/[24px] text-[#FFFFFF] font-inter font-semibold whitespace-nowrap'>Update</span>
