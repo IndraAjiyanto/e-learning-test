@@ -209,11 +209,11 @@
               </div>
               <div class="flex items-center gap-2">
                 <div class="flex flex-col items-end">
-                  <span class="text-[#404040] font-medium" x-text="formatCurrency(getPricing(item).monthly[idx].originalAmount)"></span>
-                  <template x-if="getPricing(item).monthly[idx].discountAmount > 0">
+                  <span class="text-[#404040] font-medium" x-text="formatCurrency(getPricing(item).monthly[idx]?.originalAmount ?? price)"></span>
+                  <template x-if="getPricing(item).monthly[idx]?.discountAmount > 0">
                     <span class="text-[11px] text-emerald-600" x-text="'Monthly discount: - ' + formatCurrency(getPricing(item).monthly[idx].discountAmount)"></span>
                   </template>
-                  <span class="font-semibold text-[#003060]" x-text="'Pay: ' + formatCurrency(getPricing(item).monthly[idx].amount)"></span>
+                  <span class="font-semibold text-[#003060]" x-text="'Pay: ' + formatCurrency(getPricing(item).monthly[idx]?.amount ?? price)"></span>
                 </div>
                 <span
                   class="px-2 py-0.5 rounded text-[11px] font-semibold"

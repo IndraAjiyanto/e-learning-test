@@ -177,6 +177,46 @@
         if (status === 'rejected') return 'Rejected';
         return 'Unpaid';
       },
+
+      getPricing(item) {
+        const snapshot = item?.pricing_snapshot;
+        const monthlyRows = Array.isArray(item?.installmentPayments)
+          ? item.installmentPayments
+          : [];
+        const originalDownPayment = Number(
+          snapshot?.downPayment?.originalAmount ?? item?.installment?.downPayment ?? 0,
+        );
+        const finalDownPayment = Number(
+          snapshot?.downPayment?.amount ??
+            (monthlyRows.length ? originalDownPayment : item?.invoice?.final_total ?? originalDownPayment),
+        );
+        const downPaymentDiscount = Math.max(0, originalDownPayment - finalDownPayment);
+        const originalMonthly = (item?.installment?.price || []).map(Number);
+        const monthly = originalMonthly.map((originalAmount, index) => {
+          const row = monthlyRows.find((term) => Number(term.month) === index + 1);
+          const snapshotMonth = snapshot?.monthly?.[index];
+          const amount = Number(snapshotMonth?.amount ?? row?.amount ?? originalAmount);
+          const discountAmount = Number(
+            snapshotMonth?.discountAmount ?? row?.discount_amount ?? Math.max(0, originalAmount - amount),
+          );
+          return { originalAmount, discountAmount, amount };
+        });
+        const totalOriginal = Number(
+          snapshot?.totalOriginal ?? originalDownPayment + originalMonthly.reduce((sum, amount) => sum + amount, 0),
+        );
+        const totalFinal = finalDownPayment + monthly.reduce((sum, row) => sum + row.amount, 0);
+        return {
+          downPayment: {
+            originalAmount: originalDownPayment,
+            discountAmount: downPaymentDiscount,
+            amount: finalDownPayment,
+          },
+          monthly,
+          totalOriginal,
+          totalDiscount: Math.max(0, totalOriginal - totalFinal),
+          totalFinal,
+        };
+      },
     };
   }
 </script>
