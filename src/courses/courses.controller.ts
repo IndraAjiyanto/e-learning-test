@@ -1259,7 +1259,7 @@ export class CoursesController {
         ? this.coursesService.findWeeks(activeCourse.id, id)
         : Promise.resolve([]),
       activeCourse
-        ? this.coursesService.findOneUserCourse(activeCourse.id)
+        ? this.coursesService.getUserCourseRelation(id, activeCourse.id)
         : Promise.resolve(null),
       activeCourse
         ? this.coursesService.findOnePortfolio(id, activeCourse.id)
