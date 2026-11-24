@@ -1175,6 +1175,9 @@ export class PaymentsService {
         user_email: true,
         user_no: true,
         dpPaidAt: true,
+        pricing_snapshot: true,
+        voucher_code: true,
+        voucher_discount_total: true,
         createdAt: true,
         user: {
           id: true,
@@ -1184,6 +1187,8 @@ export class PaymentsService {
         course: {
           id: true,
           name: true,
+          price: true,
+          promo: true,
           category: {
             id: true,
             name: true,
@@ -1192,18 +1197,29 @@ export class PaymentsService {
         installment: {
           id: true,
           month: true,
+          downPayment: true,
           price: true,
           dueDates: true,
         },
         installmentPayments: {
           id: true,
           month: true,
+          amount: true,
+          discount_amount: true,
           status: true,
           file: true,
           xendit_invoice_id: true,
+          xendit_invoice_url: true,
+          paidAt: true,
         },
         invoice: {
           id: true,
+          invoice_number: true,
+          price: true,
+          subtotal: true,
+          discount_amount: true,
+          final_total: true,
+          payment_method: true,
           xendit_invoice_id: true,
           xendit_invoice_url: true,
         },
