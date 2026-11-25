@@ -591,6 +591,7 @@ export class CoursesService {
         { userId },
       )
       .leftJoinAndSelect('weeks.quiz', 'quiz')
+      .leftJoinAndSelect('quiz.questions', 'questions')
       .orderBy('weeks.week_number', 'ASC')
       .getMany();
   }
@@ -2413,14 +2414,24 @@ export class CoursesService {
         ? Math.max(...matchingScores.map((sc) => Number(sc.score)))
         : null;
 
-      const isUnlocked = idx === 0 || previousPassed;
-      const isPassed = quiz
-        ? bestScore !== null && bestScore >= minScore
-        : false;
-      const prevMinScore =
-        idx > 0 ? (syllabuses[idx - 1].quiz?.[0]?.minScore ?? 80) : null;
-      const canUnlockNext = quiz ? isPassed : true;
-      previousPassed = canUnlockNext;
+      // Silabus pertama (idx === 0) selalu terbuka.
+      // Silabus berikutnya hanya terbuka jika silabus sebelumnya terbuka DAN lulus kuis.
+      const isUnlocked = idx === 0 ? true : previousPassed;
+
+      // Lulus hanya jika silabus dalam status terbuka, memiliki kuis, dan skor >= minScore.
+      // Jika belum ada kuis, belum bisa lulus kuis (isPassed = false).
+      const isPassed =
+        isUnlocked && quiz
+          ? bestScore !== null && bestScore >= minScore
+          : false;
+
+      const prevSyllabus = idx > 0 ? syllabuses[idx - 1] : null;
+      const prevQuiz = prevSyllabus?.quiz?.[0] || null;
+      const prevMinScore = prevQuiz?.minScore ?? 80;
+      const prevHasQuiz = !!prevQuiz;
+
+      // Izin untuk membuka silabus berikutnya: HANYA jika silabus saat ini terbuka DAN lulus kuis
+      previousPassed = isUnlocked && isPassed;
 
       return {
         id: s.id,
@@ -2435,6 +2446,7 @@ export class CoursesService {
         isPassed,
         isCompleted: isPassed,
         prevMinScore,
+        prevHasQuiz,
       };
     });
   }

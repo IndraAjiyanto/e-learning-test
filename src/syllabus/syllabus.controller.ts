@@ -317,6 +317,23 @@ export class SyllabusController {
       syllabusId,
       req.user!.id,
     );
+
+    if (req.user?.role === 'user' && detail.course?.id) {
+      const userSyllabuses = await this.coursesService.findSyllabusForUser(
+        detail.course.id,
+        req.user.id,
+      );
+      const current = userSyllabuses.find((s) => s.id === syllabusId);
+      if (current && !current.isUnlocked) {
+        req.flash(
+          'error',
+          'Selesaikan kuis pada silabus sebelumnya terlebih dahulu.',
+        );
+        return res.redirect(
+          `/program/myProgram/${req.user.id}?courseId=${detail.course.id}`,
+        );
+      }
+    }
     res.render('user/syllabus/detail', {
       user: req.user,
       syllabus: detail.syllabus,
@@ -358,6 +375,23 @@ export class SyllabusController {
       syllabusId,
       req.user!.id,
     );
+
+    if (req.user?.role === 'user' && detail.course?.id) {
+      const userSyllabuses = await this.coursesService.findSyllabusForUser(
+        detail.course.id,
+        req.user.id,
+      );
+      const current = userSyllabuses.find((s) => s.id === syllabusId);
+      if (current && !current.isUnlocked) {
+        req.flash(
+          'error',
+          'Selesaikan kuis pada silabus sebelumnya terlebih dahulu.',
+        );
+        return res.redirect(
+          `/program/myProgram/${req.user.id}?courseId=${detail.course.id}`,
+        );
+      }
+    }
     const pptList = detail.pptMaterials || [];
     const selected =
       (materialId && pptList.find((m) => m.id === materialId)) ||
@@ -405,6 +439,23 @@ export class SyllabusController {
       syllabusId,
       req.user!.id,
     );
+
+    if (req.user?.role === 'user' && detail.course?.id) {
+      const userSyllabuses = await this.coursesService.findSyllabusForUser(
+        detail.course.id,
+        req.user.id,
+      );
+      const current = userSyllabuses.find((s) => s.id === syllabusId);
+      if (current && !current.isUnlocked) {
+        req.flash(
+          'error',
+          'Selesaikan kuis pada silabus sebelumnya terlebih dahulu.',
+        );
+        return res.redirect(
+          `/program/myProgram/${req.user.id}?courseId=${detail.course.id}`,
+        );
+      }
+    }
     const material = (detail.materials || []).find((m) => m.id === materialId);
     if (!material || !material.file) {
       req.flash('error', 'Berkas materi tidak ditemukan.');
