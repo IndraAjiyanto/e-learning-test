@@ -85,12 +85,12 @@
       <div class="flex flex-wrap items-center gap-2 pt-0.5">
         {{#if tag1}}
           <span class="box-border inline-flex items-center rounded-full border border-[#E5E7EB] bg-white px-2.5 py-1 font-inter text-[12px] font-semibold leading-[15px] text-[#0B1F3B]">
-            {{tag1}}
+            {{capitalize tag1}}
           </span>
           {{#if tag2}}
             <span class="font-inter text-[12px] text-[#9CA3AF] select-none">·</span>
             <span class="box-border inline-flex items-center rounded-full border border-[#E5E7EB] bg-white px-2.5 py-1 font-inter text-[12px] font-semibold leading-[15px] text-[#0B1F3B]">
-              {{tag2}}
+              {{capitalize tag2}}
             </span>
           {{/if}}
           {{#if quota}}
@@ -105,19 +105,19 @@
           {{else if tag3}}
             <span class="font-inter text-[12px] text-[#9CA3AF] select-none">·</span>
             <span class="box-border inline-flex items-center rounded-full border border-[#E5E7EB] bg-white px-2.5 py-1 font-inter text-[12px] font-semibold leading-[15px] text-[#0B1F3B]">
-              {{tag3}}
+              {{capitalize tag3}}
             </span>
           {{/if}}
           {{#if tag4}}
             <span class="font-inter text-[12px] text-[#9CA3AF] select-none">·</span>
             <span class="box-border inline-flex items-center rounded-full border border-[#E5E7EB] bg-white px-2.5 py-1 font-inter text-[12px] font-semibold leading-[15px] text-[#0B1F3B]">
-              {{tag4}}
+              {{capitalize tag4}}
             </span>
           {{/if}}
         {{else if tags}}
           {{#each tags}}
             <span class="box-border inline-flex items-center rounded-full border border-[#E5E7EB] bg-white px-2.5 py-1 font-inter text-[12px] font-semibold leading-[15px] text-[#0B1F3B]">
-              {{this}}
+              {{capitalize this}}
             </span>
             {{#unless @last}}
               <span class="font-inter text-[12px] text-[#9CA3AF] select-none">·</span>
