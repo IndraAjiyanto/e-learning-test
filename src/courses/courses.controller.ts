@@ -98,11 +98,20 @@ export class CoursesController {
     try {
       const dto = await this.buildCreateDto(body, req.user);
       const course = await this.coursesService.create(dto);
-      if (req.user!.role === 'super_admin' && dto.mentoringsId) {
-        await this.coursesService.createMentoring(dto.mentoringsId, course.id);
-      }
-      if (req.user!.role === 'admin') {
-        await this.coursesService.createMentoring(req.user!.id, course.id);
+      const mentorIds =
+        req.user!.role === 'super_admin'
+          ? (dto.mentoringsIds && dto.mentoringsIds.length
+              ? dto.mentoringsIds
+              : dto.mentoringsId
+                ? [dto.mentoringsId]
+                : [])
+          : [
+              req.user!.id,
+              ...(dto.mentoringsIds || []),
+              ...(dto.mentoringsId ? [dto.mentoringsId] : []),
+            ];
+      if (mentorIds.length > 0) {
+        await this.coursesService.syncMentorings(mentorIds, course.id);
       }
       flashToast(
         req,
@@ -362,11 +371,20 @@ export class CoursesController {
       const dto = await this.buildCreateDto(body, req.user);
       dto.categoryId = categoryId;
       const course = await this.coursesService.create(dto);
-      if (req.user!.role === 'super_admin' && dto.mentoringsId) {
-        await this.coursesService.createMentoring(dto.mentoringsId, course.id);
-      }
-      if (req.user!.role === 'admin') {
-        await this.coursesService.createMentoring(req.user!.id, course.id);
+      const mentorIds =
+        req.user!.role === 'super_admin'
+          ? (dto.mentoringsIds && dto.mentoringsIds.length
+              ? dto.mentoringsIds
+              : dto.mentoringsId
+                ? [dto.mentoringsId]
+                : [])
+          : [
+              req.user!.id,
+              ...(dto.mentoringsIds || []),
+              ...(dto.mentoringsId ? [dto.mentoringsId] : []),
+            ];
+      if (mentorIds.length > 0) {
+        await this.coursesService.syncMentorings(mentorIds, course.id);
       }
       flashToast(
         req,
@@ -1884,16 +1902,15 @@ export class CoursesController {
         data: '',
       });
 
-      if (dto.mentoringsId) {
-        const currentMentoringUserId = course.mentorings?.[0]?.user?.id;
-        const newMentoringUserId = dto.mentoringsId;
+      const targetMentorIds =
+        dto.mentoringsIds !== undefined
+          ? dto.mentoringsIds
+          : dto.mentoringsId
+            ? [dto.mentoringsId]
+            : undefined;
 
-        if (currentMentoringUserId !== newMentoringUserId) {
-          await this.coursesService.updateMentoring(
-            newMentoringUserId,
-            course.id,
-          );
-        }
+      if (targetMentorIds !== undefined) {
+        await this.coursesService.syncMentorings(targetMentorIds, course.id);
       }
 
       await this.coursesService.update(courseId, dto);

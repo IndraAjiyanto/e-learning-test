@@ -40,9 +40,12 @@ describe('CoursesService', () => {
   let userCourseRepo: Record<string, jest.Mock>;
   let paymentRepo: Record<string, jest.Mock>;
   let registrationRepo: Record<string, jest.Mock>;
+  let userRepo: Record<string, jest.Mock>;
+  let mentoringRepo: Record<string, jest.Mock>;
 
   const createMockRepo = () => ({
     find: jest.fn(),
+    findBy: jest.fn(),
     findOne: jest.fn(),
     count: jest.fn(),
     save: jest.fn(),
@@ -59,6 +62,8 @@ describe('CoursesService', () => {
     userCourseRepo = createMockRepo();
     paymentRepo = createMockRepo();
     registrationRepo = createMockRepo();
+    userRepo = createMockRepo();
+    mentoringRepo = createMockRepo();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -68,7 +73,7 @@ describe('CoursesService', () => {
           provide: getRepositoryToken(PortfolioGuide),
           useValue: portfolioGuideRepo,
         },
-        { provide: getRepositoryToken(User), useValue: createMockRepo() },
+        { provide: getRepositoryToken(User), useValue: userRepo },
         { provide: getRepositoryToken(Category), useValue: createMockRepo() },
         { provide: getRepositoryToken(CourseType), useValue: createMockRepo() },
         { provide: getRepositoryToken(Weeks), useValue: weeksRepo },
@@ -90,7 +95,7 @@ describe('CoursesService', () => {
           useValue: createMockRepo(),
         },
         { provide: getRepositoryToken(Technology), useValue: createMockRepo() },
-        { provide: getRepositoryToken(Mentorings), useValue: createMockRepo() },
+        { provide: getRepositoryToken(Mentorings), useValue: mentoringRepo },
         {
           provide: getRepositoryToken(Registration),
           useValue: registrationRepo,
@@ -454,6 +459,91 @@ describe('CoursesService', () => {
 
       // Silabus 3 terkunci
       expect(result[2].isUnlocked).toBe(false);
+    });
+  });
+
+  describe('Multi-mentor (syncMentorings & createMentoring)', () => {
+    it('should assign multiple mentors to a course', async () => {
+      const mockCourse = {
+        id: 'c1',
+        mentorings: [],
+      };
+      courseRepo.findOne.mockResolvedValue(mockCourse);
+
+      const mockUsers = [
+        { id: 'u1', username: 'mentor1', role: 'admin' },
+        { id: 'u2', username: 'mentor2', role: 'admin' },
+      ];
+      userRepo.find.mockResolvedValue(mockUsers);
+      mentoringRepo.create.mockImplementation((dto) => dto);
+      mentoringRepo.save.mockResolvedValue([]);
+      mentoringRepo.find.mockResolvedValue([
+        { id: 'm1', course: mockCourse, user: mockUsers[0] },
+        { id: 'm2', course: mockCourse, user: mockUsers[1] },
+      ]);
+
+      const result = await service.syncMentorings(['u1', 'u2'], 'c1');
+
+      expect(courseRepo.findOne).toHaveBeenCalledWith({
+        where: { id: 'c1' },
+        relations: ['mentorings', 'mentorings.user'],
+      });
+      expect(userRepo.find).toHaveBeenCalled();
+      expect(mentoringRepo.create).toHaveBeenCalledTimes(2);
+      expect(mentoringRepo.save).toHaveBeenCalled();
+      expect(result).toHaveLength(2);
+    });
+
+    it('should remove unassigned mentors and add new ones when synced', async () => {
+      const existingMentoring1 = {
+        id: 'm1',
+        user: { id: 'u1', role: 'admin' },
+      };
+      const existingMentoring2 = {
+        id: 'm2',
+        user: { id: 'u2', role: 'admin' },
+      };
+      const mockCourse = {
+        id: 'c1',
+        mentorings: [existingMentoring1, existingMentoring2],
+      };
+      courseRepo.findOne.mockResolvedValue(mockCourse);
+
+      // We want to keep u2 and add u3, removing u1
+      const mockUsers = [{ id: 'u3', username: 'mentor3', role: 'admin' }];
+      userRepo.find.mockResolvedValue(mockUsers);
+      mentoringRepo.remove.mockResolvedValue([]);
+      mentoringRepo.create.mockImplementation((dto) => dto);
+      mentoringRepo.save.mockResolvedValue([]);
+      mentoringRepo.find.mockResolvedValue([
+        existingMentoring2,
+        { id: 'm3', course: mockCourse, user: mockUsers[0] },
+      ]);
+
+      const result = await service.syncMentorings(['u2', 'u3'], 'c1');
+
+      expect(mentoringRepo.remove).toHaveBeenCalledWith([existingMentoring1]);
+      expect(mentoringRepo.create).toHaveBeenCalledWith({
+        course: mockCourse,
+        user: mockUsers[0],
+      });
+      expect(result).toHaveLength(2);
+    });
+
+    it('createMentoring should call syncMentorings when an array of IDs is provided', async () => {
+      const spy = jest.spyOn(service, 'syncMentorings').mockResolvedValue([] as any);
+
+      await service.createMentoring(['u1', 'u2'], 'c1');
+
+      expect(spy).toHaveBeenCalledWith(['u1', 'u2'], 'c1');
+    });
+
+    it('updateMentoring should call syncMentorings with array', async () => {
+      const spy = jest.spyOn(service, 'syncMentorings').mockResolvedValue([] as any);
+
+      await service.updateMentoring(['u1', 'u2'], 'c1');
+
+      expect(spy).toHaveBeenCalledWith(['u1', 'u2'], 'c1');
     });
   });
 });

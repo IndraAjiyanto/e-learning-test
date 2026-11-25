@@ -473,7 +473,11 @@ function programData(mode) {
       results.push(this.validateList('technologiesIds[]', 'technologies', 'technology'));
       results.push(this.validateProgramType());
 
-      if (document.querySelector('input[name="mentoringsId"]')) {
+      if (document.querySelector('input[name="mentoringsIds_sent"]')) {
+        results.push(this.validateList('mentoringsIds[]', 'mentoringId', 'mentoring'));
+      } else if (document.querySelector('input[name="mentoringsIds[]"]')) {
+        results.push(this.validateList('mentoringsIds[]', 'mentoringId', 'mentoring'));
+      } else if (document.querySelector('input[name="mentoringsId"]')) {
         results.push(this.validateDropdown('mentoringsId', 'mentoringId', 'Mentoring'));
       }
 
@@ -524,6 +528,56 @@ function programData(mode) {
 
     hasFormErrors() {
       return !this.formComplete;
+    }
+  };
+}
+
+function mentoringSelectData(initialMentors, availableMentors) {
+  const initial = Array.isArray(initialMentors) ? initialMentors : [];
+  const selected = initial.map(function(m) {
+    if (!m) return null;
+    if (m.user && m.user.id) {
+      return { id: m.user.id, username: m.user.username };
+    }
+    if (m.id && m.username) {
+      return { id: m.id, username: m.username };
+    }
+    return null;
+  }).filter(Boolean);
+
+  return {
+    search: '',
+    selectedMentors: selected,
+    showDropdown: false,
+    availableMentors: Array.isArray(availableMentors) ? availableMentors : [],
+    get filteredMentors() {
+      const q = (this.search || '').trim().toLowerCase();
+      const chosen = this.selectedMentors || [];
+      return (this.availableMentors || []).filter(function(m) {
+        if (!m || !m.id) return false;
+        const alreadyChosen = chosen.some(function(s) { return s.id === m.id; });
+        if (alreadyChosen) return false;
+        if (!q) return true;
+        return (m.username || '').toLowerCase().indexOf(q) !== -1;
+      });
+    },
+    selectMentor(mentor) {
+      this.selectedMentors.push(mentor);
+      this.search = '';
+      this.showDropdown = false;
+      this.notifyForm();
+    },
+    removeMentor(index) {
+      this.selectedMentors.splice(index, 1);
+      this.notifyForm();
+    },
+    notifyForm() {
+      const root = document.querySelector('[x-data*="programData"]') || document.querySelector('form');
+      if (root && root._x_dataStack && root._x_dataStack[0]) {
+        const pd = root._x_dataStack[0];
+        if (pd.touch) pd.touch('mentoringId');
+        if (pd.scheduleUpdate) pd.scheduleUpdate();
+      }
     }
   };
 }

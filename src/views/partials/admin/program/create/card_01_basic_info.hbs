@@ -286,17 +286,36 @@
   {{#if (roles user.role 'super_admin')}}
   <div class='flex flex-row gap-[16px] w-full'>
     <div class='flex-1 min-w-0'>
-    {{> components/ui/admin/form/searchable_select/index
-      label="Mentoring*"
-      forId="mentoringId"
-      errorId="mentoringId_error"
-      name="mentoringsId"
-      itemsJson=(json mentorings)
-      displayField="username"
-      placeholder="Search and select mentoring..."
-      initialId=(default course.mentorings.[0].user.id '')
-      validateKey="mentoringId"
-    }}
+      <div x-data='mentoringSelectData({{json course.mentorings}}, {{json mentorings}})' @click.away='showDropdown = false'>
+        <input type='hidden' name='mentoringsIds_sent' value='1' />
+        {{#> components/ui/admin/form/form-field label='Mentoring*' for='mentoringId' errorId='mentoringId_error'}}
+          <div class='relative'>
+            <div class='box-border w-full shrink-0 h-[44px] flex flex-row gap-[8px] p-[10px_14px] justify-start items-center bg-[#FFFFFF] [outline:1px_solid_#D4D4D4] [outline-offset:-0.5px] rounded-[8px]'
+              :class="borderClass('mentoringId')">
+              <input type='text' x-model='search' @focus='showDropdown = true' @input='showDropdown = true'
+                placeholder='Search and select mentoring...'
+                class='text-[16px]/[normal] flex-1 min-w-0 text-[#737373] font-inter font-normal text-left bg-transparent outline-none placeholder:text-[#A3A3A3]' />
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='#737373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='w-[20px] h-[20px]'><path d='m6 9 6 6 6-6'/></svg>
+            </div>
+            <div x-show='showDropdown && filteredMentors.length > 0'
+              class='absolute z-10 w-full mt-1 bg-white [outline:1px_solid_#D4D4D4] rounded-[8px] shadow-lg max-h-[140px] overscroll-contain overflow-y-auto'>
+              <template x-for='mentor in filteredMentors' :key='mentor.id'>
+                <button type='button' @click='selectMentor(mentor)'
+                  class='w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F5F5F5] transition text-left border-b border-[#F5F5F5] last:border-0'>
+                  <span class='text-[14px]/[normal] font-inter font-medium text-[#404040]' x-text='mentor.username'></span>
+                </button>
+              </template>
+            </div>
+          </div>
+        {{/components/ui/admin/form/form-field}}
+
+        {{!-- Selected Mentor Badges --}}
+        <div class='flex flex-row flex-wrap gap-[8px] mt-[8px]'>
+          <template x-for='(mentor, index) in selectedMentors' :key='mentor.id'>
+            {{> components/ui/admin/form/badge-chip xLabel='mentor.username' removeClick='removeMentor(index)' inputName='mentoringsIds[]' inputValueBind='mentor.id'}}
+          </template>
+        </div>
+      </div>
     </div>
   </div>
   {{/if}}

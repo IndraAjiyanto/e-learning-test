@@ -160,8 +160,21 @@ export function mapCreateProgram(
   const image = asArray(body.uploadedImageUrls)[0];
   if (image) dto.image = image;
 
-  const mentoringsId = asText(body.mentoringsId);
-  if (mentoringsId) dto.mentoringsId = mentoringsId;
+  const mentoringsIds = asArray(
+    body.mentoringsIds ??
+      body['mentoringsIds[]'] ??
+      body.mentoringsId ??
+      body['mentoringsId[]'],
+  );
+  if (mentoringsIds.length) {
+    dto.mentoringsIds = mentoringsIds;
+    dto.mentoringsId = mentoringsIds[0];
+  } else if (body.mentoringsIds_sent !== undefined) {
+    dto.mentoringsIds = [];
+  } else {
+    const mentoringsId = asText(body.mentoringsId);
+    if (mentoringsId) dto.mentoringsId = mentoringsId;
+  }
 
   const technologiesIds = asArray(body.technologiesIds);
   if (technologiesIds.length) dto.technologiesIds = technologiesIds;
@@ -270,8 +283,21 @@ export function mapUpdateProgram(
   const courseTypeId = asText(body.courseTypeId ?? body.jenis_kelasId);
   if (courseTypeId) dto.courseTypeId = courseTypeId;
 
-  const mentoringsId = asText(body.mentoringsId);
-  if (mentoringsId) dto.mentoringsId = mentoringsId;
+  const mentoringsIds = asArray(
+    body.mentoringsIds ??
+      body['mentoringsIds[]'] ??
+      body.mentoringsId ??
+      body['mentoringsId[]'],
+  );
+  if (mentoringsIds.length) {
+    dto.mentoringsIds = mentoringsIds;
+    dto.mentoringsId = mentoringsIds[0];
+  } else if (body.mentoringsIds_sent !== undefined) {
+    dto.mentoringsIds = [];
+  } else {
+    const mentoringsId = asText(body.mentoringsId);
+    if (mentoringsId) dto.mentoringsId = mentoringsId;
+  }
 
   if (body.description !== undefined || body.description_id !== undefined) {
     dto.description = pickMultilang(body, 'description', 'description');
