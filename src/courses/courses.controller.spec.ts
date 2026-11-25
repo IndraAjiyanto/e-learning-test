@@ -18,6 +18,11 @@ describe('CoursesController', () => {
     findTechnologies: jest.Mock;
     findMentoring: jest.Mock;
     checkLearningStructureLock: jest.Mock;
+    findMyCourse: jest.Mock;
+    findSyllabusForUser: jest.Mock;
+    findWeeks: jest.Mock;
+    getUserCourseRelation: jest.Mock;
+    findOnePortfolio: jest.Mock;
   };
 
   beforeEach(async () => {
@@ -28,6 +33,11 @@ describe('CoursesController', () => {
       findTechnologies: jest.fn(),
       findMentoring: jest.fn(),
       checkLearningStructureLock: jest.fn(),
+      findMyCourse: jest.fn(),
+      findSyllabusForUser: jest.fn(),
+      findWeeks: jest.fn(),
+      getUserCourseRelation: jest.fn(),
+      findOnePortfolio: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -174,6 +184,167 @@ describe('CoursesController', () => {
       expect(flashSpy).toHaveBeenCalledWith('error', 'Program not found');
       expect(redirectSpy).toHaveBeenCalledWith('/program');
       expect(renderSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('myCourseFragment', () => {
+    it('should allow start learning for non_bootcamp when status is launch (published)', async () => {
+      const mockCourse = {
+        id: 'nb-1',
+        name: 'Faster Class',
+        programType: 'non_bootcamp',
+        status: 'launch',
+      };
+      coursesService.findMyCourse.mockResolvedValue([mockCourse]);
+      coursesService.findSyllabusForUser.mockResolvedValue([
+        { id: 's-1', title: 'Modul 1', isUnlocked: true },
+      ]);
+
+      const renderSpy = jest.fn();
+      const mockRes = {
+        render: renderSpy,
+        locals: { lang: 'id' },
+      } as unknown as Response;
+      const mockReq = {
+        user: { id: 'user-1', role: 'user' },
+      } as unknown as Request;
+
+      await controller.myCourseFragment('user-1', mockRes, mockReq, 'nb-1');
+
+      expect(renderSpy).toHaveBeenCalledWith(
+        'partials/user/sidebar_user_profile/my_learning/start_learning/non_bootcamp',
+        expect.objectContaining({
+          course: mockCourse,
+          isProgramNotStarted: false,
+          isNonBootcamp: true,
+        }),
+      );
+    });
+
+    it('should allow start learning for non_bootcamp when status is learning (learning start)', async () => {
+      const mockCourse = {
+        id: 'nb-1',
+        name: 'Faster Class',
+        programType: 'non_bootcamp',
+        status: 'learning',
+      };
+      coursesService.findMyCourse.mockResolvedValue([mockCourse]);
+      coursesService.findSyllabusForUser.mockResolvedValue([]);
+
+      const renderSpy = jest.fn();
+      const mockRes = {
+        render: renderSpy,
+        locals: { lang: 'id' },
+      } as unknown as Response;
+      const mockReq = {
+        user: { id: 'user-1', role: 'user' },
+      } as unknown as Request;
+
+      await controller.myCourseFragment('user-1', mockRes, mockReq, 'nb-1');
+
+      expect(renderSpy).toHaveBeenCalledWith(
+        'partials/user/sidebar_user_profile/my_learning/start_learning/non_bootcamp',
+        expect.objectContaining({
+          course: mockCourse,
+          isProgramNotStarted: false,
+          isNonBootcamp: true,
+        }),
+      );
+    });
+
+    it('should allow start learning for non_bootcamp when status is done (completed)', async () => {
+      const mockCourse = {
+        id: 'nb-1',
+        name: 'Faster Class',
+        programType: 'non_bootcamp',
+        status: 'done',
+      };
+      coursesService.findMyCourse.mockResolvedValue([mockCourse]);
+      coursesService.findSyllabusForUser.mockResolvedValue([]);
+
+      const renderSpy = jest.fn();
+      const mockRes = {
+        render: renderSpy,
+        locals: { lang: 'id' },
+      } as unknown as Response;
+      const mockReq = {
+        user: { id: 'user-1', role: 'user' },
+      } as unknown as Request;
+
+      await controller.myCourseFragment('user-1', mockRes, mockReq, 'nb-1');
+
+      expect(renderSpy).toHaveBeenCalledWith(
+        'partials/user/sidebar_user_profile/my_learning/start_learning/non_bootcamp',
+        expect.objectContaining({
+          course: mockCourse,
+          isProgramNotStarted: false,
+          isNonBootcamp: true,
+        }),
+      );
+    });
+
+    it('should mark program not started for non_bootcamp when status is unlaunch', async () => {
+      const mockCourse = {
+        id: 'nb-1',
+        name: 'Faster Class',
+        programType: 'non_bootcamp',
+        status: 'unlaunch',
+      };
+      coursesService.findMyCourse.mockResolvedValue([mockCourse]);
+      coursesService.findSyllabusForUser.mockResolvedValue([]);
+
+      const renderSpy = jest.fn();
+      const mockRes = {
+        render: renderSpy,
+        locals: { lang: 'id' },
+      } as unknown as Response;
+      const mockReq = {
+        user: { id: 'user-1', role: 'user' },
+      } as unknown as Request;
+
+      await controller.myCourseFragment('user-1', mockRes, mockReq, 'nb-1');
+
+      expect(renderSpy).toHaveBeenCalledWith(
+        'partials/user/sidebar_user_profile/my_learning/start_learning/non_bootcamp',
+        expect.objectContaining({
+          course: mockCourse,
+          isProgramNotStarted: true,
+          isNonBootcamp: true,
+        }),
+      );
+    });
+
+    it('should mark program not started for bootcamp when status is launch', async () => {
+      const mockCourse = {
+        id: 'bc-1',
+        name: 'Fullstack Bootcamp',
+        programType: 'bootcamp',
+        status: 'launch',
+      };
+      coursesService.findMyCourse.mockResolvedValue([mockCourse]);
+      coursesService.findWeeks.mockResolvedValue([]);
+      coursesService.getUserCourseRelation.mockResolvedValue(null);
+      coursesService.findOnePortfolio.mockResolvedValue(null);
+
+      const renderSpy = jest.fn();
+      const mockRes = {
+        render: renderSpy,
+        locals: { lang: 'id' },
+      } as unknown as Response;
+      const mockReq = {
+        user: { id: 'user-1', role: 'user' },
+      } as unknown as Request;
+
+      await controller.myCourseFragment('user-1', mockRes, mockReq, 'bc-1');
+
+      expect(renderSpy).toHaveBeenCalledWith(
+        'partials/user/sidebar_user_profile/my_learning/start_learning/index',
+        expect.objectContaining({
+          course: mockCourse,
+          isProgramNotStarted: true,
+          isNonBootcamp: false,
+        }),
+      );
     });
   });
 });

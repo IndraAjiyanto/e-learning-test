@@ -237,14 +237,17 @@
                 {{!-- Opsi jika Launch --}}
                 <template x-if="course.status === 'launch'">
                   <div>
-                    <button
-                      type='button'
-                      @click="open = false; confirmStatusChange(course.id, index, 'learning')"
-                      class='w-full px-3 py-2 text-left text-[12px] font-inter text-[#1D4ED8] hover:bg-[#EFF6FF] flex items-center gap-2 transition-colors cursor-pointer'
-                    >
-                      <div class='w-2 h-2 rounded-full bg-[#3B82F6]'></div>
-                      <span>Start Learning</span>
-                    </button>
+                    {{!-- Start Learning: hanya untuk bootcamp / lpk (bukan non_bootcamp) --}}
+                    <template x-if="course.programType !== 'non_bootcamp'">
+                      <button
+                        type='button'
+                        @click="open = false; confirmStatusChange(course.id, index, 'learning')"
+                        class='w-full px-3 py-2 text-left text-[12px] font-inter text-[#1D4ED8] hover:bg-[#EFF6FF] flex items-center gap-2 transition-colors cursor-pointer'
+                      >
+                        <div class='w-2 h-2 rounded-full bg-[#3B82F6]'></div>
+                        <span>Start Learning</span>
+                      </button>
+                    </template>
                     <button
                       type='button'
                       @click="open = false; confirmStatusChange(course.id, index, 'unlaunch')"
@@ -256,8 +259,8 @@
                   </div>
                 </template>
 
-                {{!-- Opsi jika Learning --}}
-                <template x-if="course.status === 'learning'">
+                {{!-- Opsi jika Learning: hanya untuk bootcamp / lpk (bukan non_bootcamp) --}}
+                <template x-if="course.status === 'learning' && course.programType !== 'non_bootcamp'">
                   <button
                     type='button'
                     @click="open = false; confirmStatusChange(course.id, index, 'done')"
