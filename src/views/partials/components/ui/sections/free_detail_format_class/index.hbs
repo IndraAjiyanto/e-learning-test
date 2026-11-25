@@ -177,7 +177,7 @@
               {{default (t 'test.freeProgram.formatClass.formatOption') 'Opsi Format'}}
             </span>
             <span class="font-inter font-bold text-[17px] md:text-[18px] leading-[22px] text-[#0B1F3B] truncate w-full">
-              {{default course.method '-'}}
+              {{#if course.method}}{{capitalize course.method}}{{else}}-{{/if}}
             </span>
           </div>
         </div>

@@ -77,7 +77,7 @@
           {{default (t 'test.freeProgram.hero.quickStats.learningSystem') 'Learning System'}}
         </span>
         <span class="font-inter font-bold text-[18px] sm:text-[20px] leading-[24px] text-[#0B1F3B] truncate">
-          {{#if course.method}}{{course.method}}{{else}}{{default (t 'test.freeProgram.hero.quickStats.onlineOffline') 'Online & Offline'}}{{/if}}
+          {{#if course.method}}{{capitalize course.method}}{{else}}{{default (t 'test.freeProgram.hero.quickStats.onlineOffline') 'Online & Offline'}}{{/if}}
         </span>
       </div>
     </div>

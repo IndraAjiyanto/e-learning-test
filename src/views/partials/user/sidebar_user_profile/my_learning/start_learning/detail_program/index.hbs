@@ -67,7 +67,7 @@
               {{default (t 'test.detailProgram.infoProgram.method') 'Method'}}
             </span>
             <span class='font-inter text-sm font-bold text-[#0B1F3B]'>
-              {{#if method}}{{method}}{{else}}-{{/if}}
+              {{#if method}}{{capitalize method}}{{else}}-{{/if}}
             </span>
           </div>
         </div>
@@ -100,11 +100,11 @@
             </span>
             <span class='font-inter text-sm font-bold text-[#0B1F3B]'>
               {{#if locationLink}}
-                <a href='{{locationLink}}' target='_blank' rel='noopener noreferrer' class='underline decoration-[#003060]/40 hover:text-[#003060]'>{{#if locations}}{{getByLang locations ../lang}}{{else if method}}{{method}}{{else}}-{{/if}}</a>
+                <a href='{{locationLink}}' target='_blank' rel='noopener noreferrer' class='underline decoration-[#003060]/40 hover:text-[#003060]'>{{#if locations}}{{getByLang locations ../lang}}{{else if method}}{{capitalize method}}{{else}}-{{/if}}</a>
               {{else if locations}}
                 {{getByLang locations ../lang}}
               {{else if method}}
-                {{method}}
+                {{capitalize method}}
               {{else}}-{{/if}}
             </span>
           </div>
