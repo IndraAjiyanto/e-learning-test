@@ -1183,6 +1183,13 @@ export class CoursesController {
       (uc) => uc.course?.id === activeCourse?.id && uc.progress,
     );
 
+    const isNonBootcamp =
+      activeCourse?.programType === 'non_bootcamp' ||
+      (activeCourse?.programType as string) === 'non_bootcamp';
+    const isProgramNotStarted = isNonBootcamp
+      ? activeCourse?.status === 'unlaunch'
+      : activeCourse?.status === 'launch' || activeCourse?.status === 'unlaunch';
+
     res.render('user/user_profile/index', {
       course,
       activeCourse,
@@ -1203,6 +1210,7 @@ export class CoursesController {
       stats,
       activeCourseCompleted,
       caps,
+      isProgramNotStarted,
       // Peta untuk sisi klien: berpindah program tidak memuat ulang halaman,
       // jadi sakelar logbook harus ikut berpindah.
       programCaps: Object.fromEntries(
@@ -1232,13 +1240,17 @@ export class CoursesController {
       return res.send('');
     }
 
-    const isProgramNotStarted =
-      activeCourse.status === 'launch' || activeCourse.status === 'unlaunch';
-    const lang = res.locals?.lang || req.cookies?.lang || 'id';
-
     const isNonBootcamp =
       activeCourse.programType === 'non_bootcamp' ||
       (activeCourse.programType as string) === 'non_bootcamp';
+
+    // Program bootcamp tetap menunggu pembelajaran dibuka (hanya saat 'learning' atau 'done').
+    // Program non-bootcamp: isProgramNotStarted tidak dipakai di template non_bootcamp.hbs,
+    // silabus selalu langsung ditampilkan tanpa cek status.
+    const isProgramNotStarted = isNonBootcamp
+      ? activeCourse.status === 'unlaunch'
+      : activeCourse.status === 'launch' || activeCourse.status === 'unlaunch';
+    const lang = res.locals?.lang || req.cookies?.lang || 'id';
 
     if (isNonBootcamp) {
       const syllabuses = await this.coursesService.findSyllabusForUser(

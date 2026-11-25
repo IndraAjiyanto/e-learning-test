@@ -404,7 +404,7 @@
                   <span>{{t "test.mycourse.completed"}}</span>
                 </span>
               </template>
-              <template x-if="!course.isCompleted && (course.status === 'launch' || course.status === 'unlaunch')">
+              <template x-if="!course.isCompleted && ((course.programType === 'non_bootcamp' || (window.programCaps && window.programCaps[course.id] && window.programCaps[course.id].structure === 'syllabus')) ? course.status === 'unlaunch' : (course.status === 'launch' || course.status === 'unlaunch'))">
                 <span class="inline-flex items-center gap-1.5 rounded-full bg-[#FEF3C7] border border-[#FDE68A] px-2.5 py-0.5 font-inter text-[11px] font-semibold text-[#92400E]">
                   <span class="size-1.5 rounded-full bg-[#F59E0B] animate-pulse"></span>
                   <span>{{default (t 'test.startLearning.statusPublishedNotStarted') 'Belum Dimulai'}}</span>
