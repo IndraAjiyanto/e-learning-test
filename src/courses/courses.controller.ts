@@ -1244,10 +1244,9 @@ export class CoursesController {
       activeCourse.programType === 'non_bootcamp' ||
       (activeCourse.programType as string) === 'non_bootcamp';
 
-    // Program non-bootcamp (SPL/silabus) dapat mengakses start learning saat statusnya
-    // 'launch' (published), 'learning' (learning start), maupun 'done' (completed).
-    // Hanya status 'unlaunch' yang dianggap belum dimulai.
     // Program bootcamp tetap menunggu pembelajaran dibuka (hanya saat 'learning' atau 'done').
+    // Program non-bootcamp: isProgramNotStarted tidak dipakai di template non_bootcamp.hbs,
+    // silabus selalu langsung ditampilkan tanpa cek status.
     const isProgramNotStarted = isNonBootcamp
       ? activeCourse.status === 'unlaunch'
       : activeCourse.status === 'launch' || activeCourse.status === 'unlaunch';
