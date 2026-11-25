@@ -1,3 +1,6 @@
+{{#if (or isProgramNotStarted (eq course.status 'launch') (eq course.status 'unlaunch'))}}
+  {{> user/sidebar_user_profile/my_learning/start_learning/not_started course=course user=user lang=lang caps=caps isNonBootcamp=true }}
+{{else}}
 <div class="w-full max-w-[1268px] mx-auto bg-white border border-[#D9D9D9] rounded-[16px] p-8 flex flex-col gap-6 font-inter mt-8">
   <h2 class="text-[18px] font-bold text-[#003060] leading-[22px]">
     {{default (t 'test.nonBootcamp.title') 'Silabus'}}
@@ -92,3 +95,4 @@
     {{/if}}
   </div>
 </div>
+{{/if}}

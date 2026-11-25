@@ -300,7 +300,11 @@
         class="flex w-full h-[45px] items-center justify-center rounded-[10px] bg-[#16A34A] font-inter text-sm font-bold text-white shadow-xs transition-all hover:bg-[#15803D] hover:-translate-y-0.5 active:scale-95 text-center cursor-pointer select-none"
       >
         <i class="fa-solid fa-graduation-cap mr-2"></i>
-        {{default (t 'test.paidProgram.pricing.btnGoToClass') 'Mulai Belajar'}}
+        {{#if (or (eq course.status 'launch') (eq course.status 'unlaunch'))}}
+          {{default (t 'test.paidProgram.pricing.btnGoToClassNotStarted') 'Lihat Kelas (Belum Dimulai)'}}
+        {{else}}
+          {{default (t 'test.paidProgram.pricing.btnGoToClass') 'Mulai Belajar'}}
+        {{/if}}
       </a>
     {{else if (eq userActivePayment.process 'process')}}
       <a

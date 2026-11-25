@@ -5,6 +5,10 @@
   Referensi Figma: node-id=1496-1317 (Learning workspace & schedule)
 --}}
 
+{{#if (or isProgramNotStarted (eq course.status 'launch') (eq course.status 'unlaunch'))}}
+  {{> user/sidebar_user_profile/my_learning/start_learning/not_started course=course user=user lang=lang caps=caps isNonBootcamp=false }}
+{{else}}
+
 {{!-- Progress summary metadata for test runner & accessibility --}}
 {{#if progress.totalWeeks}}
   <div class="sr-only" role="progressbar" aria-valuenow="{{progress.percent}}" aria-valuemin="0" aria-valuemax="100">
@@ -878,3 +882,4 @@
   <!-- Attendance Modal & Success Popup (using existing shared partial) -->
   {{> user/sidebar_user_profile/my_learning/start_learning/attendance/edit_modal }}
 </div>
+{{/if}}

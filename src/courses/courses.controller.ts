@@ -1228,6 +1228,10 @@ export class CoursesController {
       return res.send('');
     }
 
+    const isProgramNotStarted =
+      activeCourse.status === 'launch' || activeCourse.status === 'unlaunch';
+    const lang = res.locals?.lang || req.cookies?.lang || 'id';
+
     const isNonBootcamp =
       activeCourse.programType === 'non_bootcamp' ||
       (activeCourse.programType as string) === 'non_bootcamp';
@@ -1245,6 +1249,9 @@ export class CoursesController {
           syllabuses,
           user: req.user,
           caps: capabilitiesForCourse(activeCourse),
+          isProgramNotStarted,
+          isNonBootcamp: true,
+          lang,
           layout: false,
         },
       );
@@ -1304,6 +1311,9 @@ export class CoursesController {
         portfolio,
         user: req.user,
         caps: capabilitiesForCourse(activeCourse),
+        isProgramNotStarted,
+        isNonBootcamp: false,
+        lang,
         layout: false,
       },
     );

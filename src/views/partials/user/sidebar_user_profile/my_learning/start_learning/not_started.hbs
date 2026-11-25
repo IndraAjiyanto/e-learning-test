@@ -1,0 +1,112 @@
+{{!--
+  Partial: Program Belum Dimulai (State Saat Program Masih Status 'launch' / Published)
+  Lokasi: src/views/partials/user/sidebar_user_profile/my_learning/start_learning/not_started.hbs
+  Tujuan: Menampilkan halaman informasi ramah bahwa program belum dimulai untuk user yang sudah terdaftar,
+          dengan desain yang selaras dan satu tema dengan design system platform.
+--}}
+
+<div class="w-full max-w-[1268px] mx-auto mt-6 flex flex-col items-center font-inter">
+  {{!-- Hero Notification Card --}}
+  <div class="w-full bg-white border border-[#E2E8F0] rounded-[24px] p-6 sm:p-10 md:p-12 shadow-[0px_12px_32px_-12px_rgba(0,48,96,0.12)] flex flex-col items-center text-center relative overflow-hidden">
+
+    {{!-- Subtle decorative background glow matching brand colors --}}
+    <div class="absolute -top-24 -right-24 w-72 h-72 bg-[#E0F2F9]/50 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-[#FEF3C7]/40 rounded-full blur-3xl pointer-events-none"></div>
+
+    {{!-- Hero Icon Badge --}}
+    <div class="relative mb-6 flex size-20 sm:size-24 items-center justify-center rounded-3xl bg-[#E0F2F9]/80 border border-[#BAE6FD] shadow-xs">
+      <div class="flex size-14 sm:size-16 items-center justify-center rounded-2xl bg-white shadow-sm text-[#003060]">
+        <i class="fa-solid fa-hourglass-start text-2xl sm:text-3xl text-[#003060]"></i>
+      </div>
+      <span class="absolute -top-1.5 -right-1.5 flex size-7 items-center justify-center rounded-full bg-[#F59E0B] text-white text-xs shadow-sm ring-4 ring-white" title="Menunggu Dimulai">
+        <i class="fa-solid fa-clock"></i>
+      </span>
+    </div>
+
+    {{!-- Title & Description --}}
+    <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-[#0B1F3B] leading-tight mb-3 max-w-xl">
+      {{default (t 'test.startLearning.notStartedTitle') 'Program Pembelajaran Belum Dimulai'}}
+    </h2>
+    <p class="text-sm sm:text-base text-[#64748B] max-w-2xl leading-relaxed mb-8">
+      {{#if (or isNonBootcamp (eq caps.structure 'syllabus') (eq course.programType 'non_bootcamp'))}}
+        {{default (t 'test.startLearning.notStartedDescNonBootcamp') 'Selamat, Anda telah terdaftar dalam program ini! Saat ini program masih berada pada tahap pendaftaran (Published) dan akses pembelajaran belum dibuka secara resmi oleh instruktur. Seluruh silabus, modul materi, serta kuis akan otomatis dapat diakses setelah kelas resmi dimulai.'}}
+      {{else}}
+        {{default (t 'test.startLearning.notStartedDesc') 'Selamat, Anda telah terdaftar dalam program ini! Saat ini program masih berada pada tahap pendaftaran (Published) dan sesi pembelajaran belum dibuka secara resmi oleh instruktur. Materi, pertemuan mingguan, absensi, serta kuis akan otomatis dapat diakses setelah kelas dimulai.'}}
+      {{/if}}
+    </p>
+
+    {{!-- Guidance & Action Box --}}
+    <div class="w-full max-w-4xl rounded-2xl bg-gradient-to-r from-[#F8FAFC] to-[#F1F5F9] border border-[#E2E8F0] p-6 text-left mb-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="flex flex-col gap-2.5">
+          <div class="flex items-center gap-2">
+            <span class="flex size-6 items-center justify-center rounded-full bg-[#003060] text-white text-xs">
+              <i class="fa-solid fa-lightbulb"></i>
+            </span>
+            <h4 class="font-bold text-[#0B1F3B] text-sm sm:text-base">
+              {{default (t 'test.startLearning.waitingGuidanceTitle') 'Apa yang bisa Anda lakukan sambil menunggu?'}}
+            </h4>
+          </div>
+          <ul class="flex flex-col gap-2 text-xs sm:text-sm text-[#475569] pl-1">
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-check text-[#10B981] mt-0.5 text-xs"></i>
+              <span>{{default (t 'test.startLearning.waitingTip1') 'Bergabunglah ke grup kelas agar terhubung dengan instruktur dan rekan belajar.'}}</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-check text-[#10B981] mt-0.5 text-xs"></i>
+              <span>{{default (t 'test.startLearning.waitingTip2') 'Pelajari silabus dan kurikulum program untuk mempersiapkan materi awal.'}}</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-check text-[#10B981] mt-0.5 text-xs"></i>
+              {{#if (or isNonBootcamp (eq caps.structure 'syllabus') (eq course.programType 'non_bootcamp'))}}
+                <span>{{default (t 'test.startLearning.waitingTip3NonBootcamp') 'Pantau pengumuman resmi dan notifikasi saat modul materi dan silabus dibuka.'}}</span>
+              {{else}}
+                <span>{{default (t 'test.startLearning.waitingTip3') 'Pantau pengumuman resmi dan notifikasi saat sesi pertama dibuka.'}}</span>
+              {{/if}}
+            </li>
+          </ul>
+        </div>
+
+        {{!-- CTA Buttons --}}
+        <div class="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
+          {{#if course.group}}
+            <a
+              href="{{course.group}}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#003060] hover:bg-[#00254a] text-white font-semibold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5"
+            >
+              <i class="fa-solid fa-users text-sm"></i>
+              <span>{{default (t 'test.startLearning.btnJoinGroup') 'Gabung Grup Komunitas'}}</span>
+            </a>
+          {{else}}
+            <button
+              type="button"
+              @click="toggleActiveSection('group-class')"
+              class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#003060] hover:bg-[#00254a] text-white font-semibold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 cursor-pointer"
+            >
+              <i class="fa-solid fa-users text-sm"></i>
+              <span>{{default (t 'test.startLearning.btnJoinGroup') 'Buka Grup Kelas'}}</span>
+            </button>
+          {{/if}}
+
+          <button
+            type="button"
+            @click="toggleActiveSection('detail-program')"
+            class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-[#CBD5E1] hover:bg-[#F8FAFC] text-[#1E293B] font-semibold text-xs sm:text-sm shadow-2xs transition-all hover:-translate-y-0.5 cursor-pointer"
+          >
+            <i class="fa-solid fa-book-open-reader text-sm text-[#003060]"></i>
+            <span>{{default (t 'test.startLearning.btnViewDetail') 'Lihat Detail Kurikulum'}}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {{!-- Footer note --}}
+    <div class="inline-flex items-center gap-2 text-xs text-[#94A3B8]">
+      <i class="fa-solid fa-circle-question text-xs text-[#64748B]"></i>
+      <span>{{default (t 'test.startLearning.footerHint') 'Butuh bantuan atau pertanyaan seputar jadwal? Hubungi mentor atau admin melalui grup kelas.'}}</span>
+    </div>
+
+  </div>
+</div>
