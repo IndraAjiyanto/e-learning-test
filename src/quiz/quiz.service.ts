@@ -16,6 +16,7 @@ import { Question } from 'src/entities/question.entity';
 import { QuizProgress } from 'src/entities/quiz_progress.entity';
 import { SessionProgress } from 'src/entities/session_progress.entity';
 import { UserAnswer } from 'src/entities/user_answer.entity';
+import { Syllabus } from 'src/entities/syllabus.entity';
 
 @Injectable()
 export class QuizService {
@@ -290,6 +291,62 @@ export class QuizService {
   }
 
   async isQuizUnlocked(userId: string, quizId: string): Promise<boolean> {
+    const quiz = await this.findOne(quizId);
+    if (!quiz) return false;
+
+    if (quiz.syllabus && quiz.syllabus.course) {
+      const syllabuses = await this.quizRepository.manager
+        .getRepository(Syllabus)
+        .find({
+          where: { course: { id: quiz.syllabus.course.id } },
+          order: { syllabusNumber: 'ASC', createdAt: 'ASC' },
+          relations: ['quiz'],
+        });
+
+      const quizIds = syllabuses
+        .flatMap((s) => s.quiz || [])
+        .map((q) => q.id)
+        .filter(Boolean);
+
+      let userScores: Score[] = [];
+      if (quizIds.length > 0) {
+        userScores = await this.scoreRepository
+          .createQueryBuilder('score')
+          .innerJoinAndSelect('score.quiz', 'quiz')
+          .innerJoin('score.user', 'user')
+          .where('quiz.id IN (:...quizIds)', { quizIds })
+          .andWhere('user.id = :userId', { userId })
+          .getMany();
+      }
+
+      let previousPassed = true;
+      for (let idx = 0; idx < syllabuses.length; idx++) {
+        const s = syllabuses[idx];
+        const sQuiz = s.quiz?.[0] || null;
+        const isUnlocked = idx === 0 ? true : previousPassed;
+
+        if (sQuiz?.id === quizId) {
+          return isUnlocked;
+        }
+
+        const minScore = sQuiz?.minScore ?? 80;
+        const matchingScores = sQuiz
+          ? userScores.filter((sc) => sc.quiz?.id === sQuiz.id)
+          : [];
+        const bestScore =
+          matchingScores.length > 0
+            ? Math.max(...matchingScores.map((sc) => Number(sc.score)))
+            : null;
+        const isPassed =
+          isUnlocked && sQuiz
+            ? bestScore !== null && bestScore >= minScore
+            : false;
+        previousPassed = isUnlocked && isPassed;
+      }
+
+      return false;
+    }
+
     const quizProgress = await this.progresQuizRepository.findOne({
       where: {
         quiz: { id: quizId },

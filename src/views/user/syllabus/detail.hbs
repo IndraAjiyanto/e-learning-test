@@ -238,12 +238,26 @@
                   {{/if}}
                 </p>
 
-                <a
-                  href="/quiz/form/{{quiz.id}}"
-                  class="inline-flex w-full h-10 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-6 font-semibold text-[14px] leading-[20px] text-white no-underline hover:bg-[#00254a] transition-colors"
-                >
-                  {{#if quizStatus.isPassed}}{{default (t 'test.syllabus.quiz.ctaPassed') 'Lihat Quiz'}}{{else if quizStatus.hasAttempt}}{{default (t 'test.syllabus.quiz.ctaRetry') 'Kerjakan Ulang'}}{{else}}{{default (t 'test.syllabus.quiz.ctaStart') 'Kerjakan Quiz'}}{{/if}}
-                </a>
+                {{#if (gt questionCount 0)}}
+                  <a
+                    href="/quiz/form/{{quiz.id}}"
+                    class="inline-flex w-full h-10 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-6 font-semibold text-[14px] leading-[20px] text-white no-underline hover:bg-[#00254a] transition-colors"
+                  >
+                    {{#if quizStatus.isPassed}}{{default (t 'test.syllabus.quiz.ctaPassed') 'Lihat Quiz'}}{{else if quizStatus.hasAttempt}}{{default (t 'test.syllabus.quiz.ctaRetry') 'Kerjakan Ulang'}}{{else}}{{default (t 'test.syllabus.quiz.ctaStart') 'Kerjakan Quiz'}}{{/if}}
+                  </a>
+                {{else if quizStatus.isPassed}}
+                  <a
+                    href="/quiz/form/{{quiz.id}}"
+                    class="inline-flex w-full h-10 items-center justify-center gap-2 rounded-[8px] bg-[#003060] px-6 font-semibold text-[14px] leading-[20px] text-white no-underline hover:bg-[#00254a] transition-colors"
+                  >
+                    {{default (t 'test.syllabus.quiz.ctaPassed') 'Lihat Quiz'}}
+                  </a>
+                {{else}}
+                  <span class="inline-flex w-full h-10 items-center justify-center gap-2 rounded-[8px] border border-[#E5E5E5] bg-[#F5F5F5] px-6 font-medium text-[13px] leading-[18px] text-[#737373] cursor-not-allowed select-none">
+                    <i class="fa-solid fa-circle-info text-xs"></i>
+                    {{default (t 'test.quiz.noQuestions') 'Soal kuis belum tersedia'}}
+                  </span>
+                {{/if}}
 
                 {{#if (and next (not syllabus.isFinal))}}
                   <p class="font-medium text-[11px] leading-[16px] text-center text-[#718096]">

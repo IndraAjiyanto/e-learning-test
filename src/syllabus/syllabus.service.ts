@@ -220,7 +220,8 @@ export class SyllabusService {
         ? Math.max(...scores.map((s) => Number(s.score)))
         : null;
     }
-    const isPassed = quiz ? bestScore !== null && bestScore >= minScore : true;
+    const isPassed =
+      quiz ? bestScore !== null && bestScore >= minScore : false;
 
     // Silabus berikutnya, agar quiz-card bisa menyebutkan tujuan setelah lulus.
     const siblings = await this.syllabusRepository.find({

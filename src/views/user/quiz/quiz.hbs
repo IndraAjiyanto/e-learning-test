@@ -101,6 +101,13 @@
             <i class="fa-solid fa-circle-check text-xs"></i>
             {{t 'test.quiz.completed'}}
           </button>
+        {{else if (or (eq questionCount 0) (not questionCount))}}
+          <span
+            class="inline-flex h-10 shrink-0 cursor-not-allowed items-center justify-center gap-2 rounded-[8px] border border-[#E5E5E5] bg-[#F5F5F5] px-4 font-inter text-sm font-medium text-[#737373] opacity-80"
+          >
+            <i class="fa-solid fa-circle-info text-xs"></i>
+            {{default (t 'test.quiz.noQuestions') 'Soal kuis belum tersedia'}}
+          </span>
         {{else}}
           <a
             href="/quiz/start/{{quiz.id}}"

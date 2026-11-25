@@ -324,4 +324,136 @@ describe('CoursesService', () => {
       expect(res).toBeDefined();
     });
   });
+
+  describe('findSyllabusForUser sequential unlocking', () => {
+    it('locks subsequent syllabus if previous syllabus has no quiz or is not passed, preventing jumping', async () => {
+      const mockSyllabuses = [
+        {
+          id: 's1',
+          title: 'Silabus 1',
+          syllabusNumber: 1,
+          description: 'Desc 1',
+          quiz: [{ id: 'q1', minScore: 80 }],
+        },
+        {
+          id: 's2',
+          title: 'Silabus 2',
+          syllabusNumber: 2,
+          description: 'Desc 2',
+          quiz: [], // Tanpa kuis
+        },
+        {
+          id: 's3',
+          title: 'Silabus 3',
+          syllabusNumber: 3,
+          description: 'Desc 3',
+          quiz: [{ id: 'q3', minScore: 80 }],
+        },
+      ];
+
+      const syllabusRepoMock = {
+        find: jest.fn().mockResolvedValue(mockSyllabuses),
+      };
+
+      const scoreQueryBuilderMock = {
+        innerJoinAndSelect: jest.fn().mockReturnThis(),
+        innerJoin: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([
+          // User lulus kuis s1
+          { quiz: { id: 'q1' }, score: 85 },
+        ]),
+      };
+
+      const scoreRepoMock = {
+        createQueryBuilder: jest.fn().mockReturnValue(scoreQueryBuilderMock),
+      };
+
+      (courseRepo as any).manager = {
+        getRepository: jest.fn((entity) => {
+          if (entity === Syllabus) return syllabusRepoMock;
+          return scoreRepoMock;
+        }),
+      };
+
+      const result = await service.findSyllabusForUser('c1', 'u1');
+
+      // Silabus 1: Terbuka dan Lulus
+      expect(result[0].isUnlocked).toBe(true);
+      expect(result[0].isPassed).toBe(true);
+
+      // Silabus 2: Terbuka (karena s1 lulus), tapi isPassed = false (tidak ada kuis)
+      expect(result[1].isUnlocked).toBe(true);
+      expect(result[1].isPassed).toBe(false);
+
+      // Silabus 3: Tetap TERKUNCI karena s2 belum lulus kuis (TIDAK LOMPAT!)
+      expect(result[2].isUnlocked).toBe(false);
+      expect(result[2].isPassed).toBe(false);
+    });
+
+    it('keeps all subsequent syllabuses locked if first syllabus quiz is failed', async () => {
+      const mockSyllabuses = [
+        {
+          id: 's1',
+          title: 'Silabus 1',
+          syllabusNumber: 1,
+          description: 'Desc 1',
+          quiz: [{ id: 'q1', minScore: 80 }],
+        },
+        {
+          id: 's2',
+          title: 'Silabus 2',
+          syllabusNumber: 2,
+          description: 'Desc 2',
+          quiz: [],
+        },
+        {
+          id: 's3',
+          title: 'Silabus 3',
+          syllabusNumber: 3,
+          description: 'Desc 3',
+          quiz: [{ id: 'q3', minScore: 80 }],
+        },
+      ];
+
+      const syllabusRepoMock = {
+        find: jest.fn().mockResolvedValue(mockSyllabuses),
+      };
+
+      const scoreQueryBuilderMock = {
+        innerJoinAndSelect: jest.fn().mockReturnThis(),
+        innerJoin: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([
+          // Skor di bawah KKM 80
+          { quiz: { id: 'q1' }, score: 50 },
+        ]),
+      };
+
+      const scoreRepoMock = {
+        createQueryBuilder: jest.fn().mockReturnValue(scoreQueryBuilderMock),
+      };
+
+      (courseRepo as any).manager = {
+        getRepository: jest.fn((entity) => {
+          if (entity === Syllabus) return syllabusRepoMock;
+          return scoreRepoMock;
+        }),
+      };
+
+      const result = await service.findSyllabusForUser('c1', 'u1');
+
+      // Silabus 1 terbuka, belum lulus
+      expect(result[0].isUnlocked).toBe(true);
+      expect(result[0].isPassed).toBe(false);
+
+      // Silabus 2 terkunci
+      expect(result[1].isUnlocked).toBe(false);
+
+      // Silabus 3 terkunci
+      expect(result[2].isUnlocked).toBe(false);
+    });
+  });
 });

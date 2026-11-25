@@ -117,7 +117,7 @@ export class QuizController {
       throw new NotFoundException('Quiz not found');
     }
 
-    if (quiz.weeks) {
+    if (quiz.weeks || quiz.syllabus) {
       const isUnlocked = await this.quizService.isQuizUnlocked(
         req.user!.id,
         quizId,
@@ -125,9 +125,11 @@ export class QuizController {
       if (!isUnlocked) {
         req.flash(
           'error',
-          'Complete the previous session before taking this quiz.',
+          quiz.syllabus
+            ? 'Selesaikan kuis pada silabus sebelumnya terlebih dahulu.'
+            : 'Complete the previous session before taking this quiz.',
         );
-        const courseId = quiz.weeks.course?.id;
+        const courseId = quiz.weeks?.course?.id || quiz.syllabus?.course?.id;
         return res.redirect(
           courseId
             ? `/program/myProgram/${req.user!.id}?courseId=${courseId}`
@@ -185,7 +187,7 @@ export class QuizController {
       throw new NotFoundException('Quiz not found');
     }
 
-    if (quiz.weeks) {
+    if (quiz.weeks || quiz.syllabus) {
       const isUnlocked = await this.quizService.isQuizUnlocked(
         req.user!.id,
         quizId,
@@ -193,9 +195,11 @@ export class QuizController {
       if (!isUnlocked) {
         req.flash(
           'error',
-          'Complete the previous session before taking this quiz.',
+          quiz.syllabus
+            ? 'Selesaikan kuis pada silabus sebelumnya terlebih dahulu.'
+            : 'Complete the previous session before taking this quiz.',
         );
-        const courseId = quiz.weeks.course?.id;
+        const courseId = quiz.weeks?.course?.id || quiz.syllabus?.course?.id;
         return res.redirect(
           courseId
             ? `/program/myProgram/${req.user!.id}?courseId=${courseId}`
@@ -215,11 +219,16 @@ export class QuizController {
       return res.redirect(`/quiz/form/${quizId}`);
     }
 
+    const questions = await this.quizService.findQuestions(quizId);
+    if (!questions || questions.length === 0) {
+      flashToast(req, 'Quiz Unavailable', 'Soal kuis belum tersedia.');
+      return res.redirect(`/quiz/form/${quizId}`);
+    }
+
     const check = await this.quizService.checkStartQuestion(
       req.user!.id,
       quizId,
     );
-    const questions = await this.quizService.findQuestions(quizId);
 
     if (check) {
       res.render('user/quiz/start', {
