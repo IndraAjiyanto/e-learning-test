@@ -422,10 +422,12 @@ export class CoursesController {
       req.user!.role === 'super_admin'
         ? await this.coursesService.findMentoring()
         : [];
+    const categories = await this.coursesService.findCategory();
     res.render('admin/course/index', {
       user: req.user,
       paymentSettings,
       mentorings,
+      categories,
       isSuperAdmin: req.user!.role === 'super_admin',
     });
   }
@@ -440,6 +442,7 @@ export class CoursesController {
     @Query('status') status?: string,
     @Query('process') process?: string,
     @Query('mentor') mentor?: string,
+    @Query('category') category?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -453,6 +456,7 @@ export class CoursesController {
       process: process || undefined,
       mentor:
         req.user!.role === 'super_admin' ? mentor || undefined : undefined,
+      category: category || undefined,
       page: currentPage,
       limit: itemsPerPage,
       userId: req.user!.role === 'admin' ? req.user!.id : undefined,
