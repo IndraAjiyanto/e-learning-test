@@ -62,6 +62,11 @@ export class CreateCoursesDto {
   @IsUUID()
   mentoringsId?: string;
 
+  @IsOptional()
+  @IsArray()
+  @IsUUID('all', { each: true })
+  mentoringsIds?: string[];
+
   /** jsonb: { id, en, ja } */
   @IsObject()
   description: { id: string; en: string; ja: string };

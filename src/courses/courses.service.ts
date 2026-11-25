@@ -176,7 +176,15 @@ export class CoursesService {
       });
     }
 
-    const { endDate, ...restDto } = createCourseDto;
+    const {
+      endDate,
+      mentoringsId: _mentoringsId,
+      mentoringsIds: _mentoringsIds,
+      technologiesIds: _technologiesIds,
+      categoryId: _categoryId,
+      courseTypeId: _courseTypeId,
+      ...restDto
+    } = createCourseDto;
     const course = this.courseRepository.create({
       ...restDto,
       time_start:
@@ -234,7 +242,11 @@ export class CoursesService {
     return await this.weeksRepository.save(container);
   }
 
-  async createMentoring(userId: string, courseId: string) {
+  async createMentoring(userId: string | string[], courseId: string) {
+    if (Array.isArray(userId)) {
+      return await this.syncMentorings(userId, courseId);
+    }
+
     const user = await this.userRepository.findOne({
       where: { id: userId, role: 'admin' },
     });
@@ -249,6 +261,13 @@ export class CoursesService {
       throw new NotFoundException('Program not Found');
     }
 
+    const existing = await this.mentoringRepository.findOne({
+      where: { course: { id: courseId }, user: { id: userId } },
+    });
+    if (existing) {
+      return existing;
+    }
+
     const mentorings = this.mentoringRepository.create({
       course: course,
       user: user,
@@ -256,38 +275,61 @@ export class CoursesService {
     return await this.mentoringRepository.save(mentorings);
   }
 
-  async updateMentoring(userId: string, courseId: string) {
+  async syncMentorings(userIds: string[], courseId: string) {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
+      relations: ['mentorings', 'mentorings.user'],
     });
 
     if (!course) {
       throw new NotFoundException('Program not Found');
     }
 
-    const newMentorUser = await this.userRepository.findOne({
-      where: { id: userId, role: 'admin' },
-    });
+    const uniqueUserIds = [...new Set(userIds.filter(Boolean))];
+    const currentMentorings = course.mentorings || [];
 
-    if (!newMentorUser) {
-      throw new NotFoundException(`Mentors not Found`);
+    // Remove mentorings for users no longer in uniqueUserIds
+    const toRemove = currentMentorings.filter(
+      (m) => !m.user || !uniqueUserIds.includes(m.user.id),
+    );
+    if (toRemove.length > 0) {
+      await this.mentoringRepository.remove(toRemove);
     }
 
-    const existingMentoring = await this.mentoringRepository.findOne({
-      where: { course: { id: courseId } },
-      relations: ['course', 'user'],
-    });
+    // Identify user IDs to add
+    const existingUserIds = currentMentorings
+      .map((m) => m.user?.id)
+      .filter(Boolean);
+    const toAddUserIds = uniqueUserIds.filter(
+      (id) => !existingUserIds.includes(id),
+    );
 
-    if (existingMentoring) {
-      existingMentoring.user = newMentorUser;
-      return await this.mentoringRepository.save(existingMentoring);
-    } else {
-      const newMentoring = this.mentoringRepository.create({
-        user: newMentorUser,
-        course: course,
+    if (toAddUserIds.length > 0) {
+      const users = await this.userRepository.find({
+        where: { id: In(toAddUserIds), role: 'admin' },
       });
-      return await this.mentoringRepository.save(newMentoring);
+      const toCreate = users.map((user) =>
+        this.mentoringRepository.create({
+          course,
+          user,
+        }),
+      );
+      if (toCreate.length > 0) {
+        await this.mentoringRepository.save(toCreate);
+      }
     }
+
+    return await this.mentoringRepository.find({
+      where: { course: { id: courseId } },
+      relations: ['user'],
+    });
+  }
+
+  async updateMentoring(userId: string | string[], courseId: string) {
+    if (Array.isArray(userId)) {
+      return await this.syncMentorings(userId, courseId);
+    }
+    return await this.syncMentorings([userId], courseId);
   }
 
   async addUserToCourse(userId: string, courseId: string) {
@@ -2199,6 +2241,7 @@ export class CoursesService {
     delete persistable.categoryId;
     delete persistable.technologiesIds;
     delete persistable.mentoringsId;
+    delete persistable.mentoringsIds;
     if ('time_start' in persistable) {
       persistable.time_start =
         typeof persistable.time_start === 'string' &&

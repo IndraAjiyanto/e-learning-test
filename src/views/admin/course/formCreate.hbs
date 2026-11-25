@@ -70,7 +70,7 @@
         enctype='multipart/form-data'
         novalidate
         @submit.prevent='submitForm($event)'
-        @click='$nextTick(() => syncTools())'
+        @click='$nextTick(() => { syncTools(); syncMentors(); })'
         class='flex min-w-0 flex-col gap-4'
       >
         {{#> components/ui/super_admin/form/section_card id='section-basic' number='01' title='Basic Information'}}
@@ -200,16 +200,18 @@
               }}
             </div>
 
-            {{> components/ui/super_admin/form/select_field
-              id='mentoringsId'
-              name='mentoringsId'
-              field='mentoringsId'
-              label='Mentoring'
-              searchable=true
-              placeholder='Select mentoring'
-              options='mentoringOptions'
-              required=true
-            }}
+            <div class='flex flex-col gap-1.5'>
+              {{> components/ui/super_admin/form/multi_select_field
+                id='mentorings'
+                name='mentoringsIds[]'
+                label='Mentoring'
+                options='mentoringOptions'
+                placeholder='Search or select mentoring'
+                emptyText='No mentoring found.'
+                required=true
+              }}
+              <p x-show='formErrors.mentorings' x-cloak x-text='formErrors.mentorings' class='font-inter text-sm leading-5 text-[#ef4444]'></p>
+            </div>
           </div>
         {{/components/ui/super_admin/form/section_card}}
 
@@ -414,7 +416,7 @@
       criteria: 'criteriaLang',
     };
     const NUMERIC = ['quota', 'price', 'promo'];
-    const SELECTS = ['categoryId', 'jenis_kelasId', 'mentoringsId'];
+    const SELECTS = ['categoryId', 'jenis_kelasId'];
     const DEPENDENTS = { time_start: 'time_end', startDate: 'endDate', price: 'promo' };
 
     const byLang = (valueFor) => Object.fromEntries(LANGS.map((l) => [l, valueFor(l)]));
@@ -466,7 +468,7 @@
     const inRange = (value, min, max) => /^\d+$/.test(value) && +value >= min && +value <= max;
 
     const sectionPaths = (paid) => ({
-      'section-basic': ['name', 'group', 'categoryId', 'jenis_kelasId', 'programType', 'quota', ...(paid ? ['price', 'promo'] : []), 'mentoringsId'],
+      'section-basic': ['name', 'group', 'categoryId', 'jenis_kelasId', 'programType', 'quota', ...(paid ? ['price', 'promo'] : []), 'mentorings'],
       'section-description': LANGS.map((l) => `description.${l}`),
       'section-schedule': [
         ...(paid ? ['month'] : ['time_start', 'time_end', 'day']),
@@ -487,7 +489,7 @@
     });
 
     const emptyErrors = () => ({
-      name: '', group: '', categoryId: '', jenis_kelasId: '', programType: '', mentoringsId: '', paid: '', method: '',
+      name: '', group: '', categoryId: '', jenis_kelasId: '', programType: '', mentorings: '', mentoringsId: '', paid: '', method: '',
       quota: '', price: '', promo: '', month: '', day: '', time_start: '', time_end: '',
       start_registration: '', date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: '',
       description: byLang(() => ''), locations: byLang(() => ''),
@@ -531,7 +533,7 @@
         formData: {
           name: '', group: '',
           categoryId: categories.some((c) => c.value === categoryId) ? categoryId : '',
-          jenis_kelasId: '', programType: '', mentoringsId: '', paid: 'true', method: 'online',
+          jenis_kelasId: '', programType: '', mentorings: 0, mentoringsId: '', paid: 'true', method: 'online',
           quota: '', price: '', promo: '', month: '', day: '', time_start: '', time_end: '',
           start_registration: '', date_registration: '', startDate: '', endDate: '', locationLink: '', technologies: 0,
           description: byLang(() => ''), locations: byLang(() => ''),
@@ -574,8 +576,10 @@
               return UUID.test(val) ? '' : 'Please select a program type.';
             case 'programType':
               return ['bootcamp', 'non_bootcamp'].includes(val) ? '' : 'Please select a learning structure.';
+            case 'mentorings':
+              return this.formData.mentorings > 0 ? '' : 'Please select at least one mentor.';
             case 'mentoringsId':
-              return UUID.test(val) ? '' : 'Please select a mentoring.';
+              return '';
             case 'quota':
               if (!digits(val)) return 'Program quota is required.';
               return +digits(val) > 0 ? '' : 'Program quota must be greater than 0.';
@@ -647,6 +651,11 @@
         syncTools() {
           this.formData.technologies = this.$root.querySelectorAll('input[name="technologiesIds[]"]').length;
           this.refresh('technologies');
+        },
+
+        syncMentors() {
+          this.formData.mentorings = this.$root.querySelectorAll('input[name="mentoringsIds[]"]').length;
+          this.refresh('mentorings');
         },
 
         sectionComplete(id) {
@@ -724,6 +733,7 @@
 
         validateAll() {
           this.syncTools();
+          this.syncMentors();
           this.activePaths().forEach((path) => this.touch(path));
           if (!this.hasFile) this.setImageError('Please upload the cover program.');
         },
