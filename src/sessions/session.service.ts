@@ -98,16 +98,19 @@ export class SessionService {
     return await this.courseRepository.find();
   }
 
-  async findWeekSessions(weeksId: string) {
+  async findWeekSessions(weeksId: string): Promise<number> {
     const weeks = await this.weeksRepository.findOne({
       where: { id: weeksId },
-      relations: ['session'],
     });
     if (!weeks) {
       throw new NotFoundException('weeks ini tidak ada');
     }
-    const lastSession =
-      weeks.session.length > 0 ? weeks.session[weeks.session.length - 1] : null;
+    const lastSession = await this.sessionRepository
+      .createQueryBuilder('session')
+      .where('session.weeksId = :weeksId', { weeksId })
+      .andWhere('session.sessionOrder IS NOT NULL')
+      .orderBy('session.sessionOrder', 'DESC')
+      .getOne();
 
     return lastSession ? lastSession.sessionOrder : 0;
   }
