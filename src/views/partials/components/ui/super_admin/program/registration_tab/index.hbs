@@ -240,8 +240,18 @@
 
 <script>
   function registrationTab(courseId) {
+    const _lsStatusKey   = 'registrationTab_status_' + courseId;
+    const _validStatuses = ['all', 'process', 'proces', 'acc', 'accepted', 'rejected'];
+
+    function _loadStatus() {
+      try {
+        const saved = localStorage.getItem(_lsStatusKey);
+        return (saved && _validStatuses.includes(saved)) ? saved : 'all';
+      } catch(e) { return 'all'; }
+    }
+
     return {
-      tabStatus: 'all',
+      tabStatus: _loadStatus(),
       searchQuery: '',
       currentStatusFilter: '',
       referralFilter: '',
@@ -249,6 +259,10 @@
       loading: true,
 
       async init() {
+        // Simpan perubahan tabStatus ke localStorage setiap kali berubah
+        this.$watch('tabStatus', (val) => {
+          try { localStorage.setItem(_lsStatusKey, val); } catch(e) {}
+        });
         await this.fetchData();
       },
 

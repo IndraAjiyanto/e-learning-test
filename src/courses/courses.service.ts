@@ -1283,7 +1283,9 @@ export class CoursesService {
   }
 
   async findCategory() {
-    return await this.categoryRepository.find();
+    return await this.categoryRepository.find({
+      order: { name: 'ASC' },
+    });
   }
   async findCourseTypes() {
     return await this.courseTypeRepository.find();
@@ -1299,6 +1301,7 @@ export class CoursesService {
     status?: string;
     process?: string;
     mentor?: string;
+    category?: string;
     page: number;
     limit: number;
     userId?: string; // kalau ada = admin, kalau tidak = super_admin
@@ -1329,6 +1332,23 @@ export class CoursesService {
         .andWhere('filterMentoring.userId = :mentorUserId', {
           mentorUserId: params.mentor,
         });
+    }
+
+    // Filter by category
+    if (params.category) {
+      const isUuid =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+          params.category,
+        );
+      if (isUuid) {
+        query.andWhere('category.id = :categoryId', {
+          categoryId: params.category,
+        });
+      } else {
+        query.andWhere('category.name ILIKE :categoryName', {
+          categoryName: params.category,
+        });
+      }
     }
 
     if (params.search) {

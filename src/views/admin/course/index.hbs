@@ -226,6 +226,17 @@
             </div>
           </div>
 
+          {{!-- Category Filter Dropdown (Search List) --}}
+          {{> components/ui/admin/toolbar/searchable_filter_dropdown
+            model='selectedCategory'
+            options='categoryOptions'
+            filterMethod='filterCategory'
+            placeholder='All Category'
+            searchPlaceholder='Search category...'
+            emptyText='Category not found'
+            wrapperClass='w-full sm:w-[200px] shrink-0'
+          }}
+
           {{!-- Mentor Filter Dropdown (Super Admin only) --}}
           {{#if isSuperAdmin}}
           {{> components/ui/admin/toolbar/searchable_filter_dropdown
@@ -242,7 +253,7 @@
           {{!-- Reset Filters Button --}}
           <button
             type='button'
-            x-show='selectedProcess || !isStatusDefault || selectedMentor'
+            x-show='selectedProcess || !isStatusDefault || selectedMentor || selectedCategory'
             x-cloak
             @click='resetFilters()'
             class='h-[42px] px-3.5 flex items-center gap-1.5 text-[13px] text-[#DC2626] bg-white hover:bg-[#FEF2F2] rounded-[8px] border border-[#FCA5A5] transition-colors cursor-pointer font-medium shrink-0'
@@ -360,6 +371,14 @@ function kelasTable() {
     selectedProcess: '',
     selectedStatuses: ['unlaunch', 'launch', 'learning'],
     selectedMentor: '',
+    selectedCategory: '',
+    categoryOptions: [
+      { value: '', label: 'All Category' },
+      ...({{#if categories}}{{{json categories}}}{{else}}[]{{/if}}).map(c => ({
+        value: c.id,
+        label: c.name || c.name_en || 'Unnamed Category',
+      })),
+    ],
     mentorOptions: [
       { value: '', label: 'All Mentor' },
       ...({{#if mentorings}}{{{json mentorings}}}{{else}}[]{{/if}}).map(m => ({ value: m.id, label: m.username })),
@@ -568,6 +587,10 @@ function kelasTable() {
         this.currentPage = 1;
         this.fetchKelas();
       });
+      this.$watch('selectedCategory', () => {
+        this.currentPage = 1;
+        this.fetchKelas();
+      });
       this.fetchKelas();
     },
 
@@ -583,6 +606,7 @@ function kelasTable() {
           params.set('status', '__none__');
         }
         if (this.selectedMentor) params.set('mentor', this.selectedMentor);
+        if (this.selectedCategory) params.set('category', this.selectedCategory);
         params.set('page', this.currentPage);
         params.set('limit', this.size);
 
@@ -617,6 +641,7 @@ function kelasTable() {
       this.selectedProcess = '';
       this.selectedStatuses = ['unlaunch', 'launch', 'learning'];
       this.selectedMentor = '';
+      this.selectedCategory = '';
       this.currentPage = 1;
       this.fetchKelas();
     },
@@ -654,6 +679,16 @@ function kelasTable() {
         this.fetchKelas();
       } else {
         this.selectedMentor = next;
+      }
+    },
+
+    filterCategory(categoryId) {
+      const next = categoryId || '';
+      if (this.selectedCategory === next) {
+        this.currentPage = 1;
+        this.fetchKelas();
+      } else {
+        this.selectedCategory = next;
       }
     },
 
