@@ -172,9 +172,28 @@
 
 <script>
   function paymentTab(courseId, checkPaid) {
+    const _lsTabKey       = 'paymentTab_toggle_' + courseId;
+    const _lsStatusKey    = 'paymentTab_status_' + courseId;
+    const _defaultTab     = checkPaid ? 'payment' : 'register';
+    const _validToggles   = checkPaid ? ['payment', 'installment'] : ['register'];
+    const _validStatuses  = ['all', 'proces', 'process', 'acc', 'accepted', 'rejected'];
+
+    function _loadTab() {
+      try {
+        const saved = localStorage.getItem(_lsTabKey);
+        return (saved && _validToggles.includes(saved)) ? saved : _defaultTab;
+      } catch(e) { return _defaultTab; }
+    }
+    function _loadStatus() {
+      try {
+        const saved = localStorage.getItem(_lsStatusKey);
+        return (saved && _validStatuses.includes(saved)) ? saved : 'all';
+      } catch(e) { return 'all'; }
+    }
+
     return {
-      tab: checkPaid ? 'payment' : 'register',
-      tabStatus: 'all',
+      tab: _loadTab(),
+      tabStatus: _loadStatus(),
       searchQuery: '',
       currentStatusFilter: '',
       referralFilter: '',
@@ -183,15 +202,21 @@
       loading: true,
 
       init() {
-        const url = checkPaid
-          ? '/program/payment/' + courseId
-          : '/program/register/' + courseId;
+        // Simpan perubahan tabStatus ke localStorage setiap kali berubah
+        this.$watch('tabStatus', (val) => {
+          try { localStorage.setItem(_lsStatusKey, val); } catch(e) {}
+        });
+
+        const url = this.tab === 'installment'
+          ? '/program/paymentInstallment/' + courseId
+          : (checkPaid ? '/program/payment/' + courseId : '/program/register/' + courseId);
 
         this.toggleFetch(url, this.tab);
       },
 
       async toggleFetch(url, name) {
         this.tab = name;
+        try { localStorage.setItem(_lsTabKey, name); } catch(e) {}
         this.selectedInstallment = null;
         this.loading = true;
 
