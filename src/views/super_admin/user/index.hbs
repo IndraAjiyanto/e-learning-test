@@ -35,6 +35,15 @@
           labelClass='hidden'
           selectClass='w-full h-11 px-3.5 py-2.5 font-inter font-normal text-base leading-6 text-[#404040] bg-white border border-[#d4d4d4] rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-2 focus:ring-[#003060]/20'
         }}
+        {{> components/ui/input/editable_select/index
+          label=''
+          model='selectedStatus'
+          options='statusOptions'
+          placeholderOption='All Status'
+          wrapperClass='w-full sm:w-[180px]'
+          labelClass='hidden'
+          selectClass='w-full h-11 px-3.5 py-2.5 font-inter font-normal text-base leading-6 text-[#404040] bg-white border border-[#d4d4d4] rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] transition-colors hover:border-[#a3a3a3] focus:border-[#003060] focus:ring-2 focus:ring-[#003060]/20'
+        }}
       {{/components/ui/super_admin/table/toolbar}}
       {{#> components/ui/super_admin/table/card tableClass='min-w-[1052px]'}}
         <colgroup>
@@ -149,7 +158,13 @@
     return {
       users: [],
       searchInput: '',
+      selectedStatus: '',
       selectedRole: '',
+      statusOptions: [
+        { value: '', label: 'All Status' },
+        { value: 'true', label: 'verified' },
+        { value: 'false', label: 'unverified' },
+      ],
       roleOptions: [
         { value: '', label: 'All Roles' },
         { value: 'super_admin', label: 'Admin' },
@@ -311,6 +326,10 @@
           this.currentPage = 1;
           this.fetchUsers();
         });
+        this.$watch('selectedStatus', () => {
+          this.currentPage = 1;
+          this.fetchUsers();
+        });
         this.fetchUsers();
       },
 
@@ -320,6 +339,7 @@
           const params = new URLSearchParams();
           if (this.searchInput.trim()) params.set('search', this.searchInput.trim());
           if (this.selectedRole) params.set('role', this.selectedRole);
+          if (this.selectedStatus) params.set('status', this.selectedStatus);
           params.set('page', this.currentPage);
           params.set('limit', this.size);
 

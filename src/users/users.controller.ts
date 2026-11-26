@@ -755,6 +755,7 @@ export class UsersController {
     @Res() res: Response,
     @Query('search') search?: string,
     @Query('role') role?: string,
+    @Query('status') status?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -764,6 +765,7 @@ export class UsersController {
     const result = await this.usersService.findAllPaginated({
       search: search || undefined,
       role: role || undefined,
+      status: status || undefined,
       page: currentPage,
       limit: itemsPerPage,
     });
