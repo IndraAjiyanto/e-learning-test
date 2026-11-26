@@ -1,8 +1,10 @@
 {{!--
-  Komponen: Form Select Dropdown (Level 2 - Molekul)
+  Komponen: Form Select Dropdown (Level 2 - Molekul Modern)
   Lokasi: src/views/partials/components/ui/dropdown/select/index.hbs
 
-  Select dropdown dengan custom chevron, label Montserrat, dan kompatibilitas draft form.
+  Select dropdown kustom modern dengan leading icon, animated chevron,
+  custom popover options dengan icon/badge tiap opsi, keyboard navigation,
+  dan sinkronisasi penuh dengan native <select> untuk HTML5 validation & draft storage.
 
   Props:
   - name         : string (default: 'select')
@@ -11,46 +13,369 @@
   - label        : string (opsional)
   - placeholder  : string (default: 'Select option')
   - required     : boolean (default: false)
+  - icon         : string (opsional, class FontAwesome untuk trigger, misal: 'fa-solid fa-bullhorn')
+  - triggerClass : string (opsional, class tambahan/penyesuaian untuk trigger button)
   - wrapperClass : string (opsional)
   - labelClass   : string (opsional)
   - selectClass  : string (opsional)
 --}}
 
-<div class="flex flex-col items-start gap-2 w-full {{wrapperClass}}" {{#if containerId}}id="{{containerId}}"{{/if}}>
+<div
+  class="flex flex-col items-start gap-2 w-full relative custom-select-wrapper {{wrapperClass}}"
+  {{#if containerId}}id="{{containerId}}"{{/if}}
+  data-custom-select
+>
   {{#if label}}
     <label
       for="{{default id (default name 'select')}}"
-      class="font-montserrat font-medium text-base sm:text-xl text-[#003060] {{labelClass}}"
+      class="{{#if labelClass}}{{labelClass}}{{else}}font-inter font-medium text-base sm:text-xl text-[#0A356D]{{/if}} flex items-center gap-1.5"
     >
-      {{label}}{{#if required}}<span class="text-red-500 ml-1">*</span>{{/if}}
+      <span>{{label}}</span>
+      {{#if required}}<span class="text-red-500 font-bold">*</span>{{/if}}
     </label>
   {{/if}}
 
-  <div class="relative w-full">
+  <div class="relative w-full custom-select-box">
+    {{!-- Real Select Element (Maintains Form, Serialization, and Validation Compatibility) --}}
     <select
       id="{{default id (default name 'select')}}"
       name="{{default name 'select'}}"
       {{#if required}}required{{/if}}
-      class="
-        w-full h-12 sm:h-[54px] appearance-none rounded-[8px] border border-[#D9D9D9]
-        bg-white px-4 py-2.5 pr-12 font-montserrat font-normal text-base sm:text-xl
-        text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#003060] focus:border-[#003060]
-        cursor-pointer transition-all duration-200 {{selectClass}}
-      "
+      class="custom-select-native"
+      style="position: absolute; opacity: 0; pointer-events: none; width: 100%; height: 100%; inset: 0; z-index: -1;"
+      tabindex="-1"
+      aria-hidden="true"
     >
-      <option value="" disabled selected class="text-[#718096]">{{default placeholder 'Select option'}}</option>
+      <option value="" disabled selected class="text-[#7895BD]">{{default placeholder 'Select option'}}</option>
       {{#if options}}
         {{#each options}}
-          <option value="{{this.value}}" class="text-slate-800">{{this.label}}</option>
+          <option value="{{this.value}}">{{this.label}}</option>
         {{/each}}
       {{else}}
         {{> @partial-block}}
       {{/if}}
     </select>
 
-    <!-- Custom Chevron Icon -->
-    <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[#718096]">
-      <i class="fa-solid fa-chevron-down text-sm sm:text-base transition-transform duration-200"></i>
+    {{!-- Custom Trigger Button --}}
+    <button
+      type="button"
+      id="{{default id (default name 'select')}}-trigger"
+      class="custom-select-trigger w-full {{#if triggerClass}}{{triggerClass}}{{else}}h-14 sm:h-[64px] px-4 sm:px-5 rounded-[12px]{{/if}} bg-white border-2 border-[#D7E4F2] hover:border-[#1677F2]/50 flex items-center justify-between gap-3 text-left transition-all duration-200 focus:outline-none focus:border-[#1677F2] focus:ring-4 focus:ring-[#1677F2]/10 shadow-[0_2px_4px_rgba(10,53,109,0.02)] cursor-pointer group"
+      aria-haspopup="listbox"
+      aria-expanded="false"
+    >
+      <div class="flex items-center gap-3 min-w-0 flex-1">
+        {{#if icon}}
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-[10px] bg-[#EBF3FC] border border-[#D7E4F2]/70 text-[#0A356D] flex items-center justify-center shrink-0 transition-colors group-hover:bg-[#DDEBFA]">
+            <i class="{{icon}} text-base sm:text-lg text-[#0A356D]"></i>
+          </div>
+        {{/if}}
+        <div class="flex items-center gap-2.5 min-w-0 flex-1">
+          <span class="custom-select-selected-icon hidden shrink-0"></span>
+          <span
+            class="custom-select-label font-inter font-normal text-sm sm:text-base md:text-lg text-[#7895BD] truncate select-none"
+            data-placeholder="{{default placeholder 'Select option'}}"
+          >
+            {{default placeholder 'Select option'}}
+          </span>
+        </div>
+      </div>
+
+      {{!-- Animated Chevron Badge --}}
+      <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#F4F7FB] border border-[#D7E4F2] flex items-center justify-center text-[#7895BD] group-hover:text-[#1677F2] group-hover:border-[#1677F2]/30 shrink-0 transition-all duration-300">
+        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300 custom-chevron-icon"></i>
+      </div>
+    </button>
+
+    {{!-- Custom Dropdown Menu Popover --}}
+    <div
+      class="custom-select-menu hidden opacity-0 translate-y-1 absolute left-0 right-0 top-full mt-2 z-50 bg-white border-2 border-[#D7E4F2] rounded-[14px] shadow-[0_16px_36px_rgba(10,53,109,0.14)] p-2 max-h-72 overflow-y-auto transform origin-top transition-all duration-200"
+      role="listbox"
+    >
+      {{!-- Dynamic options rendered via client-side script below --}}
     </div>
   </div>
 </div>
+
+<script>
+  (function initCustomSelectComponent() {
+    const OPTION_META_MAP = {
+      // Referral Sources
+      'Instagram': { icon: 'fa-brands fa-instagram', color: 'text-[#E4405F]', bg: 'bg-pink-50' },
+      'TikTok': { icon: 'fa-brands fa-tiktok', color: 'text-slate-900', bg: 'bg-slate-100' },
+      'LinkedIn': { icon: 'fa-brands fa-linkedin', color: 'text-[#0A66C2]', bg: 'bg-blue-50' },
+      'Friends': { icon: 'fa-solid fa-user-group', color: 'text-[#10B981]', bg: 'bg-emerald-50' },
+      'University': { icon: 'fa-solid fa-graduation-cap', color: 'text-[#6366F1]', bg: 'bg-indigo-50' },
+      'WhatsApp Group': { icon: 'fa-brands fa-whatsapp', color: 'text-[#25D366]', bg: 'bg-emerald-50' },
+      'Webinar/Event': { icon: 'fa-solid fa-calendar-check', color: 'text-[#F59E0B]', bg: 'bg-amber-50' },
+      'Website': { icon: 'fa-solid fa-globe', color: 'text-[#3B82F6]', bg: 'bg-sky-50' },
+      'Other': { icon: 'fa-solid fa-ellipsis', color: 'text-[#64748B]', bg: 'bg-slate-100' },
+
+      // Current Statuses
+      'University Student': { icon: 'fa-solid fa-graduation-cap', color: 'text-[#6366F1]', bg: 'bg-indigo-50' },
+      'Fresh Graduate': { icon: 'fa-solid fa-user-graduate', color: 'text-[#10B981]', bg: 'bg-emerald-50' },
+      'Job Seeker': { icon: 'fa-solid fa-magnifying-glass', color: 'text-[#F59E0B]', bg: 'bg-amber-50' },
+      'Employee': { icon: 'fa-solid fa-briefcase', color: 'text-[#3B82F6]', bg: 'bg-sky-50' },
+      'Freelancer': { icon: 'fa-solid fa-laptop-code', color: 'text-[#8B5CF6]', bg: 'bg-purple-50' },
+      'Entrepreneur': { icon: 'fa-solid fa-rocket', color: 'text-[#EC4899]', bg: 'bg-rose-50' }
+    };
+
+    function setupSelect(container) {
+      if (!container || container.dataset.initialized === 'true') return;
+      container.dataset.initialized = 'true';
+
+      const select = container.querySelector('select.custom-select-native');
+      const trigger = container.querySelector('.custom-select-trigger');
+      const labelEl = container.querySelector('.custom-select-label');
+      const iconContainer = container.querySelector('.custom-select-selected-icon');
+      const chevron = container.querySelector('.custom-chevron-icon');
+      const menu = container.querySelector('.custom-select-menu');
+
+      if (!select || !trigger || !labelEl || !menu) return;
+
+      const placeholderText = labelEl.getAttribute('data-placeholder') || 'Select option';
+
+      function renderMenuOptions() {
+        menu.innerHTML = '';
+        const options = Array.from(select.querySelectorAll('option'));
+
+        options.forEach((opt) => {
+          if (opt.value === '' || opt.disabled) return;
+
+          const val = opt.value;
+          const text = opt.textContent.trim();
+          const meta = OPTION_META_MAP[val] || {
+            icon: 'fa-solid fa-circle-dot',
+            color: 'text-[#0A356D]',
+            bg: 'bg-blue-50'
+          };
+
+          const item = document.createElement('div');
+          item.className = 'custom-select-option px-3.5 py-2.5 sm:py-3 rounded-[10px] flex items-center justify-between cursor-pointer transition-all duration-150 text-[#334155] hover:bg-[#F0F7FF] hover:text-[#0A356D] select-none my-0.5';
+          item.setAttribute('role', 'option');
+          item.setAttribute('data-value', val);
+
+          item.innerHTML = `
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <div class="w-8 h-8 rounded-lg ${meta.bg} flex items-center justify-center shrink-0 border border-slate-100">
+                <i class="${meta.icon} ${meta.color} text-sm"></i>
+              </div>
+              <span class="font-inter font-medium text-sm sm:text-base text-inherit truncate">${text}</span>
+            </div>
+            <span class="check-badge hidden w-6 h-6 rounded-full bg-[#1677F2] text-white flex items-center justify-center text-xs shrink-0 shadow-xs">
+              <i class="fa-solid fa-check"></i>
+            </span>
+          `;
+
+          item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectOption(val);
+            closeMenu();
+            trigger.focus();
+          });
+
+          menu.appendChild(item);
+        });
+      }
+
+      function syncDisplay() {
+        const selectedValue = select.value;
+        const matchingOpt = select.querySelector(`option[value="${CSS.escape(selectedValue)}"]`);
+        const allItems = menu.querySelectorAll('.custom-select-option');
+
+        if (selectedValue && matchingOpt) {
+          const text = matchingOpt.textContent.trim();
+          labelEl.textContent = text;
+          labelEl.classList.remove('text-[#7895BD]', 'font-normal');
+          labelEl.classList.add('text-[#0A356D]', 'font-semibold');
+
+          const meta = OPTION_META_MAP[selectedValue];
+          if (meta && iconContainer) {
+            iconContainer.innerHTML = `<i class="${meta.icon} ${meta.color} text-base sm:text-lg"></i>`;
+            iconContainer.classList.remove('hidden');
+          } else if (iconContainer) {
+            iconContainer.classList.add('hidden');
+          }
+
+          trigger.classList.remove('border-red-500', 'ring-2', 'ring-red-100');
+
+          allItems.forEach((item) => {
+            const isMatch = item.getAttribute('data-value') === selectedValue;
+            const badge = item.querySelector('.check-badge');
+            if (isMatch) {
+              item.classList.add('bg-[#EBF3FC]', 'text-[#0A356D]', 'font-semibold');
+              if (badge) badge.classList.remove('hidden');
+            } else {
+              item.classList.remove('bg-[#EBF3FC]', 'text-[#0A356D]', 'font-semibold');
+              if (badge) badge.classList.add('hidden');
+            }
+          });
+        } else {
+          labelEl.textContent = placeholderText;
+          labelEl.classList.add('text-[#7895BD]', 'font-normal');
+          labelEl.classList.remove('text-[#0A356D]', 'font-semibold');
+
+          if (iconContainer) {
+            iconContainer.classList.add('hidden');
+            iconContainer.innerHTML = '';
+          }
+
+          allItems.forEach((item) => {
+            item.classList.remove('bg-[#EBF3FC]', 'text-[#0A356D]', 'font-semibold');
+            const badge = item.querySelector('.check-badge');
+            if (badge) badge.classList.add('hidden');
+          });
+        }
+      }
+
+      function selectOption(value) {
+        if (select.value === value) return;
+        select.value = value;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+        select.dispatchEvent(new Event('input', { bubbles: true }));
+        syncDisplay();
+      }
+
+      function openMenu() {
+        // Close any other open custom dropdowns
+        document.querySelectorAll('.custom-select-menu').forEach((m) => {
+          if (m !== menu) {
+            m.classList.add('hidden', 'opacity-0', 'translate-y-1');
+            const otherTrigger = m.closest('.custom-select-box')?.querySelector('.custom-select-trigger');
+            if (otherTrigger) {
+              otherTrigger.setAttribute('aria-expanded', 'false');
+              const otherChevron = otherTrigger.querySelector('.custom-chevron-icon');
+              if (otherChevron) otherChevron.classList.remove('rotate-180');
+            }
+          }
+        });
+
+        menu.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          menu.classList.remove('opacity-0', 'translate-y-1');
+          menu.classList.add('opacity-100', 'translate-y-0');
+        });
+        trigger.setAttribute('aria-expanded', 'true');
+        if (chevron) chevron.classList.add('rotate-180');
+
+        // Scroll active item into view
+        const activeItem = menu.querySelector('.custom-select-option.bg-\\[\\#EBF3FC\\]');
+        if (activeItem) {
+          activeItem.scrollIntoView({ block: 'nearest' });
+        }
+      }
+
+      function closeMenu() {
+        menu.classList.remove('opacity-100', 'translate-y-0');
+        menu.classList.add('opacity-0', 'translate-y-1');
+        setTimeout(() => {
+          if (trigger.getAttribute('aria-expanded') === 'false') {
+            menu.classList.add('hidden');
+          }
+        }, 150);
+        trigger.setAttribute('aria-expanded', 'false');
+        if (chevron) chevron.classList.remove('rotate-180');
+      }
+
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+        if (isOpen) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      });
+
+      trigger.addEventListener('keydown', (e) => {
+        if ([' ', 'Enter', 'ArrowDown', 'ArrowUp', 'Escape'].includes(e.key)) {
+          e.preventDefault();
+        }
+
+        const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+
+        if (e.key === 'Escape') {
+          closeMenu();
+          return;
+        }
+
+        if (e.key === ' ' || e.key === 'Enter') {
+          if (isOpen) {
+            closeMenu();
+          } else {
+            openMenu();
+          }
+          return;
+        }
+
+        const items = Array.from(menu.querySelectorAll('.custom-select-option'));
+        if (!items.length) return;
+
+        let currentIndex = items.findIndex((it) => it.getAttribute('data-value') === select.value);
+
+        if (e.key === 'ArrowDown') {
+          if (!isOpen) {
+            openMenu();
+          } else {
+            const nextIndex = (currentIndex + 1) % items.length;
+            const targetVal = items[nextIndex].getAttribute('data-value');
+            selectOption(targetVal);
+          }
+        } else if (e.key === 'ArrowUp') {
+          if (!isOpen) {
+            openMenu();
+          } else {
+            const prevIndex = (currentIndex - 1 + items.length) % items.length;
+            const targetVal = items[prevIndex].getAttribute('data-value');
+            selectOption(targetVal);
+          }
+        }
+      });
+
+      select.addEventListener('change', syncDisplay);
+      select.addEventListener('focus', () => {
+        trigger.focus();
+      });
+      select.addEventListener('invalid', () => {
+        trigger.classList.add('border-red-500', 'ring-2', 'ring-red-100');
+      });
+
+      container.__selectOptionByValue = function (val) {
+        selectOption(val);
+      };
+
+      renderMenuOptions();
+      syncDisplay();
+    }
+
+    function initAll() {
+      document.querySelectorAll('[data-custom-select]').forEach(setupSelect);
+    }
+
+    window.initCustomSelects = initAll;
+
+    // Global listener for click outside
+    document.addEventListener('click', (e) => {
+      document.querySelectorAll('[data-custom-select]').forEach((container) => {
+        if (!container.contains(e.target)) {
+          const menu = container.querySelector('.custom-select-menu');
+          const trigger = container.querySelector('.custom-select-trigger');
+          const chevron = container.querySelector('.custom-chevron-icon');
+          if (menu && !menu.classList.contains('hidden')) {
+            menu.classList.remove('opacity-100', 'translate-y-0');
+            menu.classList.add('opacity-0', 'translate-y-1', 'hidden');
+            if (trigger) trigger.setAttribute('aria-expanded', 'false');
+            if (chevron) chevron.classList.remove('rotate-180');
+          }
+        }
+      });
+    });
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAll);
+    } else {
+      initAll();
+    }
+  })();
+</script>
