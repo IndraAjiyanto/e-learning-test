@@ -163,6 +163,7 @@ export class UsersService {
   async findAllPaginated(params: {
     search?: string;
     role?: string;
+    status?:string;
     page: number;
     limit: number;
   }) {
@@ -191,6 +192,15 @@ export class UsersService {
 
     if (params.role) {
       query.andWhere('user.role = :role', { role: params.role });
+    }
+
+    if(params.status){
+
+      if(params.status === 'true'){
+        query.andWhere('user.isVerified = :status', { status: true });
+      }else if(params.status === 'false'){
+        query.andWhere('user.isVerified = :status', { status: false });
+      }
     }
 
     query.skip((page - 1) * limit).take(limit);

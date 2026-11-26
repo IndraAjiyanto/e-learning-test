@@ -468,7 +468,11 @@ export class DashboardService {
   }
 
   async findCategories() {
-    return await this.categoryRepository.find();
+    return await this.categoryRepository.find({
+      order: {
+        no: 'ASC',
+      },
+    });
   }
 
   // Khusus navbar user: urutkan mengikuti nomor urut (`no`) yang diatur super
