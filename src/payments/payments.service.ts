@@ -27,6 +27,7 @@ import { InstallmentPaymentService } from 'src/installment_payment/installment-p
 import { InstallmentPayment } from 'src/entities/installment-payment.entity';
 import { Invoice } from 'src/entities/invoice.entity';
 import { dateHelpers } from 'src/common/helpers';
+import { NotificationService } from 'src/common/notification/notification.service';
 
 // Hasil `createXenditInvoice`. Kalau payment-nya sudah pernah dibuat, service
 // mengembalikan objek ringkas yang menyertakan invoice lama; kalau baru, objek
@@ -95,6 +96,7 @@ export class PaymentsService {
     @Inject(forwardRef(() => InvoiceService))
     private readonly invoiceService: InvoiceService,
     private readonly installmentPaymentService: InstallmentPaymentService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   private calculateInstallmentPricing(
@@ -317,6 +319,28 @@ export class PaymentsService {
               err,
             );
           });
+
+        // Notifikasi super_admin: pendaftar baru via pembayaran manual cicilan
+        this.notificationService
+          .notifySuperAdminNewEnrollment({
+            studentName:
+              saved.user_fullname ||
+              (user.biodata as { fullName?: string })?.fullName ||
+              user.username,
+            studentEmail: saved.user_email || user.email,
+            studentPhone:
+              saved.user_no ||
+              (user.biodata as { no?: string })?.no ||
+              undefined,
+            courseName: course.name,
+            courseId: course.id,
+            paymentType: 'manual',
+            invoiceNo: saved.no,
+            amount: pricing.downPayment.amount,
+            registeredAt: new Date(),
+          })
+          .catch(() => undefined);
+
         return saved;
       }
     }
@@ -376,6 +400,28 @@ export class PaymentsService {
             err,
           );
         });
+
+      // Notifikasi super_admin: pendaftar baru via pembayaran manual full
+      this.notificationService
+        .notifySuperAdminNewEnrollment({
+          studentName:
+            saved.user_fullname ||
+            (user.biodata as { fullName?: string })?.fullName ||
+            user.username,
+          studentEmail: saved.user_email || user.email,
+          studentPhone:
+            saved.user_no ||
+            (user.biodata as { no?: string })?.no ||
+            undefined,
+          courseName: course.name,
+          courseId: course.id,
+          paymentType: 'manual',
+          invoiceNo: saved.no,
+          amount: finalTotal,
+          registeredAt: new Date(),
+        })
+        .catch(() => undefined);
+
       return saved;
     }
   }

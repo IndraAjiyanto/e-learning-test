@@ -13,6 +13,7 @@ import { User } from 'src/entities/user.entity';
 import { UserCourse } from 'src/entities/user_course.entity';
 import { Payment, currentStatus } from 'src/entities/payment.entity';
 import { InvoiceService } from 'src/invoice/invoice.service';
+import { NotificationService } from 'src/common/notification/notification.service';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -30,6 +31,7 @@ export class RegistrationsService {
     @InjectRepository(Payment)
     private readonly paymentRepository: Repository<Payment>,
     private readonly invoiceService: InvoiceService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async create(createRegistrationDto: CreateRegistrationsDto) {
@@ -105,6 +107,27 @@ export class RegistrationsService {
     });
     const savedRegistration =
       await this.registrationRepository.save(registration);
+
+    // Kirim notifikasi email ke super_admin
+    this.notificationService
+      .notifySuperAdminNewEnrollment({
+        studentName:
+          createRegistrationDto.user_fullname ||
+          (user.biodata as { fullName?: string })?.fullName ||
+          user.username,
+        studentEmail: createRegistrationDto.user_email || user.email,
+        studentPhone:
+          createRegistrationDto.user_no ||
+          (user.biodata as { no?: string })?.no ||
+          undefined,
+        courseName: course.name,
+        courseId: course.id,
+        paymentType: 'registration',
+        invoiceNo: finalInvoiceNumber,
+        amount: 0,
+        registeredAt: new Date(),
+      })
+      .catch(() => undefined);
 
     return savedRegistration;
   }

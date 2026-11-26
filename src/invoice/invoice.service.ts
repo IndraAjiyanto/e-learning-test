@@ -16,6 +16,7 @@ import { PaymentsService } from 'src/payments/payments.service';
 import { InstallmentPaymentService } from 'src/installment_payment/installment-payment.service';
 import { InstallmentPayment } from 'src/entities/installment-payment.entity';
 import { Installment } from 'src/entities/installment.entity';
+import { NotificationService } from 'src/common/notification/notification.service';
 
 @Injectable()
 export class InvoiceService {
@@ -34,6 +35,7 @@ export class InvoiceService {
     @Inject(forwardRef(() => PaymentsService))
     private readonly paymentsService: PaymentsService,
     private readonly installmentPaymentService: InstallmentPaymentService,
+    private readonly notificationService: NotificationService,
   ) {
     if (process.env.XENDIT_SECRET_KEY) {
       this.xenditInvoiceClient = new InvoiceClient({
@@ -523,6 +525,37 @@ export class InvoiceService {
           payment.course.id,
         );
       }
+
+      // Notifikasi super_admin: pembayaran Xendit berhasil (reconcile/settleStuck)
+      this.notificationService
+        .notifySuperAdminNewEnrollment({
+          studentName:
+            payment.invoice?.user_fullname ||
+            payment.user_fullname ||
+            (payment.user as any)?.biodata?.fullName ||
+            payment.user?.username ||
+            '-',
+          studentEmail:
+            payment.invoice?.user_email ||
+            payment.user_email ||
+            payment.user?.email ||
+            '-',
+          studentPhone:
+            payment.invoice?.user_phone ||
+            payment.user_no ||
+            (payment.user as any)?.biodata?.no ||
+            undefined,
+          courseName: payment.course?.name || '-',
+          courseId: payment.course?.id || '-',
+          paymentType: 'xendit',
+          invoiceNo:
+            payment.invoice?.invoice_number || payment.no || undefined,
+          amount: payment.invoice?.final_total
+            ? Number(payment.invoice.final_total)
+            : undefined,
+          registeredAt: res.paidAt || new Date(),
+        })
+        .catch(() => undefined);
     } else if (res && res.status === 'EXPIRED') {
       payment.process = 'rejected';
       if (payment.invoice) {
@@ -659,6 +692,37 @@ export class InvoiceService {
           payment.course.id,
         );
       }
+
+      // Notifikasi super_admin: pembayaran Xendit berhasil (PAID/SETTLED)
+      this.notificationService
+        .notifySuperAdminNewEnrollment({
+          studentName:
+            payment.invoice?.user_fullname ||
+            payment.user_fullname ||
+            (payment.user as any)?.biodata?.fullName ||
+            payment.user?.username ||
+            '-',
+          studentEmail:
+            payment.invoice?.user_email ||
+            payment.user_email ||
+            payment.user?.email ||
+            '-',
+          studentPhone:
+            payment.invoice?.user_phone ||
+            payment.user_no ||
+            (payment.user as any)?.biodata?.no ||
+            undefined,
+          courseName: payment.course?.name || '-',
+          courseId: payment.course?.id || '-',
+          paymentType: 'xendit',
+          invoiceNo:
+            payment.invoice?.invoice_number || payment.no || undefined,
+          amount: payment.invoice?.final_total
+            ? Number(payment.invoice.final_total)
+            : undefined,
+          registeredAt: new Date(),
+        })
+        .catch(() => undefined);
     } else if (status === 'EXPIRED') {
       payment.process = 'rejected';
       if (payment.invoice) {
