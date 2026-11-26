@@ -10,6 +10,7 @@ import { VoucherModule } from 'src/voucher/voucher.module';
 import { Course } from 'src/entities/course.entity';
 import { PaymentsModule } from 'src/payments/payments.module';
 import { InstallmentPaymentModule } from 'src/installment_payment/installment-payment.module';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { InstallmentPaymentModule } from 'src/installment_payment/installment-pa
     VoucherModule,
     forwardRef(() => PaymentsModule),
     InstallmentPaymentModule,
+    CommonModule,
   ],
   controllers: [InvoiceController],
   providers: [InvoiceService],
