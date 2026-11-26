@@ -127,82 +127,60 @@
       </div>
 
       <!-- field-Current Status -->
-      <div class="w-full flex flex-col gap-2">
-        <div class="flex items-center gap-1">
-          <label for="current_status" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
-            {{default (t 'test.freeProgram.registrationModal.currentStatus') 'Current Status'}}
-          </label>
-          <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
-        </div>
-        <div class="relative w-full" id="dropdown-status">
-          <select
-            id="current_status"
-            name="current_status"
-            required
-            class="w-full h-[48px] px-4 pr-10 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors appearance-none cursor-pointer"
-          >
-            <option value="" disabled selected hidden>{{default (t 'test.freeProgram.registrationModal.selectStatus') 'Select your current status'}}</option>
-            {{#if currentStatusOptions}}
-              {{#each currentStatusOptions}}
-                <option value="{{this}}" class="text-[#0F172A] font-inter">{{this}}</option>
-              {{/each}}
-            {{else}}
-              <option value="University Student" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.universityStudent') 'University Student'}}</option>
-              <option value="Fresh Graduate" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.freshGraduate') 'Fresh Graduate'}}</option>
-              <option value="Job Seeker" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.jobSeeker') 'Job Seeker'}}</option>
-              <option value="Employee" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.employee') 'Employee'}}</option>
-              <option value="Freelancer" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.freelancer') 'Freelancer'}}</option>
-              <option value="Entrepreneur" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.entrepreneur') 'Entrepreneur'}}</option>
-              <option value="Other" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.other') 'Other'}}</option>
-            {{/if}}
-          </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-[#64748B]">
-            <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </div>
-      </div>
+      {{#> components/ui/dropdown/select/index
+        name="current_status"
+        id="current_status"
+        containerId="dropdown-status"
+        icon="fa-solid fa-user-graduate"
+        label=(default (t 'test.freeProgram.registrationModal.currentStatus') 'Current Status')
+        required=true
+        placeholder=(default (t 'test.freeProgram.registrationModal.selectStatus') 'Select your current status')
+        labelClass="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]"
+        triggerClass="h-[48px] sm:h-[52px] px-4 rounded-lg"
+      }}
+        {{#if currentStatusOptions}}
+          {{#each currentStatusOptions}}
+            <option value="{{this}}" class="text-[#0F172A] font-inter">{{this}}</option>
+          {{/each}}
+        {{else}}
+          <option value="University Student" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.universityStudent') 'University Student'}}</option>
+          <option value="Fresh Graduate" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.freshGraduate') 'Fresh Graduate'}}</option>
+          <option value="Job Seeker" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.jobSeeker') 'Job Seeker'}}</option>
+          <option value="Employee" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.employee') 'Employee'}}</option>
+          <option value="Freelancer" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.freelancer') 'Freelancer'}}</option>
+          <option value="Entrepreneur" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.entrepreneur') 'Entrepreneur'}}</option>
+          <option value="Other" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.statuses.other') 'Other'}}</option>
+        {{/if}}
+      {{/components/ui/dropdown/select/index}}
 
       <!-- field-How did you know About the program? -->
-      <div class="w-full flex flex-col gap-2">
-        <div class="flex items-center gap-1">
-          <label for="referal_source" class="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]">
-            {{default (t 'test.freeProgram.registrationModal.referalSource') 'How did you know About the program?'}}
-          </label>
-          <span class="font-inter font-semibold text-[14px] leading-[18px] text-[#EF4444]">*</span>
-        </div>
-        <div class="relative w-full" id="dropdown-source">
-          <select
-            id="referal_source"
-            name="referal_source"
-            required
-            class="w-full h-[48px] px-4 pr-10 bg-white border border-[#D9D9D9] rounded-lg font-inter font-normal text-[15px] leading-[20px] text-[#94A3B8] focus:outline-none focus:border-[#003060] focus:ring-1 focus:ring-[#003060] transition-colors appearance-none cursor-pointer"
-          >
-            <option value="" disabled selected hidden>{{default (t 'test.freeProgram.registrationModal.selectOption') 'Select Option'}}</option>
-            {{#if referalSourceOptions}}
-              {{#each referalSourceOptions}}
-                <option value="{{this}}" class="text-[#0F172A] font-inter">{{this}}</option>
-              {{/each}}
-            {{else}}
-              <option value="Instagram" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.instagram') 'Instagram'}}</option>
-              <option value="TikTok" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.tiktok') 'TikTok'}}</option>
-              <option value="LinkedIn" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.linkedin') 'LinkedIn'}}</option>
-              <option value="Friends" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.friends') 'Friends'}}</option>
-              <option value="University" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.university') 'University'}}</option>
-              <option value="WhatsApp Group" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.whatsappGroup') 'WhatsApp Group'}}</option>
-              <option value="Webinar/Event" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.webinar') 'Webinar/Event'}}</option>
-              <option value="Website" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.website') 'Website'}}</option>
-              <option value="Other" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.other') 'Other'}}</option>
-            {{/if}}
-          </select>
-          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-[#64748B]">
-            <svg class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </div>
-      </div>
+      {{#> components/ui/dropdown/select/index
+        name="referal_source"
+        id="referal_source"
+        containerId="dropdown-source"
+        icon="fa-solid fa-bullhorn"
+        label=(default (t 'test.freeProgram.registrationModal.referalSource') 'How did you know About the program?')
+        required=true
+        placeholder=(default (t 'test.freeProgram.registrationModal.selectOption') 'Select Option')
+        labelClass="font-inter font-semibold text-[14px] leading-[18px] text-[#0F172A]"
+        triggerClass="h-[48px] sm:h-[52px] px-4 rounded-lg"
+      }}
+        {{#if referalSourceOptions}}
+          {{#each referalSourceOptions}}
+            <option value="{{this}}" class="text-[#0F172A] font-inter">{{this}}</option>
+          {{/each}}
+        {{else}}
+          <option value="Instagram" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.instagram') 'Instagram'}}</option>
+          <option value="TikTok" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.tiktok') 'TikTok'}}</option>
+          <option value="LinkedIn" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.linkedin') 'LinkedIn'}}</option>
+          <option value="Friends" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.friends') 'Friends'}}</option>
+          <option value="University" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.university') 'University'}}</option>
+          <option value="WhatsApp Group" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.whatsappGroup') 'WhatsApp Group'}}</option>
+          <option value="Webinar/Event" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.webinar') 'Webinar/Event'}}</option>
+          <option value="Website" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.website') 'Website'}}</option>
+          <option value="Other" class="text-[#0F172A] font-inter">{{default (t 'test.freeProgram.registrationModal.referals.other') 'Other'}}</option>
+        {{/if}}
+      {{/components/ui/dropdown/select/index}}
 
       <!-- field-will-attend -->
       <div class="w-full flex flex-col gap-3">

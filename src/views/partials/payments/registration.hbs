@@ -70,6 +70,8 @@
   {{#> components/ui/dropdown/select/index
     name="source"
     id="source-input"
+    containerId="dropdown-source"
+    icon="fa-solid fa-bullhorn"
     label=(t 'test.payment.form.sourceLabel')
     required=true
     placeholder=(t 'test.payment.form.sourcePlaceholder')
@@ -95,6 +97,8 @@
   {{#> components/ui/dropdown/select/index
     name="currentStatus"
     id="current-status-input"
+    containerId="dropdown-current-status"
+    icon="fa-solid fa-user-graduate"
     label=(default (t 'test.freeProgram.registrationModal.currentStatus') 'Current Status')
     required=true
     placeholder=(default (t 'test.freeProgram.registrationModal.selectStatus') 'Select your current status')
@@ -259,6 +263,7 @@
       const selectElement = form.querySelector('select[name="source"]');
       if (selectElement) {
         selectElement.value = sourceValue;
+        selectElement.dispatchEvent(new Event('change', { bubbles: true }));
         return;
       }
       const sourceContainer = document.getElementById('dropdown-source');
@@ -290,7 +295,10 @@
       if (fullNameInput && fullName) fullNameInput.value = fullName;
       if (emailInput && email) emailInput.value = email;
       if (whatsappInput && whatsappNumber) whatsappInput.value = whatsappNumber;
-      if (currentStatusInput && currentStatus) currentStatusInput.value = currentStatus;
+      if (currentStatusInput && currentStatus) {
+        currentStatusInput.value = currentStatus;
+        currentStatusInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
       if (agreementInput) agreementInput.checked = Boolean(agreement);
       applySourceValue(source);
     };
