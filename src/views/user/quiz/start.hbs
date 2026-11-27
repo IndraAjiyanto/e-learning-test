@@ -28,6 +28,19 @@
 
 {{> user/quiz/start/header}}
 
+<!-- Banner peringatan jika sesi login habis di tengah pengerjaan -->
+<div id="sessionExpiredAlert" class="mt-4 hidden rounded-xl border border-[#FCD34D] bg-[#FEF3C7] p-4 text-[#92400E] shadow-sm">
+  <div class="flex flex-wrap items-center gap-3">
+    <i class="fa-solid fa-triangle-exclamation text-lg text-[#D97706]"></i>
+    <div class="min-w-0 flex-1 text-sm font-medium">
+      <span>Sesi login Anda telah habis atau koneksi terputus. Jawaban Anda <strong>tetap tersimpan aman di browser ini</strong>.</span>
+      <a href="/login" target="_blank" class="ml-2 inline-flex items-center gap-1 font-bold text-[#B45309] underline hover:text-[#78350F]">
+        Buka Tab Baru untuk Login Ulang <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+      </a>
+    </div>
+  </div>
+</div>
+
 {{> user/quiz/start/content}}
 </div>
 
@@ -35,6 +48,23 @@
 {{> components/ui/user/modal/time_over/index}}
 
 <script>
+const currentUserId = '{{user.id}}';
+const currentQuizId = '{{quizId}}';
+
+function getStorageKey(questionId) {
+    return `quiz_${currentQuizId}_user_${currentUserId}_q_${questionId}`;
+}
+
+function showSessionExpiredNotification() {
+    const el = document.getElementById('sessionExpiredAlert');
+    if (el) el.classList.remove('hidden');
+}
+
+function hideSessionExpiredNotification() {
+    const el = document.getElementById('sessionExpiredAlert');
+    if (el) el.classList.add('hidden');
+}
+
 let saveTimeout;
 
 document.addEventListener("change", function(e){
@@ -47,13 +77,13 @@ document.addEventListener("change", function(e){
 
         const questionId = name.replace("q-", "");
 
-        // simpan ke localStorage dulu
-        localStorage.setItem(name, value);
+        // Simpan ke localStorage dengan namespace user & quiz agar tidak bocor ke user lain
+        localStorage.setItem(getStorageKey(questionId), value);
 
-        // hentikan timer sebelumnya
+        // Hentikan timer sebelumnya
         clearTimeout(saveTimeout);
 
-        // tunggu user berhenti klik
+        // Tunggu user selesai klik
         saveTimeout = setTimeout(async () => {
 
             try {
@@ -64,28 +94,30 @@ document.addEventListener("change", function(e){
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        userId: '{{user.id}}',
+                        userId: currentUserId,
                         questionsId: questionId,
                         answersId: value
                     })
                 });
 
-                if(!response.ok){
-                    throw new Error("Server error");
+                if (response.status === 401 || response.redirected) {
+                    showSessionExpiredNotification();
+                    return;
                 }
+
+                if(!response.ok){
+                    throw new Error("Server error " + response.status);
+                }
+
+                hideSessionExpiredNotification();
 
             } catch(err){
 
-                console.error("Autosave gagal", err);
+                console.warn("Autosave ke server tertunda (koneksi/sesi)", err);
 
-                // kosongkan pertanyaan
-       document.querySelectorAll(`input[name="${name}"]`)
-.forEach(r => {
-    r.checked = false;
-    r.dispatchEvent(new Event('change', { bubbles: true }));
-});
-
-                localStorage.removeItem(name);
+                // JANGAN kosongkan pilihan dan JANGAN hapus dari localStorage!
+                // Jawaban tetap aman di localStorage khusus user ini.
+                showSessionExpiredNotification();
 
             }
 
@@ -102,28 +134,87 @@ document.addEventListener("DOMContentLoaded", function(){
     const form = document.querySelector('#formSubmit');
     const radios = document.querySelectorAll("input[type='radio']");
 
-    radios.forEach(radio => {
+    // 1. Bersihkan cache kuis dari user lain di browser ini (isolasi privasi)
+    const currentPrefix = `quiz_${currentQuizId}_user_${currentUserId}_`;
+    const quizPrefix = `quiz_${currentQuizId}_user_`;
 
-        const savedValue = localStorage.getItem(radio.name);
+    try {
+        Object.keys(localStorage).forEach(key => {
+            // Hapus cache kuis ini yang bukan milik user yang sedang login
+            if (key.startsWith(quizPrefix) && !key.startsWith(currentPrefix)) {
+                localStorage.removeItem(key);
+            }
+            // Bersihkan format lama yang tanpa namespace user
+            if (key.startsWith("q-")) {
+                localStorage.removeItem(key);
+            }
+        });
 
-        if(savedValue && savedValue === radio.value){
-            radio.checked = true;
-            radio.dispatchEvent(new Event('change', { bubbles: true }));
+        // Jika bukan sesi lanjutan (isOngoing false), artinya ini percobaan baru / pengerjaan ulang (retake).
+        // Bersihkan sisa localStorage kuis sebelumnya agar jawaban lama tidak muncul kembali.
+        const isOngoingSession = {{ternary isOngoing 'true' 'false'}};
+        if (!isOngoingSession) {
+            Object.keys(localStorage)
+                .filter(key => key.startsWith(currentPrefix))
+                .forEach(key => localStorage.removeItem(key));
         }
+    } catch (e) {}
 
-    });
-
-    function clearQuizStorage(){
-        Object.keys(localStorage)
-        .filter(key => key.startsWith("q-"))
-        .forEach(key => localStorage.removeItem(key));
+    // 2. Pre-load jawaban dari database (jika user pernah menjawab) atau dari localStorage
+    let serverSavedAnswers = {};
+    try {
+        serverSavedAnswers = {{{jsonSafe (default savedAnswers (obj))}}} || {};
+    } catch (e) {
+        serverSavedAnswers = {};
     }
 
-    // saat submit biasa
-    form.addEventListener("submit", clearQuizStorage);
+    radios.forEach(radio => {
+        const questionId = radio.name.replace("q-", "");
+        const storageKey = getStorageKey(questionId);
 
-    // kalau submit via timer
+        const localSaved = localStorage.getItem(storageKey);
+        const serverSaved = serverSavedAnswers[questionId];
+
+        // Prioritas: localStorage (jika ada jawaban offline terbaru), jika tidak ada gunakan server
+        const valToUse = localSaved || serverSaved;
+
+        if(valToUse && valToUse === radio.value){
+            radio.checked = true;
+            // Sinkronkan ke localStorage jika sebelumnya belum ada di lokal
+            if (!localSaved && serverSaved) {
+                localStorage.setItem(storageKey, serverSaved);
+            }
+        }
+    });
+
+    // Beritahu komponen Alpine untuk memperbarui status nomor soal terjawab
+    window.dispatchEvent(new CustomEvent('quiz:answers-loaded'));
+
+    // 3. Bersihkan HANYA storage milik user aktif saat submit selesai
+    function clearQuizStorage(){
+        try {
+            Object.keys(localStorage)
+                .filter(key => key.startsWith(currentPrefix))
+                .forEach(key => localStorage.removeItem(key));
+        } catch (e) {}
+    }
+
+    if (form) {
+        form.addEventListener("submit", clearQuizStorage);
+    }
     window.clearQuizStorage = clearQuizStorage;
+
+    // 4. Heartbeat ping setiap 1.5 menit untuk mencegah sesi logout tak terduga
+    setInterval(async () => {
+        try {
+            const res = await fetch('/auth/ping');
+            if (res.status === 401 || !res.ok) {
+                showSessionExpiredNotification();
+            } else {
+                hideSessionExpiredNotification();
+            }
+        } catch (e) {}
+    }, 90 * 1000);
 
 });
 </script>
@@ -139,6 +230,9 @@ document.addEventListener("DOMContentLoaded", function(){
                     if (e.target.type === 'radio') {
                         this.updateAnsweredStatus();
                     }
+                });
+                window.addEventListener('quiz:answers-loaded', () => {
+                    this.updateAnsweredStatus();
                 });
                 this.updateAnsweredStatus();
             },

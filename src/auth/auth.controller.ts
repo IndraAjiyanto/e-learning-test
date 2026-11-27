@@ -197,4 +197,19 @@ export class AuthController {
   sessionExpired(@Res() res: Response) {
     res.redirect('/login');
   }
+
+  @Get('auth/ping')
+  ping(@Req() req: Request, @Res() res: Response) {
+    if (req.user) {
+      return res.status(200).json({
+        status: 'ok',
+        authenticated: true,
+        userId: req.user.id,
+      });
+    }
+    return res.status(401).json({
+      status: 'unauthenticated',
+      authenticated: false,
+    });
+  }
 }
