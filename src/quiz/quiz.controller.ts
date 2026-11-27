@@ -138,8 +138,13 @@ export class QuizController {
       }
     }
 
-    // Bersihkan sesi kuis usang jika ada saat user mengakses halaman ikhtisar
-    await this.quizService.resetQuizState(req.user!.id);
+    // Bersihkan sesi kuis usang jika ada saat user mengakses halaman ikhtisar,
+    // tetapi pertahankan jika user masih dalam sesi kuis aktif (belum expired)
+    await this.quizService.resetQuizState(req.user!.id, quizId);
+    const isOngoing = await this.quizService.isQuizOngoing(
+      req.user!.id,
+      quizId,
+    );
 
     const scores = await this.quizService.findUserScore(req.user!.id, quizId);
     const questions = await this.quizService.findQuestions(quizId);
@@ -169,6 +174,7 @@ export class QuizController {
       questions,
       attempts,
       best,
+      isOngoing,
       passed: byTime.length > 0 && best >= minScore,
       questionCount: questions.length,
       bareShell: true,
@@ -225,10 +231,33 @@ export class QuizController {
       return res.redirect(`/quiz/form/${quizId}`);
     }
 
-    const check = await this.quizService.checkStartQuestion(
-      req.user!.id,
+    const [check, isOngoing] = await Promise.all([
+      this.quizService.checkStartQuestion(req.user!.id, quizId),
+      this.quizService.isQuizOngoing(req.user!.id, quizId),
+    ]);
+
+    let remainingTime: number | undefined;
+    if (!check) {
+      remainingTime = await this.quizService.getRemainingTime(
+        req.user!.id,
+        quizId,
+      );
+    }
+
+    // Ambil jawaban tersimpan SETELAH getRemainingTime dipanggil.
+    // Jika ini sesi baru / pengerjaan ulang (retake), getRemainingTime sudah membersihkan jawaban lama.
+    // Jika sesi sedang berjalan (resume pengerjaan kuis), jawaban aktif saat ini tetap ada.
+    const savedUserAnswers = await this.quizService.findUserAnswersForQuiz(
       quizId,
+      req.user!.id,
     );
+
+    const savedAnswers: Record<string, string> = {};
+    for (const ua of savedUserAnswers) {
+      if (ua.question?.id && ua.answer?.id) {
+        savedAnswers[ua.question.id] = ua.answer.id;
+      }
+    }
 
     if (check) {
       res.render('user/quiz/start', {
@@ -236,19 +265,19 @@ export class QuizController {
         quizId,
         quiz,
         pertanyaan: questions,
+        savedAnswers,
+        isOngoing,
         check,
         bareShell: true,
       });
     } else {
-      const remainingTime = await this.quizService.getRemainingTime(
-        req.user!.id,
-        quizId,
-      );
       res.render('user/quiz/start', {
         user: req.user,
         quizId,
         quiz,
         pertanyaan: questions,
+        savedAnswers,
+        isOngoing,
         remainingTime,
         check,
         bareShell: true,

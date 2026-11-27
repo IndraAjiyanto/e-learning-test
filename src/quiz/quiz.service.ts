@@ -134,14 +134,50 @@ export class QuizService {
     });
   }
 
-  async resetQuizState(userId: string): Promise<void> {
+  async resetQuizState(userId: string, quizId?: string): Promise<void> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) return;
+
+    // Jika quizId diberikan dan user masih dalam durasi pengerjaan aktif,
+    // JANGAN reset state agar sesi dan jawaban kuis user tidak hilang saat kembali/login ulang.
+    if (quizId && user.quizStart && user.countdownQuiz) {
+      const quiz = await this.findOne(quizId);
+      if (quiz) {
+        const durationMs = (quiz.duration || 1) * 60000;
+        const elapsed = Date.now() - user.countdownQuiz.getTime();
+        if (elapsed < durationMs) {
+          return;
+        }
+      }
+    }
+
     if (user.quizStart || user.countdownQuiz) {
       user.quizStart = false;
       user.countdownQuiz = null;
       await this.userRepository.save(user);
     }
+  }
+
+  async isQuizOngoing(userId: string, quizId: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user || !user.quizStart || !user.countdownQuiz) return false;
+
+    const quiz = await this.findOne(quizId);
+    if (!quiz) return false;
+
+    const durationMs = (quiz.duration || 1) * 60000;
+    const elapsed = Date.now() - user.countdownQuiz.getTime();
+    return elapsed < durationMs;
+  }
+
+  async findUserAnswersForQuiz(quizId: string, userId: string) {
+    return await this.userAnswerRepository.find({
+      where: {
+        question: { quiz: { id: quizId } },
+        user: { id: userId },
+      },
+      relations: ['answer', 'question'],
+    });
   }
 
   async clearUserAnswers(userId: string, quizId: string): Promise<void> {

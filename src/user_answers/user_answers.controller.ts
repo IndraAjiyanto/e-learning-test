@@ -28,11 +28,22 @@ export class UserAnswersController {
 
   @Roles('user')
   @Post('chose-answer')
-  async choseAnswer(@Body() userAnswerDto: UserAnswerDto) {
+  async choseAnswer(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() userAnswerDto: UserAnswerDto,
+  ) {
     try {
+      // Keamanan multi-user: paksa menggunakan user ID dari session yang terotentikasi
+      userAnswerDto.userId = req.user!.id;
       await this.userAnswersService.createAnswer(userAnswerDto);
-    } catch {
-      // ignore
+      return res.status(200).json({ success: true });
+    } catch (error: unknown) {
+      const err = error as Error;
+      return res.status(500).json({
+        success: false,
+        message: err.message || 'Failed to save answer',
+      });
     }
   }
 

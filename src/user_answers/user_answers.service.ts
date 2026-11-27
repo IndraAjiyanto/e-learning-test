@@ -174,6 +174,9 @@ export class UserAnswersService {
         quiz: { id: quizId },
         score: 0,
       });
+
+      // Bersihkan jawaban kuis di database setelah dinilai agar tidak tertinggal saat retake
+      await this.deleteAnswerUser(userId, quizId);
     } else {
       const answerIds = UserAnswer.map((j) => j.answer?.id).filter(
         (id): id is string => id !== undefined && id !== null,
@@ -246,6 +249,9 @@ export class UserAnswersService {
         quiz: quiz,
         score: scores,
       });
+
+      // Bersihkan jawaban kuis di database setelah dinilai agar tidak tertinggal saat retake
+      await this.deleteAnswerUser(userId, quizId);
     }
   }
 
