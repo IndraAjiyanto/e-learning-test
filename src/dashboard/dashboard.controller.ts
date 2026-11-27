@@ -62,81 +62,54 @@ export class DashboardController {
 
   @Get()
   async getProtected(@Req() req: Request, @Res() res: Response) {
-    // const course = await this.dashboardService.findAllCourses();
-
     if (req.user) {
       if (req.user.role === 'super_admin') {
-        res.redirect('/information');
+        return res.redirect('/information');
       } else if (req.user.role === 'admin') {
-        res.redirect('/program');
-      } else if (req.user.role === 'user') {
-        const [
-          faq,
-          category,
-          alumni,
-          categoryPartner,
-          benefits,
-          about,
-          gallery,
-          partners,
-        ] = await Promise.all([
-          this.dashboardService.findFAQ(),
-          this.dashboardService.findCategories(),
-          this.dashboardService.findAllAlumni(),
-          this.dashboardService.findCategoryPartners(),
-          this.dashboardService.findAllBenefits(),
-          this.dashboardService.findAbout(),
-          this.galleryService.findAll(),
-          this.dashboardService.findAllPartners(),
-        ]);
-
-        res.render('dashboard', {
-          partners,
-          user: req.user,
-          gallery,
-          programs: category,
-          faq,
-          category,
-          alumni,
-          categoryPartner,
-          benefits,
-          about,
-        });
+        return res.redirect('/program');
       }
-    } else {
-      const [
-        faq,
-        category,
-        alumni,
-        categoryPartner,
-        benefits,
-        about,
-        gallery,
-        partners,
-      ] = await Promise.all([
-        this.dashboardService.findFAQ(),
-        this.dashboardService.findCategories(),
-        this.dashboardService.findAllAlumni(),
-        this.dashboardService.findCategoryPartners(),
-        this.dashboardService.findAllBenefits(),
-        this.dashboardService.findAbout(),
-        this.galleryService.findAll(),
-        this.dashboardService.findAllPartners(),
-      ]);
-
-      res.render('dashboard', {
-        partners,
-        user: req.user,
-        gallery,
-        programs: category,
-        faq,
-        category,
-        alumni,
-        categoryPartner,
-        benefits,
-        about,
-      });
     }
+
+    const [
+      faq,
+      category,
+      alumni,
+      categoryPartner,
+      benefits,
+      about,
+      gallery,
+      partners,
+    ] = await Promise.all([
+      this.dashboardService.findFAQ(),
+      this.dashboardService.findCategories(),
+      this.dashboardService.findAllAlumni(),
+      this.dashboardService.findCategoryPartners(),
+      this.dashboardService.findAllBenefits(),
+      this.dashboardService.findAbout(),
+      this.galleryService.findAll(),
+      this.dashboardService.findAllPartners(),
+    ]);
+
+    // Di halaman home, section gallery tidak menampilkan gallery dari category program 'Free Program'
+    const homeGallery = gallery.filter(
+      (item) =>
+        item.category?.type !== 'Free Program' &&
+        item.category?.type?.toLowerCase() !== 'free program' &&
+        item.category?.name?.toLowerCase() !== 'free program',
+    );
+
+    return res.render('dashboard', {
+      partners,
+      user: req.user,
+      gallery: homeGallery,
+      programs: category,
+      faq,
+      category,
+      alumni,
+      categoryPartner,
+      benefits,
+      about,
+    });
   }
 
   @Get('portofolios/filter')
