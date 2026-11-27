@@ -20,6 +20,7 @@ import { multerConfigMemoryOnly } from 'src/common/config/multer.config';
 import { Request, Response } from 'express';
 import { ValidateImage } from 'src/common/decorators/validate-image.decorator';
 import { ValidateImageInterceptor } from 'src/common/interceptors/validate-image.interceptor';
+import { normalizePhone08, isValidIndonesianPhone } from 'src/common/helpers/wa.helper';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('registration')
@@ -55,23 +56,44 @@ export class RegistrationsController {
         attend_program?: string;
       }
       const b = req.body as RegistrationReqBody;
+      const isJson =
+        Boolean(req.xhr) ||
+        Boolean(req.headers.accept?.includes('application/json')) ||
+        req.headers['x-requested-with'] === 'XMLHttpRequest';
+
+      const rawUserNo = (
+        b?.user_no ||
+        createRegistrationDto?.user_no ||
+        ''
+      ).trim();
+      if (!isValidIndonesianPhone(rawUserNo)) {
+        if (isJson) {
+          return res.status(400).json({
+            success: false,
+            message:
+              'Nomor WhatsApp tidak valid. Gunakan format diawali 08, 628, atau +628 dengan panjang minimal 10 digit.',
+          });
+        }
+        req.flash(
+          'error',
+          'Nomor WhatsApp tidak valid. Gunakan format diawali 08, 628, atau +628 dengan panjang minimal 10 digit.',
+        );
+        return res.redirect('back');
+      }
+
       createRegistrationDto.file = b?.uploadedImageUrls?.[0] || '';
       createRegistrationDto.courseId = courseId;
       createRegistrationDto.userId = userId;
       createRegistrationDto.process = 'approved';
       createRegistrationDto.user_fullname = b?.user_fullname || '';
       createRegistrationDto.user_email = b?.user_email || '';
-      createRegistrationDto.user_no = b?.user_no || '';
+      createRegistrationDto.user_no = normalizePhone08(rawUserNo);
       createRegistrationDto.current_status = b?.current_status || '';
       createRegistrationDto.referal_source = b?.referal_source || '';
       createRegistrationDto.attend_program = b?.attend_program === 'true';
       const registration = await this.registrationsService.create(
         createRegistrationDto,
       );
-      const isJson =
-        Boolean(req.xhr) ||
-        Boolean(req.headers.accept?.includes('application/json')) ||
-        req.headers['x-requested-with'] === 'XMLHttpRequest';
 
       if (registration == false) {
         await this.registrationsService.deleteFile(createRegistrationDto.file);

@@ -35,6 +35,10 @@ import {
   CURRENT_STATUS_OPTIONS,
   currentStatus,
 } from 'src/entities/payment.entity';
+import {
+  normalizePhone08,
+  isValidIndonesianPhone,
+} from 'src/common/helpers/wa.helper';
 
 @UseGuards(AuthenticatedGuard)
 @Controller('payment')
@@ -264,10 +268,21 @@ export class PaymentsController {
         typeof bodyRecord.fullName === 'string' ? bodyRecord.fullName : '';
       (dto as unknown as Record<string, unknown>).user_email =
         typeof bodyRecord.email === 'string' ? bodyRecord.email : '';
-      (dto as unknown as Record<string, unknown>).user_no =
+      const rawWa =
         typeof bodyRecord.whatsappNumber === 'string'
-          ? bodyRecord.whatsappNumber
+          ? bodyRecord.whatsappNumber.trim()
           : '';
+      if (rawWa && !isValidIndonesianPhone(rawWa)) {
+        flashToastError(
+          req,
+          'Validasi Gagal',
+          'Nomor WhatsApp tidak valid. Gunakan format diawali 08, 628, atau +628 dengan panjang minimal 10 digit.',
+        );
+        return res.redirect('back');
+      }
+      (dto as unknown as Record<string, unknown>).user_no = rawWa
+        ? normalizePhone08(rawWa)
+        : '';
       const formCurrentStatus = bodyRecord.currentStatus;
       if (
         typeof formCurrentStatus === 'string' &&
@@ -448,10 +463,19 @@ export class PaymentsController {
         typeof bodyRecord.fullName === 'string' ? bodyRecord.fullName : '';
       extra.user_email =
         typeof bodyRecord.email === 'string' ? bodyRecord.email : '';
-      extra.user_no =
+      const rawWa =
         typeof bodyRecord.whatsappNumber === 'string'
-          ? bodyRecord.whatsappNumber
+          ? bodyRecord.whatsappNumber.trim()
           : '';
+      if (rawWa && !isValidIndonesianPhone(rawWa)) {
+        flashToastError(
+          req,
+          'Validasi Gagal',
+          'Nomor WhatsApp tidak valid. Gunakan format diawali 08, 628, atau +628 dengan panjang minimal 10 digit.',
+        );
+        return res.redirect('back');
+      }
+      extra.user_no = rawWa ? normalizePhone08(rawWa) : '';
       if (!createPaymentDto.no) {
         createPaymentDto.no = 'MAND-' + Date.now();
       }
@@ -555,7 +579,9 @@ export class PaymentsController {
             : undefined,
         user_fullname: str(bodyRecord.fullName),
         user_email: str(bodyRecord.email),
-        user_no: str(bodyRecord.whatsappNumber),
+        user_no: str(bodyRecord.whatsappNumber)
+          ? normalizePhone08(str(bodyRecord.whatsappNumber)!)
+          : undefined,
       };
 
       await this.paymentsService.createManualInstallmentPayment(

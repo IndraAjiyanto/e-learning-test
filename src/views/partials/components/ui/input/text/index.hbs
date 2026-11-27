@@ -61,7 +61,10 @@
       placeholder="{{default placeholder 'Enter value'}}"
       {{#if pattern}}pattern="{{pattern}}"{{/if}}
       {{#if inputmode}}inputmode="{{inputmode}}"{{/if}}
-      {{#if numeric}}
+      {{#if phone}}
+        oninput="let v = this.value.replace(/[^\d+]/g, ''); if (v.includes('+')) { v = (v.startsWith('+') ? '+' : '') + v.slice(v.startsWith('+') ? 1 : 0).replace(/\+/g, ''); } this.value = v;"
+        onkeydown="if (event.key.length === 1 && !/^[0-9+]$/.test(event.key) && !event.ctrlKey && !event.metaKey) event.preventDefault(); if (event.key === '+' && (this.selectionStart !== 0 || this.value.includes('+'))) event.preventDefault();"
+      {{else if numeric}}
         {{!--
           HTML murni, bukan Alpine, supaya tetap berlaku walau bundle JS gagal
           dimuat. `oninput` menutup semua sumber sekaligus: ketik, paste, drag
@@ -101,9 +104,13 @@
     />
   </div>
 
+  <p
+    id="{{default id (default name 'text')}}-error"
+    class="hidden font-inter text-xs sm:text-sm text-[#EF4444] mt-0.5"
+  ></p>
   {{#if error}}
     <p class="font-inter text-xs sm:text-sm text-red-500 mt-0.5">{{error}}</p>
   {{else if hint}}
-    <p class="font-inter text-xs sm:text-sm text-gray-500 mt-0.5">{{hint}}</p>
+    <p id="{{default id (default name 'text')}}-hint" class="font-inter text-xs sm:text-sm text-gray-500 mt-0.5">{{hint}}</p>
   {{/if}}
 </div>

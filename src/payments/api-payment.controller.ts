@@ -18,6 +18,10 @@ import {
   CURRENT_STATUS_OPTIONS,
   currentStatus,
 } from 'src/entities/payment.entity';
+import {
+  normalizePhone08,
+  isValidIndonesianPhone,
+} from 'src/common/helpers/wa.helper';
 
 @UseGuards(AuthenticatedGuard)
 @Roles('user')
@@ -141,12 +145,25 @@ export class ApiPaymentController {
         });
       }
 
+      if (formData?.whatsappNumber) {
+        const rawWa = formData.whatsappNumber.trim();
+        if (!isValidIndonesianPhone(rawWa)) {
+          return res.status(400).json({
+            status: 'error',
+            message:
+              'Nomor WhatsApp tidak valid. Gunakan format diawali 08, 628, atau +628 dengan panjang minimal 10 digit.',
+          });
+        }
+      }
+
       // Format formData to match the column names expected by PaymentsService
       const formattedFormData = formData
         ? {
             user_fullname: formData.fullName,
             user_email: formData.email,
-            user_no: formData.whatsappNumber,
+            user_no: formData.whatsappNumber
+              ? normalizePhone08(formData.whatsappNumber.trim())
+              : undefined,
             // `source` datang dari select di form, jadi nilainya bisa saja bukan
             // member enum - localStorage pun bisa disunting manual, dan form
             // pernah mengirim "Social Media" yang tidak ada di enum. Tanpa

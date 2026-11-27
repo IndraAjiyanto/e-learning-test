@@ -25,6 +25,18 @@ export class CreatePaymentDto {
   @IsOptional()
   no: string;
 
+  @IsString()
+  @IsOptional()
+  user_fullname?: string;
+
+  @IsString()
+  @IsOptional()
+  user_email?: string;
+
+  @IsString()
+  @IsOptional()
+  user_no?: string;
+
   @IsEnum([
     'Instagram',
     'TikTok',

@@ -14,6 +14,7 @@ import { UserCourse } from 'src/entities/user_course.entity';
 import { Payment, currentStatus } from 'src/entities/payment.entity';
 import { InvoiceService } from 'src/invoice/invoice.service';
 import { NotificationService } from 'src/common/notification/notification.service';
+import { normalizePhone08 } from 'src/common/helpers/wa.helper';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -77,10 +78,11 @@ export class RegistrationsService {
         (user.biodata as { fullName?: string })?.fullName ||
         user.username,
       user_email: createRegistrationDto.user_email || user.email,
-      user_no:
-        createRegistrationDto.user_no ||
-        (user.biodata as { no?: string })?.no ||
-        undefined,
+      user_no: createRegistrationDto.user_no
+        ? normalizePhone08(createRegistrationDto.user_no)
+        : (user.biodata as { no?: string })?.no
+          ? normalizePhone08((user.biodata as { no?: string }).no!)
+          : undefined,
       current_status:
         (createRegistrationDto.current_status as currentStatus) || undefined,
       referalSource: createRegistrationDto.referal_source || undefined,
@@ -100,6 +102,11 @@ export class RegistrationsService {
     // 4. Simpan record Registration dengan nomor invoice dan relasi payment
     const registration = this.registrationRepository.create({
       ...createRegistrationDto,
+      user_no: createRegistrationDto.user_no
+        ? normalizePhone08(createRegistrationDto.user_no)
+        : (user.biodata as { no?: string })?.no
+          ? normalizePhone08((user.biodata as { no?: string }).no!)
+          : undefined,
       no: finalInvoiceNumber,
       payment: savedPayment,
       user: user,

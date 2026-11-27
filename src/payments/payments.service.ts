@@ -27,6 +27,7 @@ import { InstallmentPaymentService } from 'src/installment_payment/installment-p
 import { InstallmentPayment } from 'src/entities/installment-payment.entity';
 import { Invoice } from 'src/entities/invoice.entity';
 import { dateHelpers } from 'src/common/helpers';
+import { normalizePhone08 } from 'src/common/helpers/wa.helper';
 import { NotificationService } from 'src/common/notification/notification.service';
 
 // Hasil `createXenditInvoice`. Kalau payment-nya sudah pernah dibuat, service
@@ -226,6 +227,9 @@ export class PaymentsService {
   }
 
   async create(createPaymentDto: CreatePaymentDto) {
+    if (createPaymentDto.user_no) {
+      createPaymentDto.user_no = normalizePhone08(createPaymentDto.user_no);
+    }
     const user = await this.userRepository.findOne({
       where: { id: createPaymentDto.userId },
     });
@@ -1416,7 +1420,10 @@ export class PaymentsService {
       // Simpan data dari form
       user_fullname: formData?.user_fullname || undefined,
       user_email: formData?.user_email || undefined,
-      user_no: formData?.user_no || formData?.no || undefined,
+      user_no:
+        formData?.user_no || formData?.no
+          ? normalizePhone08((formData.user_no || formData.no)!)
+          : undefined,
       current_status:
         (formData?.current_status as import('../entities/payment.entity').currentStatus) ||
         undefined,
